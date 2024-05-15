@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DndCharacterManagerTheme {
+            DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
                     HomePage(modifier = Modifier.padding(innerPadding))
                 }
@@ -42,12 +45,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomePage(modifier: Modifier){
     Column(
-        modifier = Modifier.fillMaxSize(),
+        // background color is the one from the theme
+        modifier = Modifier.fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){// body large text
         Text("Welcome back adventurer!",
-            style = MaterialTheme.typography.titleLarge)
-
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+             modifier = Modifier.padding(16.dp)
+        )
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
@@ -69,7 +76,9 @@ fun HomePage(modifier: Modifier){
 
 @Composable
 fun CharacterCard(){
-    Card{
+    Card(colors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surface
+    )){
         Column{
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
