@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,22 +11,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-//    primary = Purple80,
-//    secondary = PurpleGrey80,
-//    tertiary = Pink80
+    primary = White,
+    onPrimary = DarkRed,
+
+    secondary = White,
+    onSecondary = DarkRed,
+
+    tertiary = Orange,
+    onTertiary = Black,
+
+    background = DarkRed,
+    onBackground = White,
+
+    surface = BlackRed,
+    onSurface = White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Red,
-    secondary = White,
-    tertiary = Orange,
-    background = White,
-    surface = LightGrey,
+    primary = DarkRed,
     onPrimary = White,
-    onSecondary = Black,
+
+    secondary = Red,
+    onSecondary = White,
+
+    tertiary = Orange,
     onTertiary = Black,
-    onBackground = LightRed,
-    onSurface = Black
+
+    background = White,
+    onBackground = Red,
+
+    surface = DarkRed,
+    onSurface = White
 )
 
 @Composable
