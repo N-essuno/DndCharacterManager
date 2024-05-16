@@ -251,8 +251,10 @@ fun RestButton(modifier: Modifier) {
 fun ImageAndDamageRow(modifier: Modifier) {
     val showDialogHp = remember { mutableStateOf(false) }
     val showDialogTempHp = remember { mutableStateOf(false) }
+    val showDialogHit = remember { mutableStateOf(false) }
     val hp = remember { mutableStateOf("") }
     val tempHp = remember { mutableStateOf("") }
+    val hitValue = remember { mutableStateOf("") }
 
     Row (
         horizontalArrangement = Arrangement.Center,
@@ -262,7 +264,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (charImage, editHpButton, editTempHpButton) = createRefs()
+            val (charImage, editHpButton, editTempHpButton, hitButton) = createRefs()
             Image(
                 modifier = Modifier
                     .padding(SmallPadding)
@@ -296,7 +298,45 @@ fun ImageAndDamageRow(modifier: Modifier) {
             ) {
                 showDialogTempHp.value = true
             }
+            MyButton(
+                modifier = Modifier
+                    .constrainAs(hitButton) {
+                        top.linkTo(parent.top)
+                        end.linkTo(editHpButton.start)
+                        bottom.linkTo(editTempHpButton.top)
+                    },
+                text = "Hit",
+            ) {
+                showDialogHit.value = true
+            }
         }
+        }
+
+        if (showDialogHit.value) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialogHit.value = false
+            },
+            title = { Text("Hit Management") },
+            text = {
+                OutlinedTextField(
+                    value = hitValue.value,
+                    onValueChange = { hitValue.value = it },
+                    label = { Text("HP") }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // TODO: handle hit value
+                        showDialogHit.value = false
+                    }
+                ) {
+                    Text("Add Hit")
+                }
+            },
+        )
+    }
 
         if (showDialogHp.value) {
             AlertDialog(
@@ -370,7 +410,6 @@ fun ImageAndDamageRow(modifier: Modifier) {
                 }
             )
         }
-    }
 }
 
 @Composable
