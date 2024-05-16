@@ -83,7 +83,10 @@ fun ArcaneTradition() {
 data class ArcaneTraditionItem(val name: String, val description: String)
 
 @Composable
-fun ExpandableCard(title: String, description: String, selected: Boolean, onSelected: () -> Unit) {
+fun ExpandableCard(
+    title: String, description:
+    String, selected: Boolean,
+    onSelected: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -97,7 +100,7 @@ fun ExpandableCard(title: String, description: String, selected: Boolean, onSele
             contentColor = MaterialTheme.colorScheme.onSurface,
             containerColor =
                 if (selected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surface
+                else MaterialTheme.colorScheme.tertiary
         )
     ) {
         Column(
