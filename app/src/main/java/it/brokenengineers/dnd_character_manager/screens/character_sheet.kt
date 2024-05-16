@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +24,7 @@ import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CharacterSheet() {
     val scrollState = rememberScrollState()
@@ -34,7 +36,7 @@ fun CharacterSheet() {
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ){
-            val (head, charImage) = createRefs()
+            val (head, charImage, mainInfo) = createRefs()
             CharacterSheetHead(modifier = Modifier
                 .constrainAs(head) {
                     top.linkTo(parent.top)
@@ -45,6 +47,13 @@ fun CharacterSheet() {
             CharacterImage(modifier = Modifier
                 .constrainAs(charImage) {
                     top.linkTo(head.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
+            MainInfo(modifier = Modifier
+                .constrainAs(mainInfo) {
+                    top.linkTo(charImage.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -144,10 +153,98 @@ fun RestButton(modifier: Modifier) {
 fun CharacterImage(modifier: Modifier) {
     MyRow(modifier = modifier) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.vincy_broken),
             contentDescription = "Character Image",
             modifier = modifier
         )
+    }
+}
+
+@Composable
+fun MainInfo(modifier: Modifier) {
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        ConstraintLayout(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val (profBonus, speed, init, armorClass) = createRefs()
+            MainInfoElem(
+                name = "PROF. BONUS",
+                value = "+3",
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .constrainAs(profBonus) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
+            )
+            MainInfoElem(
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .constrainAs(speed) {
+                    start.linkTo(profBonus.end)
+                    top.linkTo(parent.top)
+                },
+                name = "WLK. SPEED",
+                value = "30 ft."
+            )
+            MainInfoElem(
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .constrainAs(init) {
+                    start.linkTo(speed.end)
+                    top.linkTo(parent.top)
+                },
+                name = "INITIATIVE",
+                value = "+3"
+            )
+            MainInfoElem(
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .constrainAs(armorClass) {
+                    start.linkTo(init.end)
+                    top.linkTo(parent.top)
+                },
+                name = "ARMOR CLASS",
+                value = "18"
+            )
+        }
+    }
+}
+
+@Composable
+fun MainInfoElem(modifier: Modifier, name: String, value: String) {
+    Card (
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        ConstraintLayout {
+            val (nameText, valueText) = createRefs()
+            Text(
+                style = MaterialTheme.typography.bodyLarge,
+                text = value,
+                modifier = Modifier.constrainAs(valueText) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                }
+            )
+            Text(
+                style = MaterialTheme.typography.bodyMedium,
+                text = name,
+                modifier = Modifier.constrainAs(nameText) {
+                    start.linkTo(parent.start)
+                    top.linkTo(valueText.bottom)
+                    end.linkTo(parent.end)
+                }
+            )
+
+        }
     }
 }
 
