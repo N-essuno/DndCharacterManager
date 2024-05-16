@@ -23,6 +23,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -248,6 +249,11 @@ fun RestButton(modifier: Modifier) {
 
 @Composable
 fun ImageAndDamageRow(modifier: Modifier) {
+    val showDialogHp = remember { mutableStateOf(false) }
+    val showDialogTempHp = remember { mutableStateOf(false) }
+    val hp = remember { mutableStateOf("") }
+    val tempHp = remember { mutableStateOf("") }
+
     Row (
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -256,7 +262,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (charImage, hitButton, tempHpButton, recoverHpButton) = createRefs()
+            val (charImage, editHpButton, editTempHpButton) = createRefs()
             Image(
                 modifier = Modifier
                     .padding(SmallPadding)
@@ -270,25 +276,100 @@ fun ImageAndDamageRow(modifier: Modifier) {
             )
             MyButton(
                 modifier = Modifier
-                    .constrainAs(hitButton) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(recoverHpButton.top)
+                    .constrainAs(editHpButton) {
                         end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(editTempHpButton.top)
                     },
-                text = "Hit",
-            ) {}
+                text = "Edit HP",
+            ) {
+                showDialogHp.value = true
+            }
             MyButton(
                 modifier = Modifier
-                    .constrainAs(tempHpButton) {
-                        top.linkTo(hitButton.bottom)
-                        bottom.linkTo(recoverHpButton.top)
+                    .constrainAs(editTempHpButton) {
+                        top.linkTo(editHpButton.bottom)
+                        bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
                     },
-                text = "Temp HP",
-            ) {}
+                text = "Edit temp HP",
+            ) {
+                showDialogTempHp.value = true
+            }
         }
 
+        if (showDialogHp.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDialogHp.value = false
+                },
+                title = { Text("HP Management") },
+                text = {
+                    OutlinedTextField(
+                        value = hp.value,
+                        onValueChange = { hp.value = it },
+                        label = { Text("HP") }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            // TODO: handle adding hp
+                            showDialogHp.value = false
+                        }
+                    ) {
+                        Text("Add HP")
+                    }
+                },
 
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            // TODO handle losing HP
+                            showDialogHp.value = false
+                        }
+                    ) {
+                        Text("Lose HP")
+                    }
+                }
+            )
+        }
+
+        if (showDialogTempHp.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    showDialogTempHp.value = false
+                },
+                title = { Text("Temp HP Management") },
+                text = {
+                    OutlinedTextField(
+                        value = tempHp.value,
+                        onValueChange = { tempHp.value = it },
+                        label = { Text("Temp HP") }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            // TODO: handle adding temp hp
+                            showDialogTempHp.value = false
+                        }
+                    ) {
+                        Text("Add Temp HP")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            // TODO handle losing temp hp
+                            showDialogTempHp.value = false
+                        }
+                    ) {
+                        Text("Lose Temp HP")
+                    }
+                }
+            )
+        }
     }
 }
 
