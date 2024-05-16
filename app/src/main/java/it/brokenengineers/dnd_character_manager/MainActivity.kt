@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -15,16 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import it.brokenengineers.dnd_character_manager.screens.LevelUp
+import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -38,7 +36,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
-                    HomePage(modifier = Modifier.padding(innerPadding))
+//                    HomePage(modifier = Modifier.padding(innerPadding))
+                    LevelUp()
                 }
             }
         }
@@ -88,38 +87,6 @@ fun HomePage(modifier: Modifier){
         }
     }
 
-}
-
-@Composable
-fun CharacterCard(){
-    Card(
-        modifier = Modifier
-            // to fill the width of the screen
-//            .fillMaxWidth()
-            .padding(start = MediumPadding, end = MediumPadding),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ){
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Character Image"
-            )
-            Text(
-                text = "Character Name",
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = "Character Class",
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = "Character Level",
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Spacer(modifier = Modifier.padding(SmallPadding))
-        }
-    }
 }
 
 @Preview(showBackground = true)
