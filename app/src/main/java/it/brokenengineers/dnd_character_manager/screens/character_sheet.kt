@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +23,6 @@ import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CharacterSheet() {
     val scrollState = rememberScrollState()
@@ -36,7 +34,7 @@ fun CharacterSheet() {
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ){
-            val (head, charImage, mainInfo) = createRefs()
+            val (head, charImage) = createRefs()
             CharacterSheetHead(modifier = Modifier
                 .constrainAs(head) {
                     top.linkTo(parent.top)
