@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import it.brokenengineers.dnd_character_manager.screens.CharacterSheet
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
-                    HomePage(modifier = Modifier.padding(innerPadding))
+                    CharacterSheet(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
