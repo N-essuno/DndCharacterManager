@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -21,9 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
@@ -54,9 +54,10 @@ fun ExpandableCard(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Text(text = title, style = MaterialTheme.typography.titleLarge)
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
                     contentDescription = "Expand or collapse",
@@ -67,13 +68,15 @@ fun ExpandableCard(
 
                 Button(
                     onClick = onSelected,
-                    modifier = Modifier.size(24.dp)
+//                    modifier = Modifier.size(40.dp)
                 ) {
                     // show a plus icon
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Select"
+                        contentDescription = "Select",
+                        tint = Color.White
                     )
+//                    Text(text = "Select")
                 }
             }
 
