@@ -32,9 +32,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import it.brokenengineers.dnd_character_manager.screens.CharacterSheet
-import it.brokenengineers.dnd_character_manager.screens.InventoryScreen
-import it.brokenengineers.dnd_character_manager.screens.SpellsScreen
+import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
+import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
+import it.brokenengineers.dnd_character_manager.screens.sheet.SpellsScreen
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -64,7 +64,7 @@ fun CustomNavigationHost(navController: NavHostController) {
             composable("home") { HomePage(Modifier, navController) }
         }
         navigation(startDestination = "sheet", route = "character_sheet") {
-            composable("sheet") { CharacterSheet(navController) }
+            composable("sheet") { CharacterSheetScreen(navController) }
             composable("inventory") { InventoryScreen() }
             composable("spells") { SpellsScreen() }
         }

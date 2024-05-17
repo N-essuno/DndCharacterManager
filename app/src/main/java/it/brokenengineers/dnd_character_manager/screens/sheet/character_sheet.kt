@@ -1,4 +1,4 @@
-package it.brokenengineers.dnd_character_manager.screens
+package it.brokenengineers.dnd_character_manager.screens.sheet
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -57,7 +57,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CharacterSheet(navController: NavHostController) {
+fun CharacterSheetScreen(navController: NavHostController) {
     val scrollState = rememberScrollState()
     Scaffold (
         bottomBar = { CharacterSheetNavBar(navController) }
@@ -900,25 +900,13 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun InventoryScreen() {
-    Column {
-        Text("Inventory")
-    }
-}
-
-@Composable
-fun SpellsScreen() {
-    Column {
-        Text("Spells")
-    }
-}
-
-@Composable
 fun CharacterSheetNavBar(navController: NavHostController) {
-    BottomNavigation {
+    BottomNavigation (
+        backgroundColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
+    ){
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
-
         BottomNavItem.items.forEach { screen ->
             BottomNavigationItem(
                 icon = { },
@@ -944,7 +932,7 @@ fun CharacterSheetNavBar(navController: NavHostController) {
 fun DefaultPreview() {
     val navController = rememberNavController()
     DndCharacterManagerTheme {
-        CharacterSheet(navController)
+        CharacterSheetScreen(navController)
     }
 }
 
