@@ -1,5 +1,6 @@
 package it.brokenengineers.dnd_character_manager.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,9 +28,11 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,81 +42,93 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CharacterSheet(modifier: Modifier) {
+fun CharacterSheet() {
+    val navController = rememberNavController()
     val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(bottom = LargePadding)
-    ) {
-        Spacer(modifier = Modifier.height(LargePadding))
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ){
-            val (head, charImage, mainInfo, abilityRow,
-                skillsRow, savingThrowsTitle, savingThrowsRow, ) = createRefs()
-            CharacterSheetHead(modifier = Modifier
-                .constrainAs(head) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-            ImageAndDamageRow(modifier = Modifier
-                .constrainAs(charImage) {
-                    top.linkTo(head.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-            MainInfo(modifier = Modifier
-                .constrainAs(mainInfo) {
-                    top.linkTo(charImage.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-            AbilityRow(modifier = Modifier
+    Scaffold (
+        bottomBar = { CharacterSheetNavBar(navController) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(bottom = 60.dp)
+        ) {
+            Spacer(modifier = Modifier.height(LargePadding))
+            ConstraintLayout(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val (head, charImage, mainInfo, abilityRow,
+                    skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
+                CharacterSheetHead(modifier = Modifier
+                    .constrainAs(head) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+                ImageAndDamageRow(modifier = Modifier
+                    .constrainAs(charImage) {
+                        top.linkTo(head.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+                MainInfo(modifier = Modifier
+                    .constrainAs(mainInfo) {
+                        top.linkTo(charImage.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+                AbilityRow(modifier = Modifier
                     .constrainAs(abilityRow) {
                         top.linkTo(mainInfo.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-            )
-            SkillRow(modifier = Modifier
-                .constrainAs(skillsRow) {
-                    top.linkTo(abilityRow.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-            Text(
-                style = MaterialTheme.typography.titleLarge,
-                text = "Saving throws",
-                modifier = Modifier
-                    .padding(SmallPadding)
-                    .constrainAs(savingThrowsTitle) {
-                        top.linkTo(skillsRow.bottom)
+                )
+                SkillRow(modifier = Modifier
+                    .constrainAs(skillsRow) {
+                        top.linkTo(abilityRow.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-            )
-            SavingThrowsRow(modifier = Modifier
-                .constrainAs(savingThrowsRow) {
-                    top.linkTo(savingThrowsTitle.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
+                )
+                Text(
+                    style = MaterialTheme.typography.titleLarge,
+                    text = "Saving throws",
+                    modifier = Modifier
+                        .padding(SmallPadding)
+                        .constrainAs(savingThrowsTitle) {
+                            top.linkTo(skillsRow.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                )
+                SavingThrowsRow(modifier = Modifier
+                    .constrainAs(savingThrowsRow) {
+                        top.linkTo(savingThrowsTitle.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                )
+            }
         }
     }
 }
@@ -882,12 +900,105 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun InventoryScreen() {
+    Text("Inventory")
+}
+
+@Composable
+fun SpellsScreen() {
+    Text("Spells")
+}
+
+@Composable
+fun CharacterSheetNavBar(navController: NavHostController) {
+    BottomNavigation {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        BottomNavItem.bottomNavItems.forEach() { item ->
+            BottomNavigationItem(
+                selected = currentRoute == item.route,
+                onClick = {
+                    navController.navigate(item.route) {
+                        navController.popBackStack()
+                    }
+                },
+                icon = { },
+                label = { Text(item.label) }
+            )
+        }
+    }
+}
+
+@Composable
+fun NavigationHost() {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "character_sheet") {
+        navigation(startDestination = "sheet", route = "character_sheet") {
+            composable("sheet") { CharacterSheet() }
+            composable("inventory") { InventoryScreen() }
+            composable("spells") { SpellsScreen() }
+        }
+    }
+}
+
+@Composable
+fun CharacterSheetBottomAppBar() {
+    BottomAppBar(
+        Modifier.height(60.dp)
+    ) {
+//                IconButton(
+//                    onClick = { /* Handle home icon press */ }) {
+//                    Icon(Icons.Default.Home, contentDescription = "Sheet")
+//                }
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = "Sheet",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        // The actions should be moved to the end of the BottomAppBar
+        Spacer(Modifier.weight(1f, true))
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = "Inventory",
+            style = MaterialTheme.typography.bodyMedium
+        )
+//                IconButton(
+//                    onClick = { /* Handle profile icon press */ }) {
+//                    Icon(Icons.Default.List, contentDescription = "Inventory")
+//                }
+        Spacer(Modifier.weight(1f, true))
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = "Spells",
+            style = MaterialTheme.typography.bodyMedium
+        )
+//                IconButton(
+//                    onClick = { /* Handle profile icon press */ }) {
+//                    Icon(Icons.Default.Notifications, contentDescription = "Spells")
+//                }
+    }
+}
+
 // preview
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     DndCharacterManagerTheme {
-        CharacterSheet(Modifier)
+        CharacterSheet()
     }
 }
+
+sealed class BottomNavItem(val route: String, val label: String) {
+    data object Home : BottomNavItem("sheet", "Sheet")
+    data object Search : BottomNavItem("inventory", "Inventory")
+    data object Profile : BottomNavItem("spells", "Spells")
+    companion object {
+        val bottomNavItems = listOf(Home, Search, Profile)
+    }
+}
+
+
+
 
