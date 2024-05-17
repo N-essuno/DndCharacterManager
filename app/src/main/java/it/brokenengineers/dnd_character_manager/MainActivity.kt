@@ -1,5 +1,6 @@
 package it.brokenengineers.dnd_character_manager
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,12 +31,13 @@ import it.brokenengineers.dnd_character_manager.ui.theme.XLPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
-                Scaffold(modifier = Modifier.fillMaxSize()) {innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
 //                    HomePage(modifier = Modifier.padding(innerPadding))
                     LevelUp()
                 }
