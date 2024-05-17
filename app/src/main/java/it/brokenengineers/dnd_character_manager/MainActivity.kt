@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.screens.CharacterSheet
+import it.brokenengineers.dnd_character_manager.screens.InventoryScreen
+import it.brokenengineers.dnd_character_manager.screens.SpellsScreen
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -41,7 +49,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CharacterSheet()
+                    val navController = rememberNavController()
+                    CustomNavigationHost(navController)
                 }
             }
         }
@@ -49,7 +58,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HomePage(modifier: Modifier){
+fun CustomNavigationHost(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "home_route") {
+        navigation(startDestination = "home", route = "home_route") {
+            composable("home") { HomePage(Modifier, navController) }
+        }
+        navigation(startDestination = "sheet", route = "character_sheet") {
+            composable("sheet") { CharacterSheet(navController) }
+            composable("inventory") { InventoryScreen() }
+            composable("spells") { SpellsScreen() }
+        }
+    }
+}
+
+@Composable
+fun HomePage(modifier: Modifier, navController: NavHostController){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +95,7 @@ fun HomePage(modifier: Modifier){
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 items(5) {
-                    CharacterCard()
+                    CharacterCard(navController)
                     Spacer(modifier = Modifier.padding(SmallPadding))
                 }
             }
@@ -94,11 +117,18 @@ fun HomePage(modifier: Modifier){
 }
 
 @Composable
-fun CharacterCard(){
+fun CharacterCard(navController: NavHostController){
     Card(
         modifier = Modifier
             // to fill the width of the screen
 //            .fillMaxWidth()
+            .clickable {
+                // navigate to character sheet
+                navController.navigate("character_sheet") {
+                    // pop up to the home screen
+                    popUpTo("home_route"){inclusive = false}
+                }
+            }
             .padding(start = MediumPadding, end = MediumPadding),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -129,6 +159,6 @@ fun CharacterCard(){
 @Composable
 fun DefaultPreview() {
     DndCharacterManagerTheme {
-        HomePage(Modifier)
+        HomePage(Modifier, rememberNavController())
     }
 }

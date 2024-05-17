@@ -16,10 +16,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,11 +43,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
@@ -57,8 +57,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CharacterSheet() {
-    val navController = rememberNavController()
+fun CharacterSheet(navController: NavHostController) {
     val scrollState = rememberScrollState()
     Scaffold (
         bottomBar = { CharacterSheetNavBar(navController) }
@@ -471,7 +470,7 @@ fun MainInfo(modifier: Modifier) {
                         top.linkTo(parent.top)
                         end.linkTo(armorClass.start)
                     },
-                name = "INITIA",
+                name = "INITIAT.",
                 value = "+3"
             )
             MainInfoElem(
@@ -902,82 +901,40 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
 
 @Composable
 fun InventoryScreen() {
-    Text("Inventory")
+    Column {
+        Text("Inventory")
+    }
 }
 
 @Composable
 fun SpellsScreen() {
-    Text("Spells")
+    Column {
+        Text("Spells")
+    }
 }
 
 @Composable
 fun CharacterSheetNavBar(navController: NavHostController) {
     BottomNavigation {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+        val currentDestination = navBackStackEntry?.destination
 
-        BottomNavItem.bottomNavItems.forEach() { item ->
+        BottomNavItem.items.forEach { screen ->
             BottomNavigationItem(
-                selected = currentRoute == item.route,
+                icon = { },
+                label = { Text(screen.label) },
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigate(item.route) {
-                        navController.popBackStack()
+                    println(screen.route + " " + screen.route::class.simpleName)
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id)
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
-                icon = { },
-                label = { Text(item.label) }
+
             )
         }
-    }
-}
-
-@Composable
-fun NavigationHost() {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "character_sheet") {
-        navigation(startDestination = "sheet", route = "character_sheet") {
-            composable("sheet") { CharacterSheet() }
-            composable("inventory") { InventoryScreen() }
-            composable("spells") { SpellsScreen() }
-        }
-    }
-}
-
-@Composable
-fun CharacterSheetBottomAppBar() {
-    BottomAppBar(
-        Modifier.height(60.dp)
-    ) {
-//                IconButton(
-//                    onClick = { /* Handle home icon press */ }) {
-//                    Icon(Icons.Default.Home, contentDescription = "Sheet")
-//                }
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = "Sheet",
-            style = MaterialTheme.typography.bodyMedium
-        )
-        // The actions should be moved to the end of the BottomAppBar
-        Spacer(Modifier.weight(1f, true))
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = "Inventory",
-            style = MaterialTheme.typography.bodyMedium
-        )
-//                IconButton(
-//                    onClick = { /* Handle profile icon press */ }) {
-//                    Icon(Icons.Default.List, contentDescription = "Inventory")
-//                }
-        Spacer(Modifier.weight(1f, true))
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = "Spells",
-            style = MaterialTheme.typography.bodyMedium
-        )
-//                IconButton(
-//                    onClick = { /* Handle profile icon press */ }) {
-//                    Icon(Icons.Default.Notifications, contentDescription = "Spells")
-//                }
     }
 }
 
@@ -985,17 +942,19 @@ fun CharacterSheetBottomAppBar() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val navController = rememberNavController()
     DndCharacterManagerTheme {
-        CharacterSheet()
+        CharacterSheet(navController)
     }
 }
 
 sealed class BottomNavItem(val route: String, val label: String) {
-    data object Home : BottomNavItem("sheet", "Sheet")
-    data object Search : BottomNavItem("inventory", "Inventory")
-    data object Profile : BottomNavItem("spells", "Spells")
+    data object Home : BottomNavItem("home", "Home")
+    data object Sheet : BottomNavItem("sheet", "Sheet")
+    data object Inventory : BottomNavItem("inventory", "Inventory")
+    data object Spells : BottomNavItem("spells", "Spells")
     companion object {
-        val bottomNavItems = listOf(Home, Search, Profile)
+        val items = listOf(Home, Sheet, Inventory, Spells)
     }
 }
 
