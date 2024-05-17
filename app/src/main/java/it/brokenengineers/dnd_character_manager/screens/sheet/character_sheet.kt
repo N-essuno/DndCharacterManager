@@ -926,7 +926,6 @@ fun CharacterSheetNavBar(navController: NavHostController) {
     }
 }
 
-// preview
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {

@@ -65,8 +65,8 @@ fun CustomNavigationHost(navController: NavHostController) {
         }
         navigation(startDestination = "sheet", route = "character_sheet") {
             composable("sheet") { CharacterSheetScreen(navController) }
-            composable("inventory") { InventoryScreen() }
-            composable("spells") { SpellsScreen() }
+            composable("inventory") { InventoryScreen(navController) }
+            composable("spells") { SpellsScreen(navController) }
         }
     }
 }

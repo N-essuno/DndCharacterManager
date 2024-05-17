@@ -12,3 +12,6 @@ val XXLPadding = 48.dp
 val SmallVerticalSpacing = 8.dp
 val MediumVerticalSpacing = 16.dp
 val LargeVerticalSpacing = 24.dp
+
+
+val overBottomNavBar = 60.dp
