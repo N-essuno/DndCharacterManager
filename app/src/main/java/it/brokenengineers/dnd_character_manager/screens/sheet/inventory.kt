@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,29 +14,29 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
-import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -75,14 +74,7 @@ fun InventoryScreen(navController: NavHostController) {
 
             }
         }
-        Button(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 62.dp),
-            onClick = { /*TODO*/ }
-        ) {
-            Text("Add item")
-        }
+        AddItemButton(Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -154,32 +146,47 @@ fun InventoryLegend() {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column {
+        Column (
+            modifier = Modifier
+                .weight(1f)
+        ) {
             Text(
                 text = "Item",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
         }
-        Column {
+        Column (
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .weight(1f)
+        ) {
             Text(
                 text = "Quantity",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
         }
-        Column {
+        Column (
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .weight(1f)
+        ) {
             Text(
                 text = "Weight",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
         }
-        Column {
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+            .weight(1.9f)
+        ) {
             Text(
                 text = "Action",
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = LargePadding, top = SmallPadding, bottom = SmallPadding, end = 100.dp)
+                modifier = Modifier.padding(SmallPadding)
             )
         }
     }
@@ -193,7 +200,7 @@ fun InventoryItemRow(name: String, quantity: String, weight: String) {
         modifier = Modifier.fillMaxSize()
     )
     {
-        Column (){
+        Column {
             Text(
                 style = MaterialTheme.typography.bodyLarge,
                 text = name,
@@ -235,6 +242,58 @@ fun InventoryItemRow(name: String, quantity: String, weight: String) {
             }
 
         }
+    }
+}
+
+@Composable
+fun AddItemButton(modifier: Modifier) {
+    val openDialog = remember { mutableStateOf(false) }
+    val itemName = remember { mutableStateOf("") }
+    val quantity = remember { mutableStateOf("1") }
+    val weight = remember { mutableStateOf("") }
+
+    Button(
+        modifier = modifier
+            .padding(bottom = 62.dp),
+        onClick = { openDialog.value = true }
+    ) {
+        Text("Add item")
+    }
+
+    if (openDialog.value) {
+        AlertDialog(
+            onDismissRequest = { openDialog.value = false },
+            title = { Text(text = "Add item to inventory") },
+            text = {
+                Column {
+                    TextField(
+                        value = itemName.value,
+                        onValueChange = { itemName.value = it },
+                        label = { Text("Item name") }
+                    )
+                    TextField(
+                        value = quantity.value,
+                        onValueChange = { quantity.value = it },
+                        label = { Text("Quantity") }
+                    )
+                    TextField(
+                        value = weight.value,
+                        onValueChange = { weight.value = it },
+                        label = { Text("Weight") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = { openDialog.value = false }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { openDialog.value = false }) {
+                    Text("Dismiss")
+                }
+            }
+        )
     }
 }
 
