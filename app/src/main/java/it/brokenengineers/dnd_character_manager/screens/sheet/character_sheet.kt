@@ -20,6 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomNavigation
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -27,6 +29,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -51,6 +55,7 @@ import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
+import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 
@@ -219,17 +224,11 @@ fun RestButton(modifier: Modifier) {
     MaterialTheme(
         shapes = Shapes(small = CircleShape)
     ) {
-        Button(
-            // on click show dialog with two options: short rest and long rest
-            onClick = {
-                showDialog.value = true
-            },
-            modifier = modifier
+        IconButton(
+            modifier = modifier,
+            onClick = { showDialog.value = true },
         ) {
-            Image(
-                painter = painterResource(id = androidx.core.R.drawable.ic_call_answer),
-                contentDescription = "Rest"
-            )
+            Icon(Icons.Default.Favorite, contentDescription = "Delete")
         }
     }
 
@@ -475,7 +474,7 @@ fun MainInfo(modifier: Modifier) {
             )
             MainInfoElem(
                 modifier = Modifier
-                    .padding(SmallPadding)
+                    .padding(top = SmallPadding, end = MediumPadding)
                     .constrainAs(armorClass) {
                         start.linkTo(init.end)
                         top.linkTo(parent.top)
@@ -913,9 +912,9 @@ fun CharacterSheetNavBar(navController: NavHostController) {
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    println(screen.route + " " + screen.route::class.simpleName)
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.findStartDestination().id)
+
                         launchSingleTop = true
                         restoreState = true
                     }
