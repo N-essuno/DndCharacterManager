@@ -29,13 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 
 // TODO add gold visualization
 
@@ -51,10 +51,10 @@ fun InventoryScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = 60.dp)
+                .padding(bottom = OverBottomNavBar)
         ) {
             Spacer(modifier = Modifier.height(LargePadding))
-            TitleRow()
+            TitleRow("Inventory")
 
             Spacer(modifier = Modifier.height(MediumPadding))
             val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
@@ -117,7 +117,7 @@ fun WeightRow(weight: String, maxWeight: String){
 }
 
 @Composable
-fun TitleRow(){
+fun TitleRow(title: String){
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -134,7 +134,7 @@ fun TitleRow(){
             ) {
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "Inventory",
+                    text = title,
                     style = MaterialTheme.typography.titleLarge
                 )
             }

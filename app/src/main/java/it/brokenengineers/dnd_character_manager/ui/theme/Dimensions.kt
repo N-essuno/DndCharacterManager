@@ -14,4 +14,4 @@ val MediumVerticalSpacing = 16.dp
 val LargeVerticalSpacing = 24.dp
 
 
-val overBottomNavBar = 60.dp
+val OverBottomNavBar = 60.dp
