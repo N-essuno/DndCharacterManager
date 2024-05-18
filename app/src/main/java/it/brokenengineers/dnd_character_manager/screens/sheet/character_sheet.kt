@@ -1,5 +1,7 @@
 package it.brokenengineers.dnd_character_manager.screens.sheet
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,9 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigation
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -45,7 +45,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -53,8 +52,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
-import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
+import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -76,7 +76,7 @@ fun CharacterSheetScreen(navController: NavHostController) {
                 .verticalScroll(scrollState)
                 .padding(bottom = OverBottomNavBar)
         ) {
-            Spacer(modifier = Modifier.height(LargePadding))
+            Spacer(modifier = Modifier.height(LargeVerticalSpacing))
             ConstraintLayout(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -838,7 +838,7 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
             val (nameText, bonusText, proficiencyCheckBok) = createRefs()
             RoundCheckbox(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(CheckBoxMedium)
                     .constrainAs(proficiencyCheckBok) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)

@@ -23,12 +23,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
+import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
+import it.brokenengineers.dnd_character_manager.ui.theme.RadioButtonMedium
+import it.brokenengineers.dnd_character_manager.ui.theme.ScrollColumnHeightMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -123,7 +125,7 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?){
                 Icon(
                     Icons.Default.Build,
                     modifier = Modifier
-                        .size(20.dp),
+                        .size(IconButtonMedium),
                     contentDescription = "Delete")
             }
         }
@@ -137,7 +139,7 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .height(140.dp)
+                .height(ScrollColumnHeightMedium)
                 .verticalScroll(scrollState)
         ) {
             spells?.let {
@@ -147,7 +149,7 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?){
                     ) {
                         RadioButton(
                             // TODO set depending on prepared spells
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier.size(RadioButtonMedium),
                             selected = true,
                             onClick = { }
                         )

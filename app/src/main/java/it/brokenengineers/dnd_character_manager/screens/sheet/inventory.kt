@@ -32,10 +32,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
-import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
-import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
-import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
+import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
+import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.ui.theme.SmallVerticalSpacing
 
 // TODO add gold visualization
 
@@ -53,10 +54,10 @@ fun InventoryScreen(navController: NavHostController) {
                 .verticalScroll(scrollState)
                 .padding(bottom = OverBottomNavBar)
         ) {
-            Spacer(modifier = Modifier.height(LargePadding))
+            Spacer(modifier = Modifier.height(LargeVerticalSpacing))
             TitleRow("Inventory")
 
-            Spacer(modifier = Modifier.height(MediumPadding))
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
             val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
             val quantities = listOf("1", "2", "3", "4", "5")
             val weights = listOf("1 kg", "2 kg", "3 kg", "4 kg", "5 kg")
@@ -65,7 +66,7 @@ fun InventoryScreen(navController: NavHostController) {
             for (i in items.indices) {
                 InventoryItemRow(items[i], quantities[i], weights[i])
             }
-            Spacer(modifier = Modifier.height(MediumPadding))
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
             WeightRow(weight = "100", maxWeight = "200")
 
         }
@@ -97,7 +98,7 @@ fun WeightRow(weight: String, maxWeight: String){
             )
         }
     }
-    Spacer(modifier = Modifier.height(SmallPadding))
+    Spacer(modifier = Modifier.height(SmallVerticalSpacing))
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
