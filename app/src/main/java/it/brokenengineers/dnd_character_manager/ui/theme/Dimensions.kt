@@ -12,6 +12,8 @@ val XXLPadding = 48.dp
 val SmallVerticalSpacing = 8.dp
 val MediumVerticalSpacing = 16.dp
 val LargeVerticalSpacing = 24.dp
+val XLVerticalSpacing = 32.dp
+val XXLVerticalSpacing = 48.dp
 
 val CheckBoxMedium = 24.dp
 val IconButtonMedium = 20.dp
