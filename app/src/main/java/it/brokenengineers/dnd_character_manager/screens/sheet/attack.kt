@@ -34,12 +34,87 @@ import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.RadioButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.ScrollColumnHeightMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.ui.theme.XXLVerticalSpacing
+
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun AttackScreen(navController: NavHostController) {
+    // TODO get character class from view model
+    val characterClass = "Barbarian"
+
+    if (characterClass == "Wizard") {
+        SpellsScreen(navController)
+    } else if (characterClass == "Barbarian") {
+        MeleeScreen(navController)
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun MeleeScreen(navController: NavHostController) {
+    val attackBonusString = stringResource(id = R.string.attack_bonus)
+    val meleeTitle = stringResource(id = R.string.melee_title)
+
+    Scaffold(
+        bottomBar = { CharacterSheetNavBar(navController) }
+    ) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = meleeTitle,
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ){
+                RadioButton(
+                    // TODO set depending on proficient weapons
+                    modifier = Modifier.size(RadioButtonMedium),
+                    selected = true,
+                    onClick = { }
+                )
+                Text(
+                    // TODO get weapon name from view model
+                    modifier = Modifier.padding(SmallPadding),
+                    text = "Weapon Name",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Icon(
+                    // TODO change icon to weapon icon
+                    Icons.Default.Build,
+                    modifier = Modifier
+                        .size(IconButtonMedium),
+                    contentDescription = "Weapon"
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(XXLVerticalSpacing))
+
+            // TODO set depending on character stats
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = "$attackBonusString 0",
+            )
+        }
+    }
+}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SpellsScreen(navController: NavHostController) {
     val dcSavingThrowsString = stringResource(id = R.string.dc_saving_throws)
-    val spellAttackBonusString = stringResource(id = R.string.spell_attack_bonus)
+    val attackBonusString = stringResource(id = R.string.attack_bonus)
 
     val scrollState = rememberScrollState()
     Scaffold(
@@ -64,10 +139,10 @@ fun SpellsScreen(navController: NavHostController) {
 
             SpellsTitleRow(title = "Spells")
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
                 SpellsLevelColumn(level = 0, spells = cantrips)
                 SpellsLevelColumn(level = 1, spells = lev1Spells)
                 SpellsLevelColumn(level = 2, spells = lev2Spells)
@@ -77,7 +152,7 @@ fun SpellsScreen(navController: NavHostController) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
                 SpellsLevelColumn(level = 3, spells = lev3Spells)
                 SpellsLevelColumn(level = 4, spells = lev4Spells)
                 SpellsLevelColumn(level = 5, spells = lev5Spells)
@@ -88,16 +163,16 @@ fun SpellsScreen(navController: NavHostController) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
                 SpellsLevelColumn(level = 6, spells = lev6Spells)
                 SpellsLevelColumn(level = 7, spells = lev7Spells)
                 SpellsLevelColumn(level = 8, spells = lev8Spells)
             }
 
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
-            ){
+            ) {
                 // TODO set depending on character stats
                 Text(
                     modifier = Modifier.padding(SmallPadding),
@@ -105,7 +180,7 @@ fun SpellsScreen(navController: NavHostController) {
                 )
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "$spellAttackBonusString 0",
+                    text = "$attackBonusString 0",
                 )
             }
 
@@ -197,6 +272,6 @@ fun SpellsTitleRow(title: String){
 fun SpellsScreenPreview() {
     val navController = rememberNavController()
     DndCharacterManagerTheme {
-        SpellsScreen(navController)
+        AttackScreen(navController)
     }
 }
