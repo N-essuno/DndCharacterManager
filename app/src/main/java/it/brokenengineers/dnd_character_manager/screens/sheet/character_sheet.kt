@@ -60,8 +60,6 @@ import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 
-// TODO: add temp hp visualization
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -203,7 +201,8 @@ fun CharacterSheetHead(modifier: Modifier) {
 
 @Composable
 fun HitPointsCard(modifier: Modifier) {
-    val hitPointsString = stringResource(id = R.string.hit_points)
+    val hpString = stringResource(id = R.string.hp)
+    val tempHpString = stringResource(id = R.string.temp_hp)
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -211,14 +210,11 @@ fun HitPointsCard(modifier: Modifier) {
         )
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.End
         ) {
             // TODO: get values based on character
-            Text("140/140")
-            Text(
-                modifier = Modifier.padding(XSPadding),
-                text = hitPointsString
-            )
+            Text("$hpString: 140/140")
+            Text("$tempHpString: 140/140")
         }
     }
 }
