@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,8 @@ import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerThem
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+
+// TODO add gold visualization
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -74,7 +77,6 @@ fun InventoryScreen(navController: NavHostController) {
 
             }
         }
-        AddItemButton(Modifier.align(Alignment.BottomCenter))
     }
 }
 
@@ -126,16 +128,25 @@ fun WeightRow(weight: String, maxWeight: String){
 fun TitleRow(){
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            Text(
-                text = "Inventory",
-                style = MaterialTheme.typography.titleLarge
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier.padding(SmallPadding),
+                    text = "Inventory",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+            AddItemButton(Modifier.align(Alignment.CenterEnd))
         }
     }
 }
@@ -253,8 +264,7 @@ fun AddItemButton(modifier: Modifier) {
     val weight = remember { mutableStateOf("") }
 
     Button(
-        modifier = modifier
-            .padding(bottom = 62.dp),
+        modifier = modifier.padding(end = SmallPadding),
         onClick = { openDialog.value = true }
     ) {
         Text("Add item")
