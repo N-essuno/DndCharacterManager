@@ -1,13 +1,11 @@
 package it.brokenengineers.dnd_character_manager.screens.sheet
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,37 +43,31 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 @Composable
 fun InventoryScreen(navController: NavHostController) {
     val scrollState = rememberScrollState()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Scaffold(
-            bottomBar = { CharacterSheetNavBar(navController) }
-        ) { innerPadding ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(bottom = 60.dp)
-            ) {
-                Spacer(modifier = Modifier.height(LargePadding))
-                TitleRow()
+    Scaffold(
+        bottomBar = { CharacterSheetNavBar(navController) }
+    ) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(bottom = 60.dp)
+        ) {
+            Spacer(modifier = Modifier.height(LargePadding))
+            TitleRow()
 
-                Spacer(modifier = Modifier.height(MediumPadding))
-                val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
-                val quantities = listOf("1", "2", "3", "4", "5")
-                val weights = listOf("1 kg", "2 kg", "3 kg", "4 kg", "5 kg")
+            Spacer(modifier = Modifier.height(MediumPadding))
+            val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
+            val quantities = listOf("1", "2", "3", "4", "5")
+            val weights = listOf("1 kg", "2 kg", "3 kg", "4 kg", "5 kg")
 
-                InventoryLegend()
-                for (i in items.indices) {
-                    InventoryItemRow(items[i], quantities[i], weights[i])
-                }
-                Spacer(modifier = Modifier.height(MediumPadding))
-                WeightRow(weight = "100", maxWeight = "200")
-
+            InventoryLegend()
+            for (i in items.indices) {
+                InventoryItemRow(items[i], quantities[i], weights[i])
             }
+            Spacer(modifier = Modifier.height(MediumPadding))
+            WeightRow(weight = "100", maxWeight = "200")
+
         }
     }
 }
