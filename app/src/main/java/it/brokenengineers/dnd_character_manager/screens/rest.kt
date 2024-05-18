@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,22 +7,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
 fun Rest() {
     val context = LocalContext.current
+    val shortRestClicked = remember { mutableStateOf(false) }
+    val longRestClicked = remember { mutableStateOf(false) }
+
     Scaffold { innerPadding ->
 
         Column(
@@ -50,7 +57,8 @@ fun Rest() {
                 // Short Rest Button
                 Button(
                     onClick = {
-                        Toast.makeText(context, "Short Rest taken", Toast.LENGTH_SHORT).show()
+                        shortRestClicked.value = true
+//                        Toast.makeText(context, "Short Rest taken", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(SmallPadding)
                 ) {
@@ -59,17 +67,91 @@ fun Rest() {
                 // Long Rest Button
                 Button(
                     onClick = {
-                        Toast.makeText(context, "Long Rest taken", Toast.LENGTH_SHORT).show()
+                        longRestClicked.value = true
+//                        Toast.makeText(context, "Long Rest taken", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(SmallPadding)
                 ) {
                     Text("Long Rest")
                 }
             }
+
+            if(shortRestClicked.value){
+                ShortRest()
+            }
+            if(longRestClicked.value){
+                LongRest()
+            }
         }
     }
 
 }
+
+@Composable
+fun LongRest() {
+    TODO("Not yet implemented")
+}
+
+@Composable
+fun ShortRest() {
+    // selected magics contains map magic -> times selected
+    val selectedMagics = remember { mutableMapOf<Magic, Int>() }
+    val totalSlotsUsed = selectedMagics.values.sum()
+    val slotsAvailable = 4
+
+    val magicsKnown = listOf(Magic("Magic1", 1), Magic("Magic2", 2), Magic("Magic3", 3), Magic("Magic4", 4))
+
+    Column {
+        Text("Choose magics to recover", style = MaterialTheme.typography.titleMedium)
+        Text(text = "You have $slotsAvailable slots available", style = MaterialTheme.typography.bodyLarge)
+        magicsKnown.forEach { magic ->
+            MagicRow(
+                selectedMagics = selectedMagics,
+                magic = magic,
+                onAdd = { addToChosen(magic, selectedMagics) },
+                onRemove = { removeFromChosen(magic) })
+        }
+    }
+}
+
+fun removeFromChosen(magic: Magic) {
+
+}
+
+fun addToChosen(magic: Magic, selectedMagic: MutableMap<Magic, Int>) {
+    if(selectedMagic.containsKey(magic)){
+        // non null operator safe because we checked if it contains the key
+        selectedMagic[magic] = selectedMagic[magic]!! + 1
+    } else{
+        selectedMagic[magic] = 1
+    }
+}
+
+@Composable
+fun MagicRow(
+    selectedMagics: Map<Magic, Int>,
+    magic: Magic,
+    onAdd: () -> Unit,
+    onRemove: () -> Unit
+) {
+    Row {
+        Text(text = "${magic.name} (Level: ${magic.level})")
+        Spacer(modifier = Modifier.weight(1f))
+        Button(onClick = onAdd) {
+            Text("Add")
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        if(selectedMagics.containsKey(magic)){
+            Text(text = selectedMagics[magic].toString())
+        } else{
+            Button(onClick = onRemove) {
+                Text("Remove")
+            }
+            Text(text = "0")
+        }
+    }
+}
+
 
 @Composable
 fun SpellSlotsLeft() {
@@ -95,3 +177,5 @@ fun SpellSlotsLeft() {
         )
     }
 }
+
+data class Magic(val name: String, val level: Int)
