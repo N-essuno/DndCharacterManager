@@ -28,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -66,6 +66,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CharacterSheetScreen(navController: NavHostController) {
+    val savingThrowsString = stringResource(id = R.string.saving_throws)
     val scrollState = rememberScrollState()
     Scaffold (
         bottomBar = { CharacterSheetNavBar(navController) }
@@ -119,7 +120,7 @@ fun CharacterSheetScreen(navController: NavHostController) {
                 )
                 Text(
                     style = MaterialTheme.typography.titleLarge,
-                    text = "Saving throws",
+                    text = savingThrowsString,
                     modifier = Modifier
                         .padding(SmallPadding)
                         .constrainAs(savingThrowsTitle) {
@@ -151,6 +152,7 @@ fun CharacterSheetHead(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ){
             val (cName, cRace, cClass, hpCard, restButton) = createRefs()
+            // TODO retrieve character info
             Text(
                 text = "Character Name",
                 modifier = Modifier
@@ -201,6 +203,7 @@ fun CharacterSheetHead(modifier: Modifier) {
 
 @Composable
 fun HitPointsCard(modifier: Modifier) {
+    val hitPointsString = stringResource(id = R.string.hit_points)
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -214,13 +217,12 @@ fun HitPointsCard(modifier: Modifier) {
             Text("140/140")
             Text(
                 modifier = Modifier.padding(XSPadding),
-                text = "Hit Points"
+                text = hitPointsString
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestButton(modifier: Modifier) {
     val showDialog = remember { mutableStateOf(false) }
@@ -234,40 +236,45 @@ fun RestButton(modifier: Modifier) {
             Icon(Icons.Default.Favorite, contentDescription = "Delete")
         }
     }
+// TODO: maybe no longer needed because of new screen by @Marco
 
-    if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                showDialog.value = false
-            },
-            title = { Text("Rest Options") },
-            text = { Text("Choose an option") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        // TODO: handle short rest
-                        showDialog.value = false
-                    }
-                ) {
-                    Text("Short Rest")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = {
-                        // TODO handle long rest
-                        showDialog.value = false
-                    }
-                ) {
-                    Text("Long Rest")
-                }
-            }
-        )
-    }
+//    if (showDialog.value) {
+//        AlertDialog(
+//            onDismissRequest = {
+//                showDialog.value = false
+//            },
+//            title = { Text("Rest Options") },
+//            text = { Text("Choose an option") },
+//            confirmButton = {
+//                Button(
+//                    onClick = {
+//                        // TODO: handle short rest
+//                        showDialog.value = false
+//                    }
+//                ) {
+//                    Text("Short Rest")
+//                }
+//            },
+//            dismissButton = {
+//                Button(
+//                    onClick = {
+//                        // TODO handle long rest
+//                        showDialog.value = false
+//                    }
+//                ) {
+//                    Text("Long Rest")
+//                }
+//            }
+//        )
+//    }
 }
 
 @Composable
 fun ImageAndDamageRow(modifier: Modifier) {
+    val hitButtonString = stringResource(id = R.string.hit_button)
+    val editHpButtonString = stringResource(id = R.string.edit_hp_button)
+    val editTempHpButtonString = stringResource(id = R.string.edit_temp_hp_button)
+
     val showDialogHp = remember { mutableStateOf(false) }
     val showDialogTempHp = remember { mutableStateOf(false) }
     val showDialogHit = remember { mutableStateOf(false) }
@@ -302,7 +309,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
                         top.linkTo(parent.top)
                         bottom.linkTo(editTempHpButton.top)
                     },
-                text = "Edit HP",
+                text = editHpButtonString
             ) {
                 showDialogHp.value = true
             }
@@ -313,7 +320,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
                     },
-                text = "Edit temp HP",
+                text = editTempHpButtonString,
             ) {
                 showDialogTempHp.value = true
             }
@@ -324,115 +331,134 @@ fun ImageAndDamageRow(modifier: Modifier) {
                         end.linkTo(editHpButton.start)
                         bottom.linkTo(editTempHpButton.top)
                     },
-                text = "Hit",
+                text = hitButtonString,
             ) {
                 showDialogHit.value = true
             }
         }
-        }
+    }
 
-        if (showDialogHit.value) {
+    val hitManagementString = stringResource(id = R.string.hit_management)
+    val hpString = stringResource(id = R.string.hp)
+    val addHitString = stringResource(id = R.string.add_hit)
+
+    val hpManagementString = stringResource(id = R.string.hp_management)
+    val addHpString = stringResource(id = R.string.add_hp)
+    val loseHpString = stringResource(id = R.string.lose_hp)
+
+    val tempHpManagementString = stringResource(id = R.string.temp_hp_management)
+    val tempHpString = stringResource(id = R.string.temp_hp)
+    val addTempHpString = stringResource(id = R.string.add_temp_hp)
+    val loseTempHpString = stringResource(id = R.string.lose_temp_hp)
+
+    if (showDialogHit.value) {
+    AlertDialog(
+        onDismissRequest = {
+            showDialogHit.value = false
+        },
+        title = { Text(hitManagementString) },
+        text = {
+            OutlinedTextField(
+                value = hitValue.value,
+                onValueChange = { hitValue.value = it },
+                label = { Text(hpString) }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    // TODO: handle hit value
+                    showDialogHit.value = false
+                }
+            ) {
+                Text(addHitString)
+            }
+        },
+    )
+    }
+
+
+    if (showDialogHp.value) {
         AlertDialog(
             onDismissRequest = {
-                showDialogHit.value = false
+                showDialogHp.value = false
             },
-            title = { Text("Hit Management") },
+            title = { Text(hpManagementString) },
             text = {
                 OutlinedTextField(
-                    value = hitValue.value,
-                    onValueChange = { hitValue.value = it },
-                    label = { Text("HP") }
+                    value = hp.value,
+                    onValueChange = { hp.value = it },
+                    label = { Text(hpString) }
                 )
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        // TODO: handle hit value
-                        showDialogHit.value = false
+                        // TODO: handle adding hp
+                        showDialogHp.value = false
                     }
                 ) {
-                    Text("Add Hit")
+                    Text(addHpString)
                 }
             },
+
+            dismissButton = {
+                Button(
+                    onClick = {
+                        // TODO handle losing HP
+                        showDialogHp.value = false
+                    }
+                ) {
+                    Text(loseHpString)
+                }
+            }
+        )
+        }
+
+    if (showDialogTempHp.value) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialogTempHp.value = false
+            },
+            title = { Text(tempHpManagementString) },
+            text = {
+                OutlinedTextField(
+                    value = tempHp.value,
+                    onValueChange = { tempHp.value = it },
+                    label = { Text(tempHpString) }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        // TODO: handle adding temp hp
+                        showDialogTempHp.value = false
+                    }
+                ) {
+                    Text(addTempHpString)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        // TODO handle losing temp hp
+                        showDialogTempHp.value = false
+                    }
+                ) {
+                    Text(loseTempHpString)
+                }
+            }
         )
     }
-
-        if (showDialogHp.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDialogHp.value = false
-                },
-                title = { Text("HP Management") },
-                text = {
-                    OutlinedTextField(
-                        value = hp.value,
-                        onValueChange = { hp.value = it },
-                        label = { Text("HP") }
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            // TODO: handle adding hp
-                            showDialogHp.value = false
-                        }
-                    ) {
-                        Text("Add HP")
-                    }
-                },
-
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            // TODO handle losing HP
-                            showDialogHp.value = false
-                        }
-                    ) {
-                        Text("Lose HP")
-                    }
-                }
-            )
-        }
-
-        if (showDialogTempHp.value) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDialogTempHp.value = false
-                },
-                title = { Text("Temp HP Management") },
-                text = {
-                    OutlinedTextField(
-                        value = tempHp.value,
-                        onValueChange = { tempHp.value = it },
-                        label = { Text("Temp HP") }
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            // TODO: handle adding temp hp
-                            showDialogTempHp.value = false
-                        }
-                    ) {
-                        Text("Add Temp HP")
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        onClick = {
-                            // TODO handle losing temp hp
-                            showDialogTempHp.value = false
-                        }
-                    ) {
-                        Text("Lose Temp HP")
-                    }
-                }
-            )
-        }
 }
 
 @Composable
 fun MainInfo(modifier: Modifier) {
+    val profBonusString = stringResource(id = R.string.prof_bonus)
+    val walkSpeedString = stringResource(id = R.string.walk_speed)
+    val initString = stringResource(id = R.string.initiative)
+    val armorClassString = stringResource(id = R.string.armor_class)
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -444,7 +470,7 @@ fun MainInfo(modifier: Modifier) {
             val (profBonus, speed, init, armorClass) = createRefs()
             // TODO: get values based on character
             MainInfoElem(
-                name = "PROF. BONUS",
+                name = profBonusString,
                 value = "+3",
                 modifier = Modifier
                     .padding(SmallPadding)
@@ -461,7 +487,7 @@ fun MainInfo(modifier: Modifier) {
                         top.linkTo(parent.top)
                         end.linkTo(init.start)
                     },
-                name = "WLK. SPEED",
+                name = walkSpeedString,
                 value = "30 ft."
             )
             MainInfoElem(
@@ -472,7 +498,7 @@ fun MainInfo(modifier: Modifier) {
                         top.linkTo(parent.top)
                         end.linkTo(armorClass.start)
                     },
-                name = "INITIAT.",
+                name = initString,
                 value = "+3"
             )
             MainInfoElem(
@@ -483,7 +509,7 @@ fun MainInfo(modifier: Modifier) {
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
                     },
-                name = "ARMOR CLASS",
+                name = armorClassString,
                 value = "18"
             )
         }
@@ -529,6 +555,13 @@ fun MainInfoElem(modifier: Modifier, name: String, value: String) {
 
 @Composable
 fun AbilityRow(modifier: Modifier) {
+    val strengthString = stringResource(id = R.string.strength)
+    val dexterityString = stringResource(id = R.string.dexterity)
+    val constitutionString = stringResource(id = R.string.constitution)
+    val intelligenceString = stringResource(id = R.string.intelligence)
+    val wisdomString = stringResource(id = R.string.wisdom)
+    val charismaString = stringResource(id = R.string.charisma)
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -540,7 +573,7 @@ fun AbilityRow(modifier: Modifier) {
             val (str, dex, con, int, wis, cha) = createRefs()
             // TODO: get points and bonus based on abilities passed
             AbilityCard(
-                name = "STRENGTH",
+                name = strengthString,
                 value = "16",
                 bonus = "+3",
                 modifier = Modifier
@@ -551,7 +584,7 @@ fun AbilityRow(modifier: Modifier) {
                     }
             )
             AbilityCard(
-                name = "DEXTERITY",
+                name = dexterityString,
                 value = "14",
                 bonus = "+2",
                 modifier = Modifier
@@ -562,7 +595,7 @@ fun AbilityRow(modifier: Modifier) {
                     }
             )
             AbilityCard(
-                name = "CONSTITUTION",
+                name = constitutionString,
                 value = "14",
                 bonus = "+2",
                 modifier = Modifier
@@ -573,7 +606,7 @@ fun AbilityRow(modifier: Modifier) {
                     }
             )
             AbilityCard(
-                name = "INTELLIGENCE",
+                name = intelligenceString,
                 value = "10",
                 bonus = "+0",
                 modifier = Modifier
@@ -584,7 +617,7 @@ fun AbilityRow(modifier: Modifier) {
                     }
             )
             AbilityCard(
-                name = "WISDOM",
+                name = wisdomString,
                 value = "12",
                 bonus = "+1",
                 modifier = Modifier
@@ -595,7 +628,7 @@ fun AbilityRow(modifier: Modifier) {
                     }
             )
             AbilityCard(
-                name = "CHARISMA",
+                name = charismaString,
                 value = "8",
                 bonus = "-1",
                 modifier = Modifier
@@ -660,13 +693,32 @@ fun AbilityCard(modifier: Modifier, name: String, value: String, bonus: String) 
 
 @Composable
 fun SkillRow(modifier: Modifier) {
+    val acrobaticsString = stringResource(id = R.string.acrobatics)
+    val animalHandlingString = stringResource(id = R.string.animal_handling)
+    val arcanaString = stringResource(id = R.string.arcana)
+    val athleticsString = stringResource(id = R.string.athletics)
+    val deceptionString = stringResource(id = R.string.deception)
+    val historyString = stringResource(id = R.string.history)
+    val insightString = stringResource(id = R.string.insight)
+    val intimidationString = stringResource(id = R.string.intimidation)
+    val investigationString = stringResource(id = R.string.investigation)
+    val medicineString = stringResource(id = R.string.medicine)
+    val natureString = stringResource(id = R.string.nature)
+    val perceptionString = stringResource(id = R.string.perception)
+    val performanceString = stringResource(id = R.string.performance)
+    val persuasionString = stringResource(id = R.string.persuasion)
+    val religionString = stringResource(id = R.string.religion)
+    val sleightOfHandString = stringResource(id = R.string.sleight_of_hand)
+    val stealthString = stringResource(id = R.string.stealth)
+    val survivalString = stringResource(id = R.string.survival)
+
     val skills1 = listOf(
-        "Acrobatics", "Animal Handling", "Arcana", "Athletics",
-        "Deception", "History", "Insight", "Intimidation", "Investigation"
+        acrobaticsString, animalHandlingString, arcanaString, athleticsString,
+        deceptionString, historyString, insightString, intimidationString, investigationString
     )
     val skills2 = listOf(
-        "Medicine", "Nature", "Perception", "Performance",
-        "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"
+        medicineString, natureString, perceptionString, performanceString,
+        persuasionString, religionString, sleightOfHandString, stealthString, survivalString
     )
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -748,6 +800,13 @@ fun SkillBox(name: String, value: String) {
 
 @Composable
 fun SavingThrowsRow(modifier: Modifier) {
+    val strenthString = stringResource(id = R.string.strength)
+    val dexterityString = stringResource(id = R.string.dexterity)
+    val constitutionString = stringResource(id = R.string.constitution)
+    val intelligenceString = stringResource(id = R.string.intelligence)
+    val wisdomString = stringResource(id = R.string.wisdom)
+    val charismaString = stringResource(id = R.string.charisma)
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -759,7 +818,7 @@ fun SavingThrowsRow(modifier: Modifier) {
             val (str, dex, con, int, wis, cha) = createRefs()
             // TODO: get bonus based on character
             SavingThrowCard(
-                name = "STRENGTH",
+                name = strenthString,
                 bonus = "+3",
                 modifier = Modifier
                     .constrainAs(str) {
@@ -769,7 +828,7 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = "DEXTERITY",
+                name = dexterityString,
                 bonus = "+2",
                 modifier = Modifier
                     .constrainAs(dex) {
@@ -779,7 +838,7 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = "CONSTITUTION",
+                name = constitutionString,
                 bonus = "+2",
                 modifier = Modifier
                     .constrainAs(con) {
@@ -789,7 +848,7 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = "INTELLIGENCE",
+                name = intelligenceString,
                 bonus = "+0",
                 modifier = Modifier
                     .constrainAs(int) {
@@ -799,7 +858,7 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = "WISDOM",
+                name = wisdomString,
                 bonus = "+1",
                 modifier = Modifier
                     .constrainAs(wis) {
@@ -809,7 +868,7 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = "CHARISMA",
+                name = charismaString,
                 bonus = "-1",
                 modifier = Modifier
                     .constrainAs(cha) {

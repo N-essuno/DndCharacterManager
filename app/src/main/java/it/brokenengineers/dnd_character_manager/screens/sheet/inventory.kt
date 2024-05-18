@@ -28,9 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
@@ -55,7 +57,7 @@ fun InventoryScreen(navController: NavHostController) {
                 .padding(bottom = OverBottomNavBar)
         ) {
             Spacer(modifier = Modifier.height(LargeVerticalSpacing))
-            TitleRow("Inventory")
+            InventoryTitleRow("Inventory")
 
             Spacer(modifier = Modifier.height(MediumVerticalSpacing))
             val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
@@ -75,6 +77,10 @@ fun InventoryScreen(navController: NavHostController) {
 
 @Composable
 fun WeightRow(weight: String, maxWeight: String){
+    val totalWeightString = stringResource(id = R.string.total_weight)
+    val maxWeightString = stringResource(id = R.string.max_weight)
+    val remainingWeightString = stringResource(id = R.string.quantity)
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
@@ -84,7 +90,7 @@ fun WeightRow(weight: String, maxWeight: String){
         ) {
             Text(
                 modifier = Modifier.padding(start = SmallPadding),
-                text = "Total Weight: $weight",
+                text = "$totalWeightString $weight",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -93,7 +99,7 @@ fun WeightRow(weight: String, maxWeight: String){
         ) {
             Text(
                 modifier = Modifier.padding(end = SmallPadding),
-                text = "Max Weight: $maxWeight",
+                text = "$maxWeightString $maxWeight",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -109,7 +115,7 @@ fun WeightRow(weight: String, maxWeight: String){
         ) {
             Text(
                 modifier = Modifier.padding(end = SmallPadding),
-                text = "Remaining Weight: ${maxWeight.toInt() - weight.toInt()}",
+                text = "$remainingWeightString ${maxWeight.toInt() - weight.toInt()}",
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -118,7 +124,8 @@ fun WeightRow(weight: String, maxWeight: String){
 }
 
 @Composable
-fun TitleRow(title: String){
+fun InventoryTitleRow(title: String){
+
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -251,6 +258,14 @@ fun InventoryItemRow(name: String, quantity: String, weight: String) {
 
 @Composable
 fun AddItemButton(modifier: Modifier) {
+    val itemNameString = stringResource(id = R.string.item_name)
+    val quantityString = stringResource(id = R.string.quantity)
+    val weightString = stringResource(id = R.string.weight)
+    val addItemString = stringResource(id = R.string.add_item)
+    val confirmString = stringResource(id = R.string.confirm)
+    val cancelString = stringResource(id = R.string.cancel)
+    val addItemToInventoryString = stringResource(id = R.string.add_item_to_inventory)
+
     val openDialog = remember { mutableStateOf(false) }
     val itemName = remember { mutableStateOf("") }
     val quantity = remember { mutableStateOf("1") }
@@ -260,40 +275,40 @@ fun AddItemButton(modifier: Modifier) {
         modifier = modifier.padding(end = SmallPadding),
         onClick = { openDialog.value = true }
     ) {
-        Text("Add item")
+        Text(addItemString)
     }
 
     if (openDialog.value) {
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
-            title = { Text(text = "Add item to inventory") },
+            title = { Text(text = addItemToInventoryString) },
             text = {
                 Column {
                     TextField(
                         value = itemName.value,
                         onValueChange = { itemName.value = it },
-                        label = { Text("Item name") }
+                        label = { Text(itemNameString) }
                     )
                     TextField(
                         value = quantity.value,
                         onValueChange = { quantity.value = it },
-                        label = { Text("Quantity") }
+                        label = { Text(quantityString) }
                     )
                     TextField(
                         value = weight.value,
                         onValueChange = { weight.value = it },
-                        label = { Text("Weight") }
+                        label = { Text(weightString) }
                     )
                 }
             },
             confirmButton = {
                 Button(onClick = { openDialog.value = false }) {
-                    Text("Confirm")
+                    Text(confirmString)
                 }
             },
             dismissButton = {
                 Button(onClick = { openDialog.value = false }) {
-                    Text("Dismiss")
+                    Text(cancelString)
                 }
             }
         )

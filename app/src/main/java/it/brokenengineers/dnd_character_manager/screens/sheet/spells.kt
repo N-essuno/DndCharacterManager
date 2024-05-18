@@ -22,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
@@ -36,6 +38,9 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SpellsScreen(navController: NavHostController) {
+    val dcSavingThrowsString = stringResource(id = R.string.dc_saving_throws)
+    val spellAttackBonusString = stringResource(id = R.string.spell_attack_bonus)
+
     val scrollState = rememberScrollState()
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController) }
@@ -96,11 +101,11 @@ fun SpellsScreen(navController: NavHostController) {
                 // TODO set depending on character stats
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "DC Saving Throws: 0",
+                    text = "$dcSavingThrowsString 0",
                 )
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "Spell Attack Bonus: 0",
+                    text = "$spellAttackBonusString 0",
                 )
             }
 
@@ -110,12 +115,15 @@ fun SpellsScreen(navController: NavHostController) {
 
 @Composable
 fun SpellsLevelColumn(level: Int, spells: List<String>?){
+    val slotsString = stringResource(id = R.string.slots)
+    val levelString = stringResource(id = R.string.level)
+
     val scrollState = rememberScrollState()
     Column {
         Row {
             Text(
                 modifier = Modifier.padding(SmallPadding),
-                text = "Level $level",
+                text = "$levelString $level",
                 style = MaterialTheme.typography.titleMedium
             )
             IconButton(
@@ -132,7 +140,7 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?){
         Text(
             // TODO set depending on available slots
             modifier = Modifier.padding(start = SmallPadding, bottom = SmallPadding),
-            text = "Slots: 0/0",
+            text = "$slotsString 0/0",
             style = MaterialTheme.typography.bodyMedium
         )
 

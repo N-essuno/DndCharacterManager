@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -73,6 +74,8 @@ fun CustomNavigationHost(navController: NavHostController) {
 
 @Composable
 fun HomePage(modifier: Modifier, navController: NavHostController){
+    val welcomeMessage = stringResource(id = R.string.welcome_message)
+    val createCharacterString = stringResource(id = R.string.create_character_button)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -86,7 +89,7 @@ fun HomePage(modifier: Modifier, navController: NavHostController){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Welcome back adventurer!",
+                text = welcomeMessage,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(top = XLPadding, bottom = MediumPadding)
@@ -110,7 +113,7 @@ fun HomePage(modifier: Modifier, navController: NavHostController){
             ),
             onClick = { /*TODO*/ }
         ) {
-            Text("Create new character")
+            Text(createCharacterString)
         }
     }
 
@@ -126,7 +129,7 @@ fun CharacterCard(navController: NavHostController){
                 // navigate to character sheet
                 navController.navigate("character_sheet") {
                     // pop up to the home screen
-                    popUpTo("home_route"){inclusive = false}
+                    popUpTo("home_route") { inclusive = false }
                 }
             }
             .padding(start = MediumPadding, end = MediumPadding),
@@ -137,6 +140,7 @@ fun CharacterCard(navController: NavHostController){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // TODO retrieve character info
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"

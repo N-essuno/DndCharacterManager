@@ -1,3 +1,94 @@
 <resources>
+
+    <!-- Homepage -->
+
     <string name="app_name">DndCharacterManager</string>
+    <string name="welcome_message">Welcome back adventurer!</string>
+    <string name="create_character_button">Create new character</string>
+
+    <!-- Character Sheet -->
+
+    <string name="hit_button">Hit</string>
+    <string name="edit_hp_button">Edit HP</string>
+    <string name="edit_temp_hp_button">Edit temp HP</string>
+
+    <string name="hit_points">Hit Points</string>
+    <string name="temp_hit_points">Temp. Hit Points</string>
+
+    <string name="hit_management">Hit Management</string>
+    <string name="hp_management">HP Management</string>
+    <string name="temp_hp_management">Temp HP Management</string>
+    <string name="hp">HP</string>
+    <string name="temp_hp">Temp HP</string>
+    <string name="add_hit">Add Hit</string>
+    <string name="add_hp">Add HP</string>
+    <string name="add_temp_hp">Add Temp HP</string>
+    <string name="lose_hp">Lose HP</string>
+    <string name="lose_temp_hp">Lose Temp HP</string>
+
+    <string name="prof_bonus">PROF. BONUS</string>
+    <string name="walk_speed">WLK. SPEED</string>
+    <string name="initiative">INITIAT.</string>
+    <string name="armor_class">ARMOR CLASS</string>
+
+    <string name="strength">STRENGTH</string>
+    <string name="dexterity">DEXTERITY</string>
+    <string name="constitution">CONSTITUTION</string>
+    <string name="intelligence">INTELLIGENCE</string>
+    <string name="wisdom">WISDOM</string>
+    <string name="charisma">CHARISMA</string>
+
+    <string name="acrobatics">Acrobatics</string>
+    <string name="animal_handling">Animal Handling</string>
+    <string name="arcana">Arcana</string>
+    <string name="athletics">Athletics</string>
+    <string name="deception">Deception</string>
+    <string name="history">History</string>
+    <string name="insight">Insight</string>
+    <string name="intimidation">Intimidation</string>
+    <string name="investigation">Investigation</string>
+    <string name="medicine">Medicine</string>
+    <string name="nature">Nature</string>
+    <string name="perception">Perception</string>
+    <string name="performance">Performance</string>
+    <string name="persuasion">Persuasion</string>
+    <string name="religion">Religion</string>
+    <string name="sleight_of_hand">Sleight of Hand</string>
+    <string name="stealth">Stealth</string>
+    <string name="survival">Survival</string>
+
+    <string name="saving_throws">Saving Throws</string>
+
+<!--    <string name="home_navbar">Home</string>-->
+<!--    <string name="sheet_navbar">Sheet</string>-->
+<!--    <string name="inventory_navbar">Inventory</string>-->
+<!--    <string name="spells_navbar">Spells</string>-->
+
+    <!-- Inventory -->
+
+    <string name="inventory_title">Inventory</string>
+    <string name="item">Item</string>
+    <string name="item_name">Item name</string>
+    <string name="quantity">Quantity</string>
+    <string name="weight">Weight</string>
+    <string name="action">Action</string>
+
+    <string name="total_weight">Total weight: </string>
+    <string name="max_weight">Max weight: </string>
+    <string name="remaining_weight">Remaining weight:</string>
+
+    <string name="add_item">Add item</string>
+    <string name="add_item_to_inventory">Add item to inventory</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Spells -->
+
+    <string name="spells_title">Spells</string>
+    <string name="level">Level</string>
+    <string name="dc_saving_throws">DC Saving Throws:</string>
+    <string name="spell_attack_bonus">Spell Attack Bonus:</string>
+    <string name="slots">Slots:</string>
+
+
 </resources>
