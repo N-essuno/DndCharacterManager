@@ -996,9 +996,9 @@ sealed class BottomNavItem(val route: String, val label: String) {
     data object Home : BottomNavItem("home", "Home")
     data object Sheet : BottomNavItem("sheet", "Sheet")
     data object Inventory : BottomNavItem("inventory", "Inventory")
-    data object Spells : BottomNavItem("spells", "Spells")
+    data object Attack : BottomNavItem("attack", "Attack & Spells")
     companion object {
-        val items = listOf(Home, Sheet, Inventory, Spells)
+        val items = listOf(Home, Sheet, Inventory, Attack)
     }
 }
 
