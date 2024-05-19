@@ -4,8 +4,8 @@ data class Character (
     val id: Int,
     val name: String,
     val race: Race,
-    val DndClass: DndClass,
+    val dndClass: DndClass,
     val level: Int,
     val abilityValues: List<AbilityValue>,
-    val proficiencies: List<Skill>,
+    val skillProficiencies: List<Skill>,
 )
