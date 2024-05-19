@@ -19,8 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,12 +29,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.view_model.RestViewModel
 
 @Composable
 fun Rest() {
     val context = LocalContext.current
     val shortRestClicked = remember { mutableStateOf(false) }
     val longRestClicked = remember { mutableStateOf(false) }
+
+    // init view model
+    val restViewModel = RestViewModel()
 
     Scaffold { innerPadding ->
 
@@ -86,7 +88,7 @@ fun Rest() {
             }
 
             if(shortRestClicked.value){
-                ShortRest()
+                ShortRest(restViewModel)
             }
             if(longRestClicked.value){
                 LongRest()
@@ -98,47 +100,37 @@ fun Rest() {
 
 @Composable
 fun LongRest() {
+    // should be retrieved from data model based on character selected
+    val magicsKnown = listOf(Magic("Magic1", 1), Magic("Magic2", 2), Magic("Magic3", 3), Magic("Magic4", 4))
     TODO("Not yet implemented")
 }
 
 @Composable
-fun ShortRest() {
+fun ShortRest(viewModel: RestViewModel) {
     // TODO instead of choosing spell uses to recover, the user chooses the spell slot levels to recover
     // the spell user has a certain amount of spell slots to recover, he can choose to recover every
     // magic level spell so that the total amount of slots recovered is equal to the amount of slots available
-
-    // should be retrieved from data model based on character selected
-    val magicsKnown = listOf(Magic("Magic1", 1), Magic("Magic2", 2), Magic("Magic3", 3), Magic("Magic4", 4))
-
-    // selected magics contains map magic -> times selected
-    val selectedMagics = remember { mutableStateMapOf<Magic, MutableState<Int>>() }
-    initSelectedMagics(selectedMagics, magicsKnown) // initialize the map with 0 for each magic
-    val totalSlotsUsed = selectedMagics.values.sumOf { it.value }
-    val slotsAvailable = 4
-
+    val slotsAvailable by remember { derivedStateOf { viewModel.slotsAvailable } }
 
     Column {
         Text("Choose magics to recover", style = MaterialTheme.typography.titleMedium)
-        Text(text = "You have $slotsAvailable slots available", style = MaterialTheme.typography.bodyLarge)
-        magicsKnown.forEach { magic ->
-            MagicRow(
-                selectedCount = selectedMagics[magic]!!.value,
+        Text(text = "You have ${viewModel.slotsAvailable} slots available", style = MaterialTheme.typography.bodyLarge)
+        // for spell level from 1 to 9
+        for (level in 1..9) {
+            val timesSelected by remember { derivedStateOf { viewModel.selectedSpells[level]?.value ?: 0 } }
+            SpellRow(
+                viewModel = viewModel,
+                level = level,
+                timesSelected = timesSelected,
                 slotsAvailable = slotsAvailable,
-                magic = magic,
                 onAdd = {
-                    if(totalSlotsUsed < slotsAvailable) {
-                        Log.d("ShortRest", "Adding ${magic.name}. Current count: ${selectedMagics[magic]}")
-                        selectedMagics[magic]?.let {currentCount ->
-                            selectedMagics[magic]?.value = currentCount.value + 1
-                        }
-                        Log.d("ShortRest", "New count: ${selectedMagics[magic]}")
+                    if(slotsAvailable > 0) {
+                        viewModel.addSpell(level)
                     }
                 },
                 onRemove = {
-                    if(selectedMagics[magic]!!.value > 0) {
-                        selectedMagics[magic]?.let {currentCount ->
-                            selectedMagics[magic]?.value = currentCount.value - 1
-                        }
+                    if(timesSelected > 0) {
+                        viewModel.removeSpell(level)
                     }
                 }
             )
@@ -146,12 +138,41 @@ fun ShortRest() {
     }
 }
 
-fun initSelectedMagics(
-    selectedMagics: MutableMap<Magic, MutableState<Int>>,
-    magicsKnown: List<Magic>
-){
-    magicsKnown.forEach { magic ->
-        selectedMagics[magic] = mutableIntStateOf(0)
+@Composable
+fun SpellRow(
+    viewModel: RestViewModel,
+    level: Int,
+    timesSelected: Int,
+    slotsAvailable: Int,
+    onAdd: () -> Unit,
+    onRemove: () -> Unit
+) {
+
+    Row {
+        Text(text = "Level: $level Spells)")
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = onAdd,
+            enabled = slotsAvailable > 0
+        ) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_input_add),
+                contentDescription = "Add"
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Button(
+            onClick = onRemove,
+            enabled = timesSelected > 0
+        ) {
+            Icon(
+                painter = painterResource(id = android.R.drawable.ic_input_delete),
+                contentDescription = "Remove"
+            )
+        }
+        Text(text = timesSelected.toString())
     }
 }
 
@@ -218,5 +239,6 @@ fun SpellSlotsLeft() {
         )
     }
 }
+
 
 data class Magic(val name: String, val level: Int)
