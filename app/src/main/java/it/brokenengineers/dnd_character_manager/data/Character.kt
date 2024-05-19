@@ -8,4 +8,5 @@ data class Character (
     val level: Int,
     val abilityValues: List<AbilityValue>,
     val skillProficiencies: List<Skill>,
+    val spells: List<Spell>?,
 )
