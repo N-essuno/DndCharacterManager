@@ -19,6 +19,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
+import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.view_model.RestViewModel
 
@@ -57,9 +59,14 @@ fun Rest() {
             // button to take either a short or long rest
 
             Row(modifier = Modifier.padding(SmallPadding)){
-                CharacterCard(20)
-
-                SpellSlotsLeft()
+                Column {
+                    CharacterCard(20)
+                }
+                Column {
+                    SpellSlotsLeft()
+                    Spacer(modifier = Modifier.height(MediumPadding))
+                    HpRecovery()
+                }
             }
 
 
@@ -92,7 +99,7 @@ fun Rest() {
                 ShortRest(restViewModel)
             }
             if(longRestClicked.value){
-                LongRest()
+                LongRest(restViewModel)
             }
         }
     }
@@ -100,10 +107,48 @@ fun Rest() {
 }
 
 @Composable
-fun LongRest() {
+fun HpRecovery() {
     // should be retrieved from data model based on character selected
-    val magicsKnown = listOf(Magic("Magic1", 1), Magic("Magic2", 2), Magic("Magic3", 3), Magic("Magic4", 4))
-    TODO("Not yet implemented")
+    val hp = 20
+    val maxHp = 50
+    val currentHp = 30
+    Column {
+        Text("HP Recovery",
+            style = MaterialTheme.typography.titleMedium)
+        Text("Current HP: $currentHp / $maxHp",
+            style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+fun LongRest(viewModel: RestViewModel) {
+    val spellsKnown by remember { derivedStateOf { viewModel.spellsKnown } }
+
+    Column {
+        Text("Choose spells to prepare",
+            style = MaterialTheme.typography.titleMedium)
+        LazyColumn(modifier = Modifier.height(300.dp).padding(SmallPadding)) {
+            items(spellsKnown.size) { index ->
+                val spell = spellsKnown[index]
+                PrepareSpellRow(
+                    spell = spell,
+                    onAdd = {
+                        viewModel.prepareSpell(spell)
+                    },
+                    onRemove = {
+                        viewModel.undoPrepareSpell(spell)
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(SmallPadding))
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Confirm")
+        }
+    }
 }
 
 @Composable
@@ -117,20 +162,19 @@ fun ShortRest(viewModel: RestViewModel) {
     LazyColumn(modifier = Modifier.height(300.dp)) {
         items(9) { index ->
             val level = index + 1
-            val timesSelected by remember { derivedStateOf { viewModel.selectedSpells[index].intValue } }
-            SpellRow(
-                viewModel = viewModel,
+            val timesSelected by remember { derivedStateOf { viewModel.spellsToRecover[index].intValue } }
+            RecoverSpellRow(
                 level = level,
                 timesSelected = timesSelected,
                 slotsAvailable = slotsAvailable,
                 onAdd = {
                     if(slotsAvailable > 0) {
-                        viewModel.addSpell(level)
+                        viewModel.recoverSpellSlot(level)
                     }
                 },
                 onRemove = {
                     if(timesSelected > 0) {
-                        viewModel.removeSpell(level)
+                        viewModel.undoRecoverSpellSlot(level)
                     }
                 }
             )
@@ -144,8 +188,7 @@ fun ShortRest(viewModel: RestViewModel) {
 }
 
 @Composable
-fun SpellRow(
-    viewModel: RestViewModel,
+fun RecoverSpellRow(
     level: Int,
     timesSelected: Int,
     slotsAvailable: Int,
@@ -182,42 +225,44 @@ fun SpellRow(
 }
 
 @Composable
-fun MagicRow(
-    selectedCount: Int,
-    slotsAvailable: Int,
-    magic: Magic,
+fun PrepareSpellRow(
+    spell: Spell,
     onAdd: () -> Unit,
     onRemove: () -> Unit
 ) {
-    val timesSelected by remember { derivedStateOf { selectedCount } }
-
+    var selected by remember { mutableStateOf(false) }
     Row {
-        Text(text = "${magic.name} (Level: ${magic.level})")
+        Text(text = spell.name, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = onAdd,
-            enabled = selectedCount < slotsAvailable
-        ) {
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_input_add),
-                contentDescription = "Add"
-            )
+        if(selected) {
+            Button(
+                onClick = {
+                    onRemove()
+                    selected = false
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_input_delete),
+                    contentDescription = "Remove"
+                )
+            }
+        } else {
+            Button(
+                onClick = {
+                    onAdd()
+                    selected = true
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = android.R.drawable.ic_input_add),
+                    contentDescription = "Add",
+                )
+            }
         }
-        Spacer(modifier = Modifier.width(8.dp))
 
-        Button(
-            onClick = onRemove,
-            // if the magic is not in the map, the button should be disabled
-            enabled = selectedCount > 0
-        ) {
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_input_delete),
-                contentDescription = "Remove"
-            )
-        }
-        Text(text = timesSelected.toString())
     }
 }
+
 
 
 @Composable
@@ -246,4 +291,4 @@ fun SpellSlotsLeft() {
 }
 
 
-data class Magic(val name: String, val level: Int)
+data class Spell(val name: String, val level: Int)
