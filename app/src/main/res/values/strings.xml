@@ -91,5 +91,8 @@
     <string name="attack_bonus">Attack Bonus:</string>
     <string name="slots">Slots:</string>
 
+    <string name="proficiency">Prof.</string>
+    <string name="weapon">Weapon</string>
+    <string name="damage">Damage</string>
 
 </resources>

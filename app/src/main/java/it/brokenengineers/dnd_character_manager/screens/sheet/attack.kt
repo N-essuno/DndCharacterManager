@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,6 +56,7 @@ fun AttackScreen(navController: NavHostController) {
 fun MeleeScreen(navController: NavHostController) {
     val attackBonusString = stringResource(id = R.string.attack_bonus)
     val meleeTitle = stringResource(id = R.string.melee_title)
+    val weaponList = listOf("Weapon 1", "Weapon 2", "Weapon 3", "Weapon 4", "Weapon 5")
 
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController) }
@@ -73,30 +75,9 @@ fun MeleeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(MediumVerticalSpacing))
 
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ){
-                RadioButton(
-                    // TODO set depending on proficient weapons
-                    modifier = Modifier.size(RadioButtonMedium),
-                    selected = true,
-                    onClick = { }
-                )
-                Text(
-                    // TODO get weapon name from view model
-                    modifier = Modifier.padding(SmallPadding),
-                    text = "Weapon Name",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Icon(
-                    // TODO change icon to weapon icon
-                    Icons.Default.Build,
-                    modifier = Modifier
-                        .size(IconButtonMedium),
-                    contentDescription = "Weapon"
-                )
-
+            WeaponTableHeader()
+            weaponList.forEach { weapon ->
+                WeaponRow(weapon)
             }
 
             Spacer(modifier = Modifier.height(XXLVerticalSpacing))
@@ -264,6 +245,71 @@ fun SpellsTitleRow(title: String){
                 style = MaterialTheme.typography.titleLarge
             )
         }
+    }
+}
+
+@Composable
+fun WeaponTableHeader(){
+    val proficiencyString = stringResource(id = R.string.proficiency)
+    val weaponString = stringResource(id = R.string.weapon)
+    val damageString = stringResource(id = R.string.damage)
+
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ){
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = proficiencyString,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = weaponString,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            modifier = Modifier.padding(SmallPadding),
+            text = damageString,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun WeaponRow(weapon: String){
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ){
+        RadioButton(
+            // TODO set depending on proficient weapons
+            modifier = Modifier.size(RadioButtonMedium),
+            selected = true,
+            onClick = { }
+        )
+        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
+        Text(
+            // TODO get weapon name from view model
+            modifier = Modifier.padding(SmallPadding),
+            text = weapon,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Icon(
+            // TODO change icon to weapon icon
+            Icons.Default.Build,
+            modifier = Modifier.size(IconButtonMedium),
+            contentDescription = "Weapon"
+        )
+        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
+        Text(
+            // TODO get weapon damage from view model
+            modifier = Modifier.padding(SmallPadding),
+            text = "2d6",
+            style = MaterialTheme.typography.bodyLarge
+        )
+
     }
 }
 
