@@ -87,6 +87,11 @@ fun MeleeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(SmallPadding),
                 text = "$attackBonusString 0",
             )
+
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = "$attackBonusString 0",
+            )
         }
     }
 }
@@ -102,7 +107,7 @@ fun SpellsScreen(navController: NavHostController) {
         bottomBar = { CharacterSheetNavBar(navController) }
     ) { innerPadding ->
         Column(
-//            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
