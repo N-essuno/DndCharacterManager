@@ -55,6 +55,7 @@ fun AttackScreen(navController: NavHostController) {
 @Composable
 fun MeleeScreen(navController: NavHostController) {
     val attackBonusString = stringResource(id = R.string.attack_bonus)
+    val damageBonusString = stringResource(id = R.string.damage_bonus)
     val meleeTitle = stringResource(id = R.string.melee_title)
     val weaponList = listOf("Weapon 1", "Weapon 2", "Weapon 3", "Weapon 4", "Weapon 5")
 
@@ -82,16 +83,22 @@ fun MeleeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(XXLVerticalSpacing))
 
-            // TODO set depending on character stats
-            Text(
-                modifier = Modifier.padding(SmallPadding),
-                text = "$attackBonusString 0",
-            )
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // TODO set depending on character stats
+                Text(
+                    modifier = Modifier.padding(SmallPadding),
+                    text = "$attackBonusString 0",
+                )
+                Text(
+                    modifier = Modifier.padding(SmallPadding),
+                    text = "$damageBonusString 0",
+                )
+            }
 
-            Text(
-                modifier = Modifier.padding(SmallPadding),
-                text = "$attackBonusString 0",
-            )
+
         }
     }
 }

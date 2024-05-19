@@ -89,6 +89,7 @@
     <string name="level">Level</string>
     <string name="dc_saving_throws">DC Saving Throws:</string>
     <string name="attack_bonus">Attack Bonus:</string>
+    <string name="damage_bonus">Damage Bonus:</string>
     <string name="slots">Slots:</string>
 
     <string name="proficiency">Prof.</string>
