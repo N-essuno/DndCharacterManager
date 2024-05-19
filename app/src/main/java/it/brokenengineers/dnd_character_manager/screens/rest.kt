@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,14 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -107,17 +105,16 @@ fun LongRest() {
 
 @Composable
 fun ShortRest(viewModel: RestViewModel) {
-    // TODO instead of choosing spell uses to recover, the user chooses the spell slot levels to recover
-    // the spell user has a certain amount of spell slots to recover, he can choose to recover every
-    // magic level spell so that the total amount of slots recovered is equal to the amount of slots available
     val slotsAvailable by remember { derivedStateOf { viewModel.slotsAvailable } }
+    Text("Choose magics to recover",
+        style = MaterialTheme.typography.titleMedium)
+    Text(text = "You have $slotsAvailable slots available",
+        style = MaterialTheme.typography.bodyLarge)
 
-    Column {
-        Text("Choose magics to recover", style = MaterialTheme.typography.titleMedium)
-        Text(text = "You have ${viewModel.slotsAvailable} slots available", style = MaterialTheme.typography.bodyLarge)
-        // for spell level from 1 to 9
-        for (level in 1..9) {
-            val timesSelected by remember { derivedStateOf { viewModel.selectedSpells[level]?.value ?: 0 } }
+    LazyColumn {
+        items(9) { index ->
+            val level = index + 1
+            val timesSelected by remember { derivedStateOf { viewModel.selectedSpells[index].intValue } }
             SpellRow(
                 viewModel = viewModel,
                 level = level,
