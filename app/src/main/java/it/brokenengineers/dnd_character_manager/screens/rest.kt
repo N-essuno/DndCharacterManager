@@ -56,9 +56,12 @@ fun Rest() {
             // summary of character hp and spell slots
             // button to take either a short or long rest
 
-            CharacterCard(20)
+            Row(modifier = Modifier.padding(SmallPadding)){
+                CharacterCard(20)
 
-            SpellSlotsLeft()
+                SpellSlotsLeft()
+            }
+
 
             Row {
                 // Short Rest Button
@@ -111,7 +114,7 @@ fun ShortRest(viewModel: RestViewModel) {
     Text(text = "You have $slotsAvailable slots available",
         style = MaterialTheme.typography.bodyLarge)
 
-    LazyColumn {
+    LazyColumn(modifier = Modifier.height(300.dp)) {
         items(9) { index ->
             val level = index + 1
             val timesSelected by remember { derivedStateOf { viewModel.selectedSpells[index].intValue } }
@@ -132,6 +135,11 @@ fun ShortRest(viewModel: RestViewModel) {
                 }
             )
         }
+    }
+
+    Spacer(modifier = Modifier.height(SmallPadding))
+    Button(onClick = { /*TODO*/ }) {
+        Text("Confirm")
     }
 }
 
