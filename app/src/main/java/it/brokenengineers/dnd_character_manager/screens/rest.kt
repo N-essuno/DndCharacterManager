@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ fun Rest() {
                 Button(
                     onClick = {
                         shortRestClicked.value = true
+                        longRestClicked.value = false
 //                        Toast.makeText(context, "Short Rest taken", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(SmallPadding)
@@ -74,6 +76,7 @@ fun Rest() {
                 Button(
                     onClick = {
                         longRestClicked.value = true
+                        shortRestClicked.value = false
 //                        Toast.makeText(context, "Long Rest taken", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier.padding(SmallPadding)
@@ -100,13 +103,17 @@ fun LongRest() {
 
 @Composable
 fun ShortRest() {
+    // TODO instead of choosing spell uses to recover, the user chooses the spell slot levels to recover
+    // the spell user has a certain amount of spell slots to recover, he can choose to recover every
+    // magic level spell so that the total amount of slots recovered is equal to the amount of slots available
+
     // should be retrieved from data model based on character selected
     val magicsKnown = listOf(Magic("Magic1", 1), Magic("Magic2", 2), Magic("Magic3", 3), Magic("Magic4", 4))
 
     // selected magics contains map magic -> times selected
-    val selectedMagics = remember { mutableStateMapOf<Magic, Int>() }
+    val selectedMagics = remember { mutableStateMapOf<Magic, MutableState<Int>>() }
     initSelectedMagics(selectedMagics, magicsKnown) // initialize the map with 0 for each magic
-    val totalSlotsUsed = selectedMagics.values.sum()
+    val totalSlotsUsed = selectedMagics.values.sumOf { it.value }
     val slotsAvailable = 4
 
 
@@ -115,22 +122,22 @@ fun ShortRest() {
         Text(text = "You have $slotsAvailable slots available", style = MaterialTheme.typography.bodyLarge)
         magicsKnown.forEach { magic ->
             MagicRow(
-                selectedCount = selectedMagics[magic] ?: 0,
+                selectedCount = selectedMagics[magic]!!.value,
                 slotsAvailable = slotsAvailable,
                 magic = magic,
                 onAdd = {
                     if(totalSlotsUsed < slotsAvailable) {
                         Log.d("ShortRest", "Adding ${magic.name}. Current count: ${selectedMagics[magic]}")
-                        selectedMagics[magic]?.let { currentCount ->
-                            selectedMagics[magic] = currentCount + 1
+                        selectedMagics[magic]?.let {currentCount ->
+                            selectedMagics[magic]?.value = currentCount.value + 1
                         }
                         Log.d("ShortRest", "New count: ${selectedMagics[magic]}")
                     }
                 },
                 onRemove = {
-                    if(selectedMagics[magic]!! > 0) {
+                    if(selectedMagics[magic]!!.value > 0) {
                         selectedMagics[magic]?.let {currentCount ->
-                            selectedMagics[magic] = currentCount - 1
+                            selectedMagics[magic]?.value = currentCount.value - 1
                         }
                     }
                 }
@@ -140,11 +147,11 @@ fun ShortRest() {
 }
 
 fun initSelectedMagics(
-    selectedMagics: MutableMap<Magic, Int>,
-    magicsKnown: List<Magic>)
-{
+    selectedMagics: MutableMap<Magic, MutableState<Int>>,
+    magicsKnown: List<Magic>
+){
     magicsKnown.forEach { magic ->
-        selectedMagics[magic] = 0
+        selectedMagics[magic] = mutableIntStateOf(0)
     }
 }
 
