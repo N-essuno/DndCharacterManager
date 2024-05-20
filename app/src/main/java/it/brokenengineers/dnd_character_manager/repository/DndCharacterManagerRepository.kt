@@ -2,14 +2,12 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.Ability
-import it.brokenengineers.dnd_character_manager.data.AbilityScoreIncrease
-import it.brokenengineers.dnd_character_manager.data.AbilityValue
 import it.brokenengineers.dnd_character_manager.data.Character
-import it.brokenengineers.dnd_character_manager.data.DndClass
-import it.brokenengineers.dnd_character_manager.data.Race
-import it.brokenengineers.dnd_character_manager.data.Skill
 import it.brokenengineers.dnd_character_manager.data.Spell
+import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
+import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -41,52 +39,85 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
 
     private fun createMockCharacters(): List<Character> {
         // Mock Abilities
-        val strength = Ability("Strength")
-        val dexterity = Ability("Dexterity")
-        val constitution = Ability("Constitution")
-        val intelligence = Ability("Intelligence")
-        val charisma = Ability("Charisma")
-
-        // Mock Ability Score Increases
-        val strengthIncrease = AbilityScoreIncrease(strength, 2)
-        val dexterityIncrease = AbilityScoreIncrease(dexterity, 1)
-        val constitutionIncrease = AbilityScoreIncrease(constitution, 2)
-        val charismaIncrease = AbilityScoreIncrease(charisma, 1)
+        val strength = AbilityEnum.STRENGTH.ability
+        val dexterity = AbilityEnum.DEXTERITY.ability
+        val constitution = AbilityEnum.CONSTITUTION.ability
+        val intelligence = AbilityEnum.INTELLIGENCE.ability
+        val wisdom = AbilityEnum.WISDOM.ability
+        val charisma = AbilityEnum.CHARISMA.ability
 
         // Mock Skills
-        val athletics = Skill("Athletics", strength)
-        val acrobatics = Skill("Acrobatics", dexterity)
-        val arcana = Skill("Arcana", intelligence)
-
-        // Mock Races
-        val eladrin = Race("Eladrin", 30, "Medium", listOf(dexterityIncrease, charismaIncrease))
-        val dwarf = Race("Dwarf", 25, "Medium", listOf(strengthIncrease, constitutionIncrease))
+        val athletics = SkillEnum.ATHLETICS.skill
+        val acrobatics = SkillEnum.ACROBATICS.skill
+        val arcana = SkillEnum.ARCANA.skill
+        val history = SkillEnum.HISTORY.skill
 
         // Mock DndClasses
-        val wizard = DndClass("Wizard", 6, listOf(arcana), listOf(intelligence, charisma), intelligence)
-        val barbarian = DndClass("Barbarian", 12, listOf(athletics), listOf(strength, constitution), strength)
+        val barbarian = DndClassEnum.BARBARIAN.dndClass
+        val wizard = DndClassEnum.WIZARD.dndClass
+
+        // Mock Races
+        val eladrin = RaceEnum.ELADRIN.race
+        val dwarf = RaceEnum.DWARF.race
 
         // Mock Spells
         val fireball = Spell("Fireball", 3, "Evocation")
         val magicMissile = Spell("Magic Missile", 1, "Evocation")
 
         // Mock Ability Values
-        val strengthValue = AbilityValue(strength, 15, 2, true)
-        val dexterityValue = AbilityValue(dexterity, 14, 2, false)
-        val constitutionValue = AbilityValue(constitution, 13, 1, false)
-        val intelligenceValue = AbilityValue(intelligence, 12, 1, false)
-        val charismaValue = AbilityValue(charisma, 10, 0, false)
+        val abilityValues1 = mapOf(
+            strength to 15,
+            dexterity to 14,
+            constitution to 13,
+            intelligence to 12,
+            wisdom to 10,
+            charisma to 8
+        )
 
-        val character1 = Character(1, "John", eladrin, wizard, 1, listOf(intelligenceValue, charismaValue), listOf(arcana), listOf(fireball, magicMissile))
-        val character2 = Character(2, "Jane", eladrin, barbarian, 2, listOf(strengthValue, dexterityValue), listOf(athletics, acrobatics), null)
-        val character3 = Character(3, "Bob", dwarf, wizard, 3, listOf(intelligenceValue, constitutionValue), listOf(arcana), listOf(fireball, magicMissile))
-        val character4 = Character(4, "Alice", dwarf, barbarian, 4, listOf(strengthValue, constitutionValue), listOf(athletics, acrobatics), null)
+        val abilityValues2 = mapOf(
+            strength to 10,
+            dexterity to 12,
+            constitution to 14,
+            intelligence to 16,
+            wisdom to 13,
+            charisma to 11
+        )
+
+        val character1 = Character(
+            id = 5,
+            name = "Sam",
+            proficiencyBonus = 2,
+            race = eladrin,
+            dndClass = wizard,
+            level = 1,
+            abilityValues = abilityValues1,
+            skillProficiencies = setOf(arcana, history),
+            remainingHp = 8,
+            tempHp = 0,
+            spellsKnown = setOf(fireball, magicMissile),
+            preparedSpells = setOf(fireball),
+            availableSpellSlots = mapOf(1 to 2)
+        )
+
+        val character2 = Character(
+            id = 6,
+            name = "Frodo",
+            proficiencyBonus = 2,
+            race = dwarf,
+            dndClass = barbarian,
+            level = 1,
+            abilityValues = abilityValues2,
+            skillProficiencies = setOf(athletics, acrobatics),
+            remainingHp = 12,
+            tempHp = 0,
+            spellsKnown = null,
+            preparedSpells = null,
+            availableSpellSlots = null
+        )
 
         return listOf(
             character1,
-            character2,
-            character3,
-            character4
+            character2
         )
     }
 }
