@@ -27,6 +27,28 @@ class Character (
         }
     }
 
+    fun getInitiative(): Int {
+        return getAbilityModifier(AbilityEnum.DEXTERITY)
+    }
+
+    fun getMaxHp(): Int {
+        if (dndClass.name == "Barbarian") {
+            if (level == 1) {
+                return 12 + getAbilityModifier(AbilityEnum.CONSTITUTION)
+            } else {
+                return 12 + 7 + getAbilityModifier(AbilityEnum.CONSTITUTION) * level
+            }
+        } else if (dndClass.name == "Wizard") {
+            if (level == 1) {
+                return 6 + getAbilityModifier(AbilityEnum.CONSTITUTION)
+            } else {
+                return 6 + 4 + getAbilityModifier(AbilityEnum.CONSTITUTION) * level
+            }
+        } else {
+            return -1
+        }
+    }
+
     fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
         return (abilityValues[abilityEnum.ability]!! - 10) / 2
     }
