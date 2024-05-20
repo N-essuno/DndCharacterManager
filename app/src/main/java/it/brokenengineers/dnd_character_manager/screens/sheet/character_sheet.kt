@@ -52,6 +52,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
@@ -91,19 +92,25 @@ fun CharacterSheetScreen(
                 ) {
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
-                    CharacterSheetHead(modifier = Modifier
-                        .constrainAs(head) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                    )
-                    ImageAndDamageRow(modifier = Modifier
-                        .constrainAs(charImage) {
-                            top.linkTo(head.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
+                    character.value?.let { characterValue ->
+                        CharacterSheetHead(
+                            character = characterValue,
+                            modifier = Modifier
+                                .constrainAs(head) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                        )
+                    }
+                    ImageAndDamageRow(
+                        character = character.value,
+                        modifier = Modifier
+                            .constrainAs(charImage) {
+                                top.linkTo(head.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
                     )
                     MainInfo(modifier = Modifier
                         .constrainAs(mainInfo) {
@@ -151,7 +158,7 @@ fun CharacterSheetScreen(
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier) {
+fun CharacterSheetHead(modifier: Modifier, character: Character) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -161,9 +168,8 @@ fun CharacterSheetHead(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ){
             val (cName, cRace, cClass, hpCard, restButton) = createRefs()
-            // TODO retrieve character info
             Text(
-                text = "Character Name",
+                text = character.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cName) {
@@ -173,7 +179,7 @@ fun CharacterSheetHead(modifier: Modifier) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Character Race",
+                text = character.race.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cRace) {
@@ -183,7 +189,7 @@ fun CharacterSheetHead(modifier: Modifier) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Character Class",
+                text = character.dndClass.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cClass) {
@@ -277,7 +283,7 @@ fun RestButton(modifier: Modifier) {
 }
 
 @Composable
-fun ImageAndDamageRow(modifier: Modifier) {
+fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
     val hitButtonString = stringResource(id = R.string.hit_button)
     val editHpButtonString = stringResource(id = R.string.edit_hp_button)
     val editTempHpButtonString = stringResource(id = R.string.edit_temp_hp_button)
@@ -306,6 +312,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     },
+                // TODO get character image URL
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"
             )
