@@ -17,7 +17,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
-fun CharacterCard(){
+fun CharacterCard(hp: Int? = null){
     Card(
         modifier = Modifier
             // to fill the width of the screen
@@ -46,6 +46,12 @@ fun CharacterCard(){
                 text = "Character Level",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
+            if (hp != null) {
+                Text(
+                    text = "Max Hp: 45 * Hp left: $hp",
+                    modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
+                )
+            }
             Spacer(modifier = Modifier.padding(SmallPadding))
         }
     }
