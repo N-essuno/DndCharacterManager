@@ -162,13 +162,14 @@ fun HomePage(
 
 @Composable
 fun CharacterCard(navController: NavHostController, character: Character){
+    // TODO change to Card defined in ui.composables
     Card(
         modifier = Modifier
             // to fill the width of the screen
 //            .fillMaxWidth()
             .clickable {
                 // navigate to character sheet
-                navController.navigate("character_sheet") {
+                navController.navigate("sheet/${character.id}") {
                     // pop up to the home screen
                     popUpTo("home_route") { inclusive = false }
                 }
