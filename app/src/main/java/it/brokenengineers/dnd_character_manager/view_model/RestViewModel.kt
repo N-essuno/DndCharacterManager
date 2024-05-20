@@ -13,7 +13,7 @@ class RestViewModel : ViewModel() {
     // spellsToRecover for Short Rest
     val spellsToRecover = Array(9) { mutableIntStateOf(0) }
     // spellsToPrepare for Long Rest
-    val spellsToPrepare = mutableListOf<Spell>()
+    private val spellsToPrepare = mutableListOf<Spell>()
 
     // data from character, TODO should be retrieved from data model based on character selected
     // should be retrieved from data model based on character selected

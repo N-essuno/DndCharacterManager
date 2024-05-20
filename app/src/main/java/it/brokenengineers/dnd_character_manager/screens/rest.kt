@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -199,10 +200,10 @@ fun RecoverSpellRow(
     Row {
         Text(text = "Level: $level Spells)")
         Spacer(modifier = Modifier.weight(1f))
-        Button(
+        IconButton(
             onClick = onAdd,
             enabled = slotsAvailable > 0
-        ) {
+        ){
             Icon(
                 painter = painterResource(id = android.R.drawable.ic_input_add),
                 contentDescription = "Add"
@@ -211,7 +212,8 @@ fun RecoverSpellRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Button(
+
+        IconButton(
             onClick = onRemove,
             enabled = timesSelected > 0
         ) {
@@ -235,7 +237,7 @@ fun PrepareSpellRow(
         Text(text = spell.name, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.weight(1f))
         if(selected) {
-            Button(
+            IconButton(
                 onClick = {
                     onRemove()
                     selected = false
@@ -247,7 +249,7 @@ fun PrepareSpellRow(
                 )
             }
         } else {
-            Button(
+            IconButton(
                 onClick = {
                     onAdd()
                     selected = true
