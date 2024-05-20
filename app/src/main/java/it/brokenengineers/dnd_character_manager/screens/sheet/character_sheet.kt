@@ -36,6 +36,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,103 +46,119 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
-import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CharacterSheetScreen(navController: NavHostController) {
-    val savingThrowsString = stringResource(id = R.string.saving_throws)
-    val scrollState = rememberScrollState()
-    Scaffold (
-        bottomBar = { CharacterSheetNavBar(navController) }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(bottom = OverBottomNavBar)
-        ) {
-            Spacer(modifier = Modifier.height(LargeVerticalSpacing))
-            ConstraintLayout(
-                modifier = Modifier.fillMaxSize()
+fun CharacterSheetScreen(
+    navController: NavHostController,
+    characterId: Int,
+    viewModel: DndCharacterManagerViewModel
+) {
+    LaunchedEffect(characterId) {
+        viewModel.fetchCharacterById(characterId)
+    }
+    val character = viewModel.selectedCharacter.collectAsState(initial = null)
+
+    character.let {
+        val savingThrowsString = stringResource(id = R.string.saving_throws)
+        val scrollState = rememberScrollState()
+        Scaffold(
+            bottomBar = { CharacterSheetNavBar(navController) }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(bottom = OverBottomNavBar)
             ) {
-                val (head, charImage, mainInfo, abilityRow,
-                    skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
-                CharacterSheetHead(modifier = Modifier
-                    .constrainAs(head) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
+                Spacer(modifier = Modifier.height(LargeVerticalSpacing))
+                ConstraintLayout(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    val (head, charImage, mainInfo, abilityRow,
+                        skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
+                    character.value?.let { characterValue ->
+                        CharacterSheetHead(
+                            character = characterValue,
+                            modifier = Modifier
+                                .constrainAs(head) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                        )
                     }
-                )
-                ImageAndDamageRow(modifier = Modifier
-                    .constrainAs(charImage) {
-                        top.linkTo(head.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-                MainInfo(modifier = Modifier
-                    .constrainAs(mainInfo) {
-                        top.linkTo(charImage.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-                AbilityRow(modifier = Modifier
-                    .constrainAs(abilityRow) {
-                        top.linkTo(mainInfo.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-                SkillRow(modifier = Modifier
-                    .constrainAs(skillsRow) {
-                        top.linkTo(abilityRow.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-                Text(
-                    style = MaterialTheme.typography.titleLarge,
-                    text = savingThrowsString,
-                    modifier = Modifier
-                        .padding(SmallPadding)
-                        .constrainAs(savingThrowsTitle) {
-                            top.linkTo(skillsRow.bottom)
+                    ImageAndDamageRow(
+                        character = character.value,
+                        modifier = Modifier
+                            .constrainAs(charImage) {
+                                top.linkTo(head.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                    )
+                    MainInfo(modifier = Modifier
+                        .constrainAs(mainInfo) {
+                            top.linkTo(charImage.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
-                )
-                SavingThrowsRow(modifier = Modifier
-                    .constrainAs(savingThrowsRow) {
-                        top.linkTo(savingThrowsTitle.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
+                    )
+                    AbilityRow(modifier = Modifier
+                        .constrainAs(abilityRow) {
+                            top.linkTo(mainInfo.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    )
+                    SkillRow(modifier = Modifier
+                        .constrainAs(skillsRow) {
+                            top.linkTo(abilityRow.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    )
+                    Text(
+                        style = MaterialTheme.typography.titleLarge,
+                        text = savingThrowsString,
+                        modifier = Modifier
+                            .padding(SmallPadding)
+                            .constrainAs(savingThrowsTitle) {
+                                top.linkTo(skillsRow.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                    )
+                    SavingThrowsRow(modifier = Modifier
+                        .constrainAs(savingThrowsRow) {
+                            top.linkTo(savingThrowsTitle.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier) {
+fun CharacterSheetHead(modifier: Modifier, character: Character) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -150,9 +168,8 @@ fun CharacterSheetHead(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ){
             val (cName, cRace, cClass, hpCard, restButton) = createRefs()
-            // TODO retrieve character info
             Text(
-                text = "Character Name",
+                text = character.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cName) {
@@ -162,7 +179,7 @@ fun CharacterSheetHead(modifier: Modifier) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Character Race",
+                text = character.race.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cRace) {
@@ -172,7 +189,7 @@ fun CharacterSheetHead(modifier: Modifier) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = "Character Class",
+                text = character.dndClass.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cClass) {
@@ -266,7 +283,7 @@ fun RestButton(modifier: Modifier) {
 }
 
 @Composable
-fun ImageAndDamageRow(modifier: Modifier) {
+fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
     val hitButtonString = stringResource(id = R.string.hit_button)
     val editHpButtonString = stringResource(id = R.string.edit_hp_button)
     val editTempHpButtonString = stringResource(id = R.string.edit_temp_hp_button)
@@ -295,6 +312,7 @@ fun ImageAndDamageRow(modifier: Modifier) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     },
+                // TODO get character image URL
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"
             )
@@ -983,14 +1001,14 @@ fun CharacterSheetNavBar(navController: NavHostController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    val navController = rememberNavController()
-    DndCharacterManagerTheme {
-        CharacterSheetScreen(navController)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    val navController = rememberNavController()
+//    DndCharacterManagerTheme {
+//        CharacterSheetScreen(navController, it, viewModel)
+//    }
+//}
 
 sealed class BottomNavItem(val route: String, val label: String) {
     data object Home : BottomNavItem("home", "Home")
