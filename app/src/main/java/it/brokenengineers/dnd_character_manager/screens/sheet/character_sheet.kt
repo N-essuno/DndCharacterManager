@@ -852,6 +852,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
             SavingThrowCard(
                 name = strengthString,
                 bonus = strSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.STRENGTH),
                 modifier = Modifier
                     .constrainAs(str) {
                         start.linkTo(parent.start)
@@ -860,61 +861,66 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     }
             )
             SavingThrowCard(
-                name = dexterityString,
-                bonus = dexSavingThrowBonus,
                 modifier = Modifier
                     .constrainAs(dex) {
                         start.linkTo(str.end)
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = dexterityString,
+                bonus = dexSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.DEXTERITY)
             )
             SavingThrowCard(
-                name = constitutionString,
-                bonus = conSavingThrowBonus,
                 modifier = Modifier
                     .constrainAs(con) {
                         start.linkTo(parent.start)
                         top.linkTo(str.bottom)
                         end.linkTo(int.start)
-                    }
+                    },
+                name = constitutionString,
+                bonus = conSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.CONSTITUTION)
             )
             SavingThrowCard(
-                name = intelligenceString,
-                bonus = intSavingThrowBonus,
                 modifier = Modifier
                     .constrainAs(int) {
                         start.linkTo(con.end)
                         top.linkTo(dex.bottom)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = intelligenceString,
+                bonus = intSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.INTELLIGENCE)
             )
             SavingThrowCard(
-                name = wisdomString,
-                bonus = wisSavingThrowBonus,
                 modifier = Modifier
                     .constrainAs(wis) {
                         start.linkTo(parent.start)
                         top.linkTo(con.bottom)
                         end.linkTo(cha.start)
-                    }
+                    },
+                name = wisdomString,
+                bonus = wisSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.WISDOM)
             )
             SavingThrowCard(
-                name = charismaString,
-                bonus = chaSavingThrowBonus,
                 modifier = Modifier
                     .constrainAs(cha) {
                         start.linkTo(wis.end)
                         top.linkTo(con.bottom)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = charismaString,
+                bonus = chaSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.CHARISMA)
             )
         }
     }
 }
 
 @Composable
-fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
+fun SavingThrowCard(modifier: Modifier, name: String, bonus: String, proficiency: Boolean){
     Card (
         modifier = modifier
             .fillMaxWidth(0.50f)
@@ -928,6 +934,7 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
         ){
             val (nameText, bonusText, proficiencyCheckBok) = createRefs()
             RoundCheckbox(
+                check = proficiency,
                 modifier = Modifier
                     .size(CheckBoxMedium)
                     .constrainAs(proficiencyCheckBok) {
@@ -963,14 +970,13 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
 }
 
 @Composable
-fun RoundCheckbox(modifier: Modifier) {
-    val checkedState = remember { mutableStateOf(true) }
+fun RoundCheckbox(modifier: Modifier, check: Boolean) {
     MaterialTheme(
         shapes = Shapes(small = CircleShape)
     ) {
         Checkbox(
             modifier = modifier,
-            checked = checkedState.value,
+            checked = check,
             onCheckedChange = { },
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.primary,

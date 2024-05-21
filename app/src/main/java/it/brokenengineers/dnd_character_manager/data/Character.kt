@@ -93,4 +93,8 @@ data class Character (
             return abilityModifier
         }
     }
+
+    fun isProficientInAbility(abilityEnum: AbilityEnum): Boolean {
+        return dndClass.savingThrowProficiencies.contains(abilityEnum.ability)
+    }
 }
