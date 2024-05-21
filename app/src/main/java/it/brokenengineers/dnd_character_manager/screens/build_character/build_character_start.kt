@@ -129,12 +129,17 @@ fun BuildCharacterStart(navController: NavController) {
         }
 
 
-        Button(onClick = {
-            viewModel.setCharacterName(characterName)
-            viewModel.setCharacterRace(characterRace)
-            viewModel.setCharacterClass(characterClass)
-            characterImage?.let { viewModel.setCharacterImage(it) }
-        }) {
+        Button(
+            onClick = {
+                viewModel.setCharacterName(characterName)
+                viewModel.setCharacterRace(characterRace)
+                viewModel.setCharacterClass(characterClass)
+                characterImage?.let { viewModel.setCharacterImage(it) }
+            },
+            enabled = characterName.isNotEmpty() &&
+                        characterRace.isNotEmpty() &&
+                        characterClass.isNotEmpty()
+        ) {
             Text(text = "Confirm")
         }
     }
