@@ -74,9 +74,9 @@ fun CharacterSheetScreen(
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
     }
-    val character by viewModel.selectedCharacter.collectAsState(initial = null)
+    val char by viewModel.selectedCharacter.collectAsState(initial = null)
 
-    character?.let {
+    char?.let { character ->
         val savingThrowsString = stringResource(id = R.string.saving_throws)
         val scrollState = rememberScrollState()
         Scaffold(
@@ -95,7 +95,7 @@ fun CharacterSheetScreen(
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
                     CharacterSheetHead(
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                             .constrainAs(head) {
                                 top.linkTo(parent.top)
@@ -105,7 +105,7 @@ fun CharacterSheetScreen(
                     )
                     ImageAndDamageRow(
                         viewModel = viewModel,
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                             .constrainAs(charImage) {
                                 top.linkTo(head.bottom)
@@ -114,7 +114,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     MainInfo(
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                         .constrainAs(mainInfo) {
                             top.linkTo(charImage.bottom)
@@ -123,7 +123,7 @@ fun CharacterSheetScreen(
                         }
                     )
                     AbilityRow(
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                             .constrainAs(abilityRow) {
                                 top.linkTo(mainInfo.bottom)
@@ -132,7 +132,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     SkillRow(
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                         .constrainAs(skillsRow) {
                             top.linkTo(abilityRow.bottom)
@@ -152,7 +152,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     SavingThrowsRow(
-                        character = character!!,
+                        character = character,
                         modifier = Modifier
                         .constrainAs(savingThrowsRow) {
                             top.linkTo(savingThrowsTitle.bottom)
