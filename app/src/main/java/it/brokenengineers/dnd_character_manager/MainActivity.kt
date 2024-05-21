@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,81 +23,47 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import it.brokenengineers.dnd_character_manager.data.Character
-import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
+import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
+import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XLPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
-import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 class MainActivity : ComponentActivity() {
-    val TAG = "MY_TAG"
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // init database here
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
-                val viewModel: DndCharacterManagerViewModel by viewModels {
-                    object : ViewModelProvider.Factory {
-                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                            if (modelClass.isAssignableFrom(DndCharacterManagerViewModel::class.java)) {
-                                @Suppress("UNCHECKED_CAST")
-                                return DndCharacterManagerViewModel(/*pass DB here*/) as T
-                            }
-                            throw IllegalArgumentException("Unknown ViewModel class")
-                        }
-                    }
-                }
-                viewModel.init()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val navController = rememberNavController()
-                    CustomNavigationHost(navController, viewModel)
-                }
+                BuildCharacterStart(navController = rememberNavController())
             }
         }
     }
 }
 
 @Composable
-fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
+fun CustomNavigationHost(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
-            composable("home") { HomePage(Modifier, navController, viewModel) }
+            composable("home") { HomePage(Modifier, navController) }
         }
         navigation(startDestination = "sheet", route = "character_sheet") {
-            composable("sheet/{characterId}", arguments = listOf(navArgument("characterId"){
-                type = NavType.IntType
-            })) { backStackEntry ->
-                val characterId = backStackEntry.arguments?.getInt("characterId")
-                characterId?.let {
-                    CharacterSheetScreen(
-                        characterId = it,
-                        navController = navController,
-                        viewModel = viewModel
-                    )
-                }
-
-            }
+            composable("sheet") { CharacterSheetScreen(navController) }
             composable("inventory") { InventoryScreen(navController) }
             composable("attack") { AttackScreen(navController) }
         }
@@ -106,14 +71,9 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
 }
 
 @Composable
-fun HomePage(
-    modifier: Modifier,
-    navController: NavHostController,
-    viewModel: DndCharacterManagerViewModel
-){
+fun HomePage(modifier: Modifier, navController: NavHostController){
     val welcomeMessage = stringResource(id = R.string.welcome_message)
     val createCharacterString = stringResource(id = R.string.create_character_button)
-    val characters = viewModel.characters.collectAsState(null)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -135,12 +95,9 @@ fun HomePage(
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                characters.value?.let {
-                    items(characters.value!!.size) {index ->
-                        val character = characters.value!![index]
-                        CharacterCard(navController, character)
-                        Spacer(modifier = Modifier.padding(SmallPadding))
-                    }
+                items(5) {
+                    CharacterCard(navController)
+                    Spacer(modifier = Modifier.padding(SmallPadding))
                 }
             }
         }
@@ -161,15 +118,14 @@ fun HomePage(
 }
 
 @Composable
-fun CharacterCard(navController: NavHostController, character: Character){
-    // TODO change to Card defined in ui.composables
+fun CharacterCard(navController: NavHostController){
     Card(
         modifier = Modifier
             // to fill the width of the screen
 //            .fillMaxWidth()
             .clickable {
                 // navigate to character sheet
-                navController.navigate("sheet/${character.id}") {
+                navController.navigate("character_sheet") {
                     // pop up to the home screen
                     popUpTo("home_route") { inclusive = false }
                 }
@@ -183,28 +139,28 @@ fun CharacterCard(navController: NavHostController, character: Character){
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // TODO retrieve character info
-            Image( // TODO meybe use async image to retrieve image from url
+            Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"
             )
             Text(
-                text = character.name,
+                text = "Character Name",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Text(
-                text = character.dndClass.name,
+                text = "Character Class",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Text(
-                text = character.level.toString(),
+                text = "Character Level",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Spacer(modifier = Modifier.padding(SmallPadding))
         }
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    DndCharacterManagerTheme {
-//        HomePage(Modifier, rememberNavController(), viewModel)
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    DndCharacterManagerTheme {
+        HomePage(Modifier, rememberNavController())
+    }
+}
