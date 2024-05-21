@@ -3,6 +3,7 @@ package it.brokenengineers.dnd_character_manager.repository
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.Spell
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/* TODO add DAOs */) {
     val TAG = "MY"
-    var allCharacters: MutableStateFlow<List<Character>> = MutableStateFlow(emptyList())
+    var allCharacters: MutableStateFlow<MutableList<Character>> = MutableStateFlow(mutableListOf())
     val selectedCharacter: MutableStateFlow<Character?> = MutableStateFlow(null)
 
     fun init() {
@@ -37,7 +38,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
         }
     }
 
-    private fun createMockCharacters(): List<Character> {
+    private fun createMockCharacters(): MutableList<Character> {
         // Mock Abilities
         val strength = AbilityEnum.STRENGTH.ability
         val dexterity = AbilityEnum.DEXTERITY.ability
@@ -83,9 +84,14 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             charisma to 11
         )
 
+        val item1 = InventoryItem(1, "Health potion", 1, 1.5)
+        val item2 = InventoryItem(2, "Paper", 1, 0.2)
+        val item3 = InventoryItem(3, "Brick", 1, 2.5)
+        val item4 = InventoryItem(4, "Book", 1, 2.0)
+
         val character1 = Character(
             id = 5,
-            name = "Sam",
+            name = "Silvano",
             race = eladrin,
             dndClass = wizard,
             level = 1,
@@ -95,12 +101,13 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             tempHp = 0,
             spellsKnown = setOf(fireball, magicMissile),
             preparedSpells = setOf(fireball),
-            availableSpellSlots = mapOf(1 to 2)
+            availableSpellSlots = mapOf(1 to 2),
+            inventoryItems = setOf(item1, item2)
         )
 
         val character2 = Character(
             id = 6,
-            name = "Frodo",
+            name = "Broken",
             race = dwarf,
             dndClass = barbarian,
             level = 1,
@@ -110,12 +117,13 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             tempHp = 0,
             spellsKnown = null,
             preparedSpells = null,
-            availableSpellSlots = null
+            availableSpellSlots = null,
+            inventoryItems = setOf(item3, item4)
         )
 
         Log.i(TAG, "Repository: created mock characters")
 
-        return listOf(
+        return mutableListOf(
             character1,
             character2
         )

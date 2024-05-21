@@ -24,6 +24,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,7 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.InventoryItem
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
+import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -47,87 +52,47 @@ fun InventoryScreen(
     characterId: Int,
     viewModel: DndCharacterManagerViewModel
 ) {
+    LaunchedEffect(characterId) {
+        viewModel.fetchCharacterById(characterId)
+    }
+    val char by viewModel.selectedCharacter.collectAsState(initial = null)
     val scrollState = rememberScrollState()
-    Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController, characterId) }
-    ) { innerPadding ->
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(bottom = OverBottomNavBar)
-        ) {
-            Spacer(modifier = Modifier.height(LargeVerticalSpacing))
-            InventoryTitleRow("Inventory")
 
-            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
-            val items = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5")
-            val quantities = listOf("1", "2", "3", "4", "5")
-            val weights = listOf("1 kg", "2 kg", "3 kg", "4 kg", "5 kg")
+    char?.let { character ->
+        Scaffold(
+            bottomBar = { CharacterSheetNavBar(navController, characterId) }
+        ) { innerPadding ->
+            val inventoryTitleString = stringResource(id = R.string.inventory_title)
+            val items = character.inventoryItems
+            val maxWeight = character.getMaxCarryWeight().toString()
+            val currentWeight = character.getCurrentCarryWeight().toString()
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(bottom = OverBottomNavBar)
+            ) {
+                Spacer(modifier = Modifier.height(LargeVerticalSpacing))
+                InventoryTitleRow(inventoryTitleString, viewModel)
+                Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+                InventoryLegend()
 
-            InventoryLegend()
-            for (i in items.indices) {
-                InventoryItemRow(items[i], quantities[i], weights[i])
+                items?.forEach {inventoryItem ->
+                    InventoryItemRow(inventoryItem, viewModel)
+                }
+
+                Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+                WeightRow(weight = currentWeight, maxWeight = maxWeight)
+
             }
-            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
-            WeightRow(weight = "100", maxWeight = "200")
-
         }
     }
 }
 
-@Composable
-fun WeightRow(weight: String, maxWeight: String){
-    val totalWeightString = stringResource(id = R.string.total_weight)
-    val maxWeightString = stringResource(id = R.string.max_weight)
-    val remainingWeightString = stringResource(id = R.string.quantity)
-
-    Row (
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(start = SmallPadding),
-                text = "$totalWeightString $weight",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(end = SmallPadding),
-                text = "$maxWeightString $maxWeight",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(SmallVerticalSpacing))
-    Row (
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column (
-            horizontalAlignment = Alignment.End,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                modifier = Modifier.padding(end = SmallPadding),
-                text = "$remainingWeightString ${maxWeight.toInt() - weight.toInt()}",
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
-
-}
 
 @Composable
-fun InventoryTitleRow(title: String){
-
+fun InventoryTitleRow(title: String, viewModel: DndCharacterManagerViewModel){
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -148,13 +113,20 @@ fun InventoryTitleRow(title: String){
                     style = MaterialTheme.typography.titleLarge
                 )
             }
-            AddItemButton(Modifier.align(Alignment.CenterEnd))
+            AddItemButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                viewModel = viewModel
+            )
         }
     }
 }
 
 @Composable
 fun InventoryLegend() {
+    val itemString = stringResource(id = R.string.item)
+    val quantityString = stringResource(id = R.string.quantity)
+    val weightString = stringResource(id = R.string.weight)
+    val actionString = stringResource(id = R.string.action)
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
@@ -164,29 +136,29 @@ fun InventoryLegend() {
                 .weight(1f)
         ) {
             Text(
-                text = "Item",
+                text = itemString,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = MediumPadding, end = SmallPadding, top = SmallPadding, bottom = SmallPadding)
+            )
+        }
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            Text(
+                text = quantityString,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
         }
         Column (
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f)
         ) {
             Text(
-                text = "Quantity",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(SmallPadding)
-            )
-        }
-        Column (
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            Text(
-                text = "Weight",
+                text = weightString,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
@@ -197,58 +169,75 @@ fun InventoryLegend() {
             .weight(1.9f)
         ) {
             Text(
-                text = "Action",
+                text = actionString,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(SmallPadding)
             )
         }
     }
-
 }
 
 @Composable
-fun InventoryItemRow(name: String, quantity: String, weight: String) {
+fun InventoryItemRow(
+    item: InventoryItem,
+    viewModel: DndCharacterManagerViewModel
+) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
     )
     {
-        Column {
-            Text(
-                style = MaterialTheme.typography.bodyLarge,
-                text = name,
-                modifier = Modifier.padding(SmallPadding)
-                )
-        }
-        Column {
-            Text(
-                style = MaterialTheme.typography.bodyLarge,
-                text = quantity,
-                modifier = Modifier.padding(SmallPadding)
-            )
-        }
         Column (
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier
+                .weight(1f)
         ){
             Text(
                 style = MaterialTheme.typography.bodyLarge,
-                text = weight,
-                modifier = Modifier.padding(SmallPadding)
+                text = item.name,
+                modifier = Modifier.padding(MediumPadding)
+                )
+        }
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .weight(1f)
+        ){
+            Text(
+                style = MaterialTheme.typography.bodyLarge,
+                text = item.quantity.toString(),
+                modifier = Modifier.padding(MediumPadding)
             )
         }
-        Column {
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier
+                .weight(1f)
+        ){
+            Text(
+                style = MaterialTheme.typography.bodyLarge,
+                text = item.weight.toString(),
+                modifier = Modifier.padding(MediumPadding)
+            )
+        }
+        Column (
+            modifier = Modifier
+                .weight(1.8f)
+        ){
             Row {
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = { viewModel.deleteInventoryItem(item) }
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete")
                 }
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = { viewModel.incrementInventoryItem(item) }
                 ) {
                     Icon(Icons.Default.AddCircle, contentDescription = "Add")
                 }
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = { viewModel.decrementInventoryItem(item) }
                 ) {
                     Icon(Icons.Default.Clear, contentDescription = "Remove")
                 }
@@ -259,7 +248,7 @@ fun InventoryItemRow(name: String, quantity: String, weight: String) {
 }
 
 @Composable
-fun AddItemButton(modifier: Modifier) {
+fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
     val itemNameString = stringResource(id = R.string.item_name)
     val quantityString = stringResource(id = R.string.quantity)
     val weightString = stringResource(id = R.string.weight)
@@ -304,7 +293,14 @@ fun AddItemButton(modifier: Modifier) {
                 }
             },
             confirmButton = {
-                Button(onClick = { openDialog.value = false }) {
+                Button(onClick = {
+                    viewModel.addItemToInventory(
+                        name = itemName.value,
+                        quantity = quantity.value,
+                        weight = weight.value
+                    )
+                    openDialog.value = false
+                }) {
                     Text(confirmString)
                 }
             },
@@ -316,6 +312,55 @@ fun AddItemButton(modifier: Modifier) {
         )
     }
 }
+
+@Composable
+fun WeightRow(weight: String, maxWeight: String){
+    val totalWeightString = stringResource(id = R.string.total_weight)
+    val maxWeightString = stringResource(id = R.string.max_weight)
+    val remainingWeightString = stringResource(id = R.string.remaining_weight)
+
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier.padding(start = SmallPadding),
+                text = "$totalWeightString $weight",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+        Column (
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier.padding(end = SmallPadding),
+                text = "$maxWeightString $maxWeight",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(SmallVerticalSpacing))
+    Row (
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column (
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Text(
+                modifier = Modifier.padding(end = SmallPadding),
+                text = "$remainingWeightString ${maxWeight.toDouble() - weight.toDouble()}",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
+
+}
+
 
 //@Preview(showBackground = true)
 //@Composable
