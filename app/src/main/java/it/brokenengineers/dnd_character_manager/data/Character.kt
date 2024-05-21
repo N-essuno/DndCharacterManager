@@ -2,7 +2,7 @@ package it.brokenengineers.dnd_character_manager.data
 
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 
-class Character (
+data class Character (
     val id: Int,
     val name: String,
     val proficiencyBonus: Int,
@@ -11,8 +11,8 @@ class Character (
     val level: Int,
     val abilityValues: Map<Ability, Int>,
     val skillProficiencies: Set<Skill>,
-    val remainingHp: Int,
-    val tempHp: Int,
+    var remainingHp: Int,
+    var tempHp: Int,
     val spellsKnown: Set<Spell>?,
     val preparedSpells: Set<Spell>?,
     val availableSpellSlots: Map<Int, Int>?
@@ -49,9 +49,7 @@ class Character (
         }
     }
 
-    fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
+    private fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
         return (abilityValues[abilityEnum.ability]!! - 10) / 2
     }
-
-
 }

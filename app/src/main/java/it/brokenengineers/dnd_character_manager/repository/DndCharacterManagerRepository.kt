@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/* TODO add DAOs */) {
-    val TAG = "MY_TAG"
+    val TAG = "MY"
     var allCharacters: MutableStateFlow<List<Character>> = MutableStateFlow(emptyList())
     val selectedCharacter: MutableStateFlow<Character?> = MutableStateFlow(null)
 
-    val characters = getAllCharacters()
-
     fun init() {
-        getAllCharacters()
+        viewModel.viewModelScope.launch {
+            getAllCharacters()
+        }
     }
 
     private fun getAllCharacters() {
@@ -114,6 +114,8 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             preparedSpells = null,
             availableSpellSlots = null
         )
+
+        Log.i(TAG, "Repository: created mock characters")
 
         return listOf(
             character1,

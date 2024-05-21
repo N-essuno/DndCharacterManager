@@ -25,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -113,7 +114,7 @@ fun HomePage(
 ){
     val welcomeMessage = stringResource(id = R.string.welcome_message)
     val createCharacterString = stringResource(id = R.string.create_character_button)
-    val characters = viewModel.characters.collectAsState(null)
+    val characters by viewModel.characters.collectAsState(null)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -135,9 +136,9 @@ fun HomePage(
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                characters.value?.let {
-                    items(characters.value!!.size) {index ->
-                        val character = characters.value!![index]
+                characters?.let {
+                    items(characters!!.size) {index ->
+                        val character = characters!![index]
                         CharacterCard(navController, character)
                         Spacer(modifier = Modifier.padding(SmallPadding))
                     }
