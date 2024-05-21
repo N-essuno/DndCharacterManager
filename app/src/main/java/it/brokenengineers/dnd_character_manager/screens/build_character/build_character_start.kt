@@ -39,10 +39,12 @@ import coil.compose.AsyncImage
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.view_model.BuildCharacterViewModel
 
 @Composable
 fun BuildCharacterStart(navController: NavController) {
     val context = LocalContext.current
+    val viewModel = BuildCharacterViewModel()
 
     var characterName by remember { mutableStateOf("") }
     var characterRace by remember { mutableStateOf("") }
@@ -111,7 +113,7 @@ fun BuildCharacterStart(navController: NavController) {
                 Text(text = "Add character image")
             }
             characterImage?.let {
-                Card {
+                Card(modifier = Modifier.size(200.dp)) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         AsyncImage(
                             model = characterImage,
@@ -123,17 +125,15 @@ fun BuildCharacterStart(navController: NavController) {
                         }
                     }
                 }
-                AsyncImage(
-                    model = characterImage,
-                    contentDescription = "Character Image",
-                    modifier = Modifier.size(200.dp)
-                )
             }
         }
 
 
         Button(onClick = {
-            navController.navigate("")
+            viewModel.setCharacterName(characterName)
+            viewModel.setCharacterRace(characterRace)
+            viewModel.setCharacterClass(characterClass)
+            characterImage?.let { viewModel.setCharacterImage(it) }
         }) {
             Text(text = "Confirm")
         }
