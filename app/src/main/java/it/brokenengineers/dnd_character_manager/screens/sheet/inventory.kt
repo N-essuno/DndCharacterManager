@@ -29,25 +29,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallVerticalSpacing
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 // TODO add gold visualization
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun InventoryScreen(navController: NavHostController) {
+fun InventoryScreen(
+    navController: NavHostController,
+    characterId: Int,
+    viewModel: DndCharacterManagerViewModel
+) {
     val scrollState = rememberScrollState()
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController) }
+        bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -315,11 +317,11 @@ fun AddItemButton(modifier: Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InventoryScreenPreview() {
-    val navController = rememberNavController()
-    DndCharacterManagerTheme {
-        InventoryScreen(navController)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun InventoryScreenPreview() {
+//    val navController = rememberNavController()
+//    DndCharacterManagerTheme {
+//        InventoryScreen(navController, it, viewModel)
+//    }
+//}

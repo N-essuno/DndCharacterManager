@@ -100,8 +100,31 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 }
 
             }
-            composable("inventory") { InventoryScreen(navController) }
-            composable("attack") { AttackScreen(navController) }
+            composable("inventory/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    InventoryScreen(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+
+            }
+            composable("attack/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    AttackScreen(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+            }
         }
     }
 }

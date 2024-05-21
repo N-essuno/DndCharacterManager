@@ -3,6 +3,7 @@ package it.brokenengineers.dnd_character_manager.screens.sheet
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -79,7 +80,7 @@ fun CharacterSheetScreen(
         val savingThrowsString = stringResource(id = R.string.saving_throws)
         val scrollState = rememberScrollState()
         Scaffold(
-            bottomBar = { CharacterSheetNavBar(navController) }
+            bottomBar = { CharacterSheetNavBar(navController, characterId) }
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -991,7 +992,7 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun CharacterSheetNavBar(navController: NavHostController) {
+fun CharacterSheetNavBar(navController: NavHostController, characterId: Int) {
     BottomNavigation (
         backgroundColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
@@ -1004,7 +1005,12 @@ fun CharacterSheetNavBar(navController: NavHostController) {
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigate(screen.route) {
+                    var route = "home"
+                    if (screen.route != "home"){
+                        route = "${screen.route}/$characterId"
+                    }
+                    Log.i("CharacterSheetNavBar", "route: $route")
+                    navController.navigate(route) {
                         popUpTo(navController.graph.findStartDestination().id)
 
                         launchSingleTop = true

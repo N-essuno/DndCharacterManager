@@ -24,11 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
@@ -36,31 +33,40 @@ import it.brokenengineers.dnd_character_manager.ui.theme.RadioButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.ScrollColumnHeightMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLVerticalSpacing
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AttackScreen(navController: NavHostController) {
+fun AttackScreen(
+    navController: NavHostController,
+    characterId: Int,
+    viewModel: DndCharacterManagerViewModel
+) {
     // TODO get character class from view model
     val characterClass = "Barbarian"
 
     if (characterClass == "Wizard") {
-        SpellsScreen(navController)
+        SpellsScreen(navController, characterId, viewModel)
     } else if (characterClass == "Barbarian") {
-        MeleeScreen(navController)
+        MeleeScreen(navController, characterId, viewModel)
     }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MeleeScreen(navController: NavHostController) {
+fun MeleeScreen(
+    navController: NavHostController,
+    characterId: Int,
+    viewModel: DndCharacterManagerViewModel
+) {
     val attackBonusString = stringResource(id = R.string.attack_bonus)
     val damageBonusString = stringResource(id = R.string.damage_bonus)
     val meleeTitle = stringResource(id = R.string.melee_title)
     val weaponList = listOf("Weapon 1", "Weapon 2", "Weapon 3", "Weapon 4", "Weapon 5")
 
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController) }
+        bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,13 +111,17 @@ fun MeleeScreen(navController: NavHostController) {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SpellsScreen(navController: NavHostController) {
+fun SpellsScreen(
+    navController: NavHostController,
+    characterId: Int,
+    viewModel: DndCharacterManagerViewModel
+) {
     val dcSavingThrowsString = stringResource(id = R.string.dc_saving_throws)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
 
     val scrollState = rememberScrollState()
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController) }
+        bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -325,11 +335,11 @@ fun WeaponRow(weapon: String){
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SpellsScreenPreview() {
-    val navController = rememberNavController()
-    DndCharacterManagerTheme {
-        AttackScreen(navController)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SpellsScreenPreview() {
+//    val navController = rememberNavController()
+//    DndCharacterManagerTheme {
+//        AttackScreen(navController, it, viewModel)
+//    }
+//}
