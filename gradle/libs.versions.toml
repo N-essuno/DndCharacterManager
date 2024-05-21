@@ -1,5 +1,6 @@
 [versions]
-agp = "8.4.0"
+activityComposeVersion = "1.7.1"
+agp = "8.4.1"
 constraintlayoutCompose = "1.0.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
@@ -15,6 +16,7 @@ navigationRuntimeKtx = "2.7.7"
 navigationCompose = "2.7.7"
 
 [libraries]
+androidx-activity-compose-v171 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
