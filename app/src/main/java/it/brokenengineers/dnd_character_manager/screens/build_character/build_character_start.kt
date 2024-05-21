@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -105,6 +111,18 @@ fun BuildCharacterStart(navController: NavController) {
                 Text(text = "Add character image")
             }
             characterImage?.let {
+                Card {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AsyncImage(
+                            model = characterImage,
+                            contentDescription = "Character Image",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        IconButton(onClick = { characterImage = null}, modifier = Modifier.align(Alignment.TopEnd)) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Delete Button")
+                        }
+                    }
+                }
                 AsyncImage(
                     model = characterImage,
                     contentDescription = "Character Image",
