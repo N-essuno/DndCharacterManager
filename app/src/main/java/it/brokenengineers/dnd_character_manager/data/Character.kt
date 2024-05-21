@@ -17,6 +17,7 @@ data class Character (
     val preparedSpells: Set<Spell>?,
     val availableSpellSlots: Map<Int, Int>?,
     val inventoryItems: Set<InventoryItem>?,
+    val weapon: Weapon?
 ) {
     fun getProficiencyBonus(): Int {
         return when (level) {
