@@ -15,7 +15,8 @@ data class Character (
     var tempHp: Int,
     val spellsKnown: Set<Spell>?,
     val preparedSpells: Set<Spell>?,
-    val availableSpellSlots: Map<Int, Int>?
+    val availableSpellSlots: Map<Int, Int>?,
+    val inventoryItems: Set<InventoryItem>?,
 ) {
     fun getProficiencyBonus(): Int {
         return when (level) {
@@ -96,5 +97,17 @@ data class Character (
 
     fun isProficientInAbility(abilityEnum: AbilityEnum): Boolean {
         return dndClass.savingThrowProficiencies.contains(abilityEnum.ability)
+    }
+
+    fun getMaxCarryWeight (): Double {
+        return abilityValues[AbilityEnum.STRENGTH.ability]!! * 15.0
+    }
+
+    fun getCurrentCarryWeight (): Double {
+        var totalWeight = 0.0
+        inventoryItems?.forEach {
+            totalWeight += it.weight * it.quantity
+        }
+        return totalWeight
     }
 }
