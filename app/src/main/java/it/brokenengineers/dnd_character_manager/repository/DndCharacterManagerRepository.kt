@@ -86,7 +86,6 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
         val character1 = Character(
             id = 5,
             name = "Sam",
-            proficiencyBonus = 2,
             race = eladrin,
             dndClass = wizard,
             level = 1,
@@ -102,7 +101,6 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
         val character2 = Character(
             id = 6,
             name = "Frodo",
-            proficiencyBonus = 2,
             race = dwarf,
             dndClass = barbarian,
             level = 1,
