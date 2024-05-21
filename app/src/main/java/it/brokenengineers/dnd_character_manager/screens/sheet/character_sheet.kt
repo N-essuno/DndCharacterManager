@@ -72,9 +72,9 @@ fun CharacterSheetScreen(
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
     }
-    val character = viewModel.selectedCharacter.collectAsState(initial = null)
+    val character by viewModel.selectedCharacter.collectAsState(initial = null)
 
-    character.let {
+    character?.let {
         val savingThrowsString = stringResource(id = R.string.saving_throws)
         val scrollState = rememberScrollState()
         Scaffold(
@@ -92,19 +92,18 @@ fun CharacterSheetScreen(
                 ) {
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
-                    character.value?.let { characterValue ->
-                        CharacterSheetHead(
-                            character = characterValue,
-                            modifier = Modifier
-                                .constrainAs(head) {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                },
-                        )
-                    }
+                    CharacterSheetHead(
+                        character = character!!,
+                        modifier = Modifier
+                            .constrainAs(head) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                    )
                     ImageAndDamageRow(
-                        character = character.value,
+                        viewModel = viewModel,
+                        character = character!!,
                         modifier = Modifier
                             .constrainAs(charImage) {
                                 top.linkTo(head.bottom)
@@ -198,6 +197,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
                     }
             )
             HitPointsCard(
+                character = character,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(hpCard) {
@@ -217,9 +217,12 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
 }
 
 @Composable
-fun HitPointsCard(modifier: Modifier) {
+fun HitPointsCard(modifier: Modifier, character: Character) {
     val hpString = stringResource(id = R.string.hp)
     val tempHpString = stringResource(id = R.string.temp_hp)
+    val maxHp = character.getMaxHp().toString()
+    val currentHp = character.remainingHp
+    val tempHp = character.tempHp
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -230,8 +233,14 @@ fun HitPointsCard(modifier: Modifier) {
             horizontalAlignment = Alignment.End
         ) {
             // TODO: get values based on character
-            Text("$hpString: 140/140")
-            Text("$tempHpString: 140/140")
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = "$hpString: $currentHp/$maxHp"
+            )
+            Text(
+                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding, bottom = SmallPadding),
+                text = "$tempHpString: $tempHp"
+            )
         }
     }
 }
@@ -283,7 +292,11 @@ fun RestButton(modifier: Modifier) {
 }
 
 @Composable
-fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
+fun ImageAndDamageRow(
+    modifier: Modifier,
+    character: Character, // TODO: do not remove, maybe needed later to get image URL
+    viewModel: DndCharacterManagerViewModel
+) {
     val hitButtonString = stringResource(id = R.string.hit_button)
     val editHpButtonString = stringResource(id = R.string.edit_hp_button)
     val editTempHpButtonString = stringResource(id = R.string.edit_temp_hp_button)
@@ -381,7 +394,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
         confirmButton = {
             Button(
                 onClick = {
-                    // TODO: handle hit value
+                    viewModel.addHit(hitValue.value.toInt())
                     showDialogHit.value = false
                 }
             ) {
@@ -408,7 +421,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             confirmButton = {
                 Button(
                     onClick = {
-                        // TODO: handle adding hp
+                        viewModel.addHp(hp.value.toInt())
                         showDialogHp.value = false
                     }
                 ) {
@@ -419,7 +432,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             dismissButton = {
                 Button(
                     onClick = {
-                        // TODO handle losing HP
+                        viewModel.loseHp(hp.value.toInt())
                         showDialogHp.value = false
                     }
                 ) {
@@ -445,7 +458,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             confirmButton = {
                 Button(
                     onClick = {
-                        // TODO: handle adding temp hp
+                        viewModel.addTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
                     }
                 ) {
@@ -455,7 +468,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             dismissButton = {
                 Button(
                     onClick = {
-                        // TODO handle losing temp hp
+                        viewModel.loseTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
                     }
                 ) {
