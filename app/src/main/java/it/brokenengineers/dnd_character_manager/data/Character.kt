@@ -1,6 +1,7 @@
 package it.brokenengineers.dnd_character_manager.data
 
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 
 data class Character (
@@ -49,13 +50,13 @@ data class Character (
     }
 
     fun getMaxHp(): Int {
-        if (dndClass.name == "Barbarian") {
+        if (dndClass == DndClassEnum.BARBARIAN.dndClass) {
             if (level == 1) {
                 return 12 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
                 return 12 + 7 + getAbilityModifier(AbilityEnum.CONSTITUTION) * level
             }
-        } else if (dndClass.name == "Wizard") {
+        } else if (dndClass == DndClassEnum.WIZARD.dndClass) {
             if (level == 1) {
                 return 6 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
@@ -110,5 +111,9 @@ data class Character (
             totalWeight += it.weight * it.quantity
         }
         return totalWeight
+    }
+
+    fun getAttackBonus(): Int {
+        return abilityValues[dndClass.primaryAbility]!! + getProficiencyBonus()
     }
 }

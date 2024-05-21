@@ -21,11 +21,17 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.Weapon
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
@@ -43,13 +49,22 @@ fun AttackScreen(
     characterId: Int,
     viewModel: DndCharacterManagerViewModel
 ) {
+    LaunchedEffect(characterId) {
+        viewModel.fetchCharacterById(characterId)
+    }
+    val char by viewModel.selectedCharacter.collectAsState(initial = null)
     // TODO get character class from view model
-    val characterClass = "Barbarian"
+    char?.let {character ->
+        val characterClass = character.dndClass
 
-    if (characterClass == "Wizard") {
-        SpellsScreen(navController, characterId, viewModel)
-    } else if (characterClass == "Barbarian") {
-        MeleeScreen(navController, characterId, viewModel)
+        if (characterClass == DndClassEnum.WIZARD.dndClass) {
+            SpellsScreen(navController, character)
+        } else if (characterClass == DndClassEnum.BARBARIAN.dndClass) {
+            MeleeScreen(navController, character)
+        }
+
+        Spacer(modifier = Modifier.height(XXLVerticalSpacing))
+
     }
 }
 
@@ -57,16 +72,17 @@ fun AttackScreen(
 @Composable
 fun MeleeScreen(
     navController: NavHostController,
-    characterId: Int,
-    viewModel: DndCharacterManagerViewModel
+    character: Character
 ) {
-    val attackBonusString = stringResource(id = R.string.attack_bonus)
-    val damageBonusString = stringResource(id = R.string.damage_bonus)
     val meleeTitle = stringResource(id = R.string.melee_title)
-    val weaponList = listOf("Weapon 1", "Weapon 2", "Weapon 3", "Weapon 4", "Weapon 5")
+    val attackBonusString = stringResource(id = R.string.attack_bonus)
+//    val damageBonusString = stringResource(id = R.string.damage_bonus)
+    val weapon = character.weapon
+    val weaponList = listOf(weapon)
+    val attackBonus = character.getAttackBonus()
 
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController, characterId) }
+        bottomBar = { CharacterSheetNavBar(navController, character.id) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -84,10 +100,10 @@ fun MeleeScreen(
 
             WeaponTableHeader()
             weaponList.forEach { weapon ->
-                WeaponRow(weapon)
+                weapon?.let {
+                    WeaponRow(it)
+                }
             }
-
-            Spacer(modifier = Modifier.height(XXLVerticalSpacing))
 
             Row (
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,15 +112,13 @@ fun MeleeScreen(
                 // TODO set depending on character stats
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "$attackBonusString 0",
+                    text = "$attackBonusString $attackBonus",
                 )
-                Text(
-                    modifier = Modifier.padding(SmallPadding),
-                    text = "$damageBonusString 0",
-                )
+//        Text(
+//            modifier = Modifier.padding(SmallPadding),
+//            text = "$damageBonusString $damageBonus",
+//        )
             }
-
-
         }
     }
 }
@@ -113,15 +127,14 @@ fun MeleeScreen(
 @Composable
 fun SpellsScreen(
     navController: NavHostController,
-    characterId: Int,
-    viewModel: DndCharacterManagerViewModel
+    character: Character
 ) {
     val dcSavingThrowsString = stringResource(id = R.string.dc_saving_throws)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
 
     val scrollState = rememberScrollState()
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController, characterId) }
+        bottomBar = { CharacterSheetNavBar(navController, character.id) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -272,7 +285,7 @@ fun SpellsTitleRow(title: String){
 
 @Composable
 fun WeaponTableHeader(){
-    val proficiencyString = stringResource(id = R.string.proficiency)
+//    val proficiencyString = stringResource(id = R.string.proficiency)
     val weaponString = stringResource(id = R.string.weapon)
     val damageString = stringResource(id = R.string.damage)
 
@@ -280,57 +293,83 @@ fun WeaponTableHeader(){
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ){
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = proficiencyString,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = weaponString,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            modifier = Modifier.padding(SmallPadding),
-            text = damageString,
-            style = MaterialTheme.typography.bodyLarge
-        )
+//        Text(
+//            modifier = Modifier.padding(SmallPadding),
+//            text = proficiencyString,
+//            style = MaterialTheme.typography.bodyLarge
+//        )
+        Column(
+            modifier = Modifier.weight(1.6f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = weaponString,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = damageString,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
 @Composable
-fun WeaponRow(weapon: String){
+fun WeaponRow(weapon: Weapon){
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ){
-        RadioButton(
-            // TODO set depending on proficient weapons
-            modifier = Modifier.size(RadioButtonMedium),
-            selected = true,
-            onClick = { }
-        )
-        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
-        Text(
-            // TODO get weapon name from view model
-            modifier = Modifier.padding(SmallPadding),
-            text = weapon,
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Icon(
-            // TODO change icon to weapon icon
-            Icons.Default.Build,
-            modifier = Modifier.size(IconButtonMedium),
-            contentDescription = "Weapon"
-        )
-        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
-        Text(
-            // TODO get weapon damage from view model
-            modifier = Modifier.padding(SmallPadding),
-            text = "2d6",
-            style = MaterialTheme.typography.bodyLarge
-        )
+//        RadioButton(
+//            // TODO set depending on proficient weapons
+//            modifier = Modifier.size(RadioButtonMedium),
+//            selected = true,
+//            onClick = { }
+//        )
+//        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
+        Column(
+            modifier = Modifier.weight(0.8f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = weapon.name,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+        Column (
+            modifier = Modifier.weight(0.8f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ){
+            Icon(
+                // TODO change icon to weapon icon
+                Icons.Default.Build,
+                modifier = Modifier.size(IconButtonMedium),
+                contentDescription = "Weapon"
+            )
+        }
+
+        Text("|", style = MaterialTheme.typography.bodyLarge)
+        Column (
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = weapon.damage,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+        }
+
 
     }
 }
