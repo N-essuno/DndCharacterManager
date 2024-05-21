@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -25,10 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -48,10 +49,11 @@ fun BuildCharacterStart(navController: NavController) {
         // photo picker.
         if (uri != null) {
             characterImage = uri
-            Log.d("PhotoPicker", "Selected URI: $uri")
+// Now you have the InputStream containing the image data.
+            Log.d("ImagePicker", "Selected URI: $uri")
             Toast.makeText(context, "Character image added", Toast.LENGTH_SHORT).show()
         } else {
-            Log.d("PhotoPicker", "No media selected")
+            Log.d("ImagePicker", "No media selected")
         }
     }
 
@@ -102,8 +104,12 @@ fun BuildCharacterStart(navController: NavController) {
             }) {
                 Text(text = "Add character image")
             }
-            if (characterImage != null) {
-                // image here
+            characterImage?.let {
+                AsyncImage(
+                    model = characterImage,
+                    contentDescription = "Character Image",
+                    modifier = Modifier.size(200.dp)
+                )
             }
         }
 
