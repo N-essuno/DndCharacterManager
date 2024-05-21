@@ -1,11 +1,11 @@
 package it.brokenengineers.dnd_character_manager.data
 
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
+import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 
 data class Character (
     val id: Int,
     val name: String,
-    val proficiencyBonus: Int,
     val race: Race,
     val dndClass: DndClass,
     val level: Int,
@@ -17,6 +17,17 @@ data class Character (
     val preparedSpells: Set<Spell>?,
     val availableSpellSlots: Map<Int, Int>?
 ) {
+    fun getProficiencyBonus(): Int {
+        return when (level) {
+            in 1..4 -> 2
+            in 5..8 -> 3
+            in 9..12 -> 4
+            in 13..16 -> 5
+            in 17..20 -> 6
+            else -> -1
+        }
+    }
+
     fun getArmorClass(): Int {
         val dexterityModifier = getAbilityModifier(AbilityEnum.DEXTERITY)
         if (dndClass.name == "Barbarian") {
@@ -29,6 +40,10 @@ data class Character (
 
     fun getInitiative(): Int {
         return getAbilityModifier(AbilityEnum.DEXTERITY)
+    }
+
+    fun getWalkSpeed(): Int {
+        return race.walkSpeed
     }
 
     fun getMaxHp(): Int {
@@ -49,7 +64,33 @@ data class Character (
         }
     }
 
-    private fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
+    fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
         return (abilityValues[abilityEnum.ability]!! - 10) / 2
+    }
+
+    private fun getAbilityModifier(ability: Ability): Int{
+        return (abilityValues[ability]!! - 10) / 2
+    }
+
+    fun getSkills(): List<Pair<Skill, Int>> {
+        val skills = mutableListOf<Pair<Skill, Int>>()
+        for (enumEntry in SkillEnum.entries) {
+            var skillValue = getAbilityModifier(enumEntry.skill.ability)
+            if (skillProficiencies.contains(enumEntry.skill)) {
+                skillValue += getProficiencyBonus()
+            }
+            val pair = Pair(enumEntry.skill, skillValue)
+            skills.add(pair)
+        }
+        return skills
+    }
+
+    fun getSavingThrowBonus(abilityEnum: AbilityEnum): Int {
+        val abilityModifier = getAbilityModifier(abilityEnum)
+        if (dndClass.savingThrowProficiencies.contains(abilityEnum.ability)) {
+            return abilityModifier + getProficiencyBonus()
+        } else {
+            return abilityModifier
+        }
     }
 }
