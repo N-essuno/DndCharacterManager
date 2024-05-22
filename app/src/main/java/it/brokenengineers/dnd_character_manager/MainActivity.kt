@@ -35,6 +35,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import it.brokenengineers.dnd_character_manager.screens.Rest
+import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -127,6 +128,20 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 val characterId = backStackEntry.arguments?.getInt("characterId")
                 characterId?.let {
                     Rest(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+            }
+        }
+        navigation(startDestination = "levelup", route = "levelup_route") {
+            composable("levelup/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    LevelUp(
                         characterId = it,
                         navController = navController,
                         viewModel = viewModel

@@ -23,6 +23,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -295,7 +296,7 @@ fun LevelUpButton(modifier: Modifier, navController: NavHostController, characte
         IconButton(
             modifier = modifier,
             onClick = {
-                navController.navigate("rest/${character.id}") {
+                navController.navigate("levelup/${character.id}") {
                     popUpTo(navController.graph.findStartDestination().id)
 
                     launchSingleTop = true
@@ -303,7 +304,7 @@ fun LevelUpButton(modifier: Modifier, navController: NavHostController, characte
                 }
             },
         ) {
-            Icon(Icons.Default.Favorite, contentDescription = "Delete")
+            Icon(Icons.Default.Star, contentDescription = "Delete")
         }
     }
 }
