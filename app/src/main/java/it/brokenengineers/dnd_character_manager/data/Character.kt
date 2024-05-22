@@ -33,7 +33,7 @@ data class Character (
 
     fun getArmorClass(): Int {
         val dexterityModifier = getAbilityModifier(AbilityEnum.DEXTERITY)
-        if (dndClass.name == "Barbarian") {
+        if (dndClass == DndClassEnum.BARBARIAN.dndClass) {
             val constitutionModifier = getAbilityModifier(AbilityEnum.CONSTITUTION)
             return 10 + constitutionModifier + dexterityModifier
         } else {
@@ -54,13 +54,13 @@ data class Character (
             if (level == 1) {
                 return 12 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
-                return 12 + 7 + getAbilityModifier(AbilityEnum.CONSTITUTION) * level
+                return 12 + (7 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level-1)
             }
         } else if (dndClass == DndClassEnum.WIZARD.dndClass) {
             if (level == 1) {
                 return 6 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
-                return 6 + 4 + getAbilityModifier(AbilityEnum.CONSTITUTION) * level
+                return 6 + (4 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level-1)
             }
         } else {
             return -1
@@ -115,5 +115,9 @@ data class Character (
 
     fun getAttackBonus(): Int {
         return abilityValues[dndClass.primaryAbility]!! + getProficiencyBonus()
+    }
+
+    fun getSpellDcSavingThrow(): Int {
+        return 8 + getProficiencyBonus() + getAbilityModifier(dndClass.primaryAbility)
     }
 }

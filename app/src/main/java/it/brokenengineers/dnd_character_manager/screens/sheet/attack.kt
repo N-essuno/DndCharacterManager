@@ -129,8 +129,27 @@ fun SpellsScreen(
     navController: NavHostController,
     character: Character
 ) {
-    val dcSavingThrowsString = stringResource(id = R.string.dc_saving_throws)
+    val spellDcSavingThrowsString = stringResource(id = R.string.spell_dc_saving_throws)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
+    val cantrips = character.spellsKnown?.filter { it.level == 0 }?.map { it.name }
+    val lev1Spells = character.spellsKnown?.filter { it.level == 1 }?.map { it.name }
+    val lev2Spells = character.spellsKnown?.filter { it.level == 2 }?.map { it.name }
+    val lev3Spells = character.spellsKnown?.filter { it.level == 3 }?.map { it.name }
+    val lev4Spells = character.spellsKnown?.filter { it.level == 4 }?.map { it.name }
+    val lev5Spells = character.spellsKnown?.filter { it.level == 5 }?.map { it.name }
+    val lev6Spells = character.spellsKnown?.filter { it.level == 6 }?.map { it.name }
+    val lev7Spells = character.spellsKnown?.filter { it.level == 7 }?.map { it.name }
+    val lev8Spells = character.spellsKnown?.filter { it.level == 8 }?.map { it.name }
+    val lev1Slots = character.availableSpellSlots?.get(1)
+    val lev2Slots = character.availableSpellSlots?.get(2)
+    val lev3Slots = character.availableSpellSlots?.get(3)
+    val lev4Slots = character.availableSpellSlots?.get(4)
+    val lev5Slots = character.availableSpellSlots?.get(5)
+    val lev6Slots = character.availableSpellSlots?.get(6)
+    val lev7Slots = character.availableSpellSlots?.get(7)
+    val lev8Slots = character.availableSpellSlots?.get(8)
+    val spellDcSavingThrow = character.getSpellDcSavingThrow()
+    val attackBonus = character.getAttackBonus()
 
     val scrollState = rememberScrollState()
     Scaffold(
@@ -143,35 +162,24 @@ fun SpellsScreen(
                 .verticalScroll(scrollState)
                 .padding(bottom = OverBottomNavBar)
         ) {
-            val cantrips = listOf("Cantrip 1", "Cantrip 2", "Cantrip 3", "Cantrip 4", "Cantrip 5")
-            val lev1Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev2Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev3Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev4Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev5Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev6Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev7Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-            val lev8Spells = listOf("Spell 1", "Spell 2", "Spell 3", "Spell 4", "Spell 5")
-
             SpellsTitleRow(title = "Spells")
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 0, spells = cantrips)
-                SpellsLevelColumn(level = 1, spells = lev1Spells)
-                SpellsLevelColumn(level = 2, spells = lev2Spells)
+                SpellsLevelColumn(level = 0, spells = cantrips, null)
+                SpellsLevelColumn(level = 1, spells = lev1Spells, lev1Slots)
+                SpellsLevelColumn(level = 2, spells = lev2Spells, lev2Slots)
             }
-
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 3, spells = lev3Spells)
-                SpellsLevelColumn(level = 4, spells = lev4Spells)
-                SpellsLevelColumn(level = 5, spells = lev5Spells)
+                SpellsLevelColumn(level = 3, spells = lev3Spells, lev3Slots)
+                SpellsLevelColumn(level = 4, spells = lev4Spells, lev4Slots)
+                SpellsLevelColumn(level = 5, spells = lev5Spells, lev5Slots)
             }
 
             Spacer(modifier = Modifier.height(MediumVerticalSpacing))
@@ -180,23 +188,22 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 6, spells = lev6Spells)
-                SpellsLevelColumn(level = 7, spells = lev7Spells)
-                SpellsLevelColumn(level = 8, spells = lev8Spells)
+                SpellsLevelColumn(level = 6, spells = lev6Spells, lev6Slots)
+                SpellsLevelColumn(level = 7, spells = lev7Spells, lev7Slots)
+                SpellsLevelColumn(level = 8, spells = lev8Spells, lev8Slots)
             }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                // TODO set depending on character stats
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "$dcSavingThrowsString 0",
+                    text = "$spellDcSavingThrowsString $spellDcSavingThrow",
                 )
                 Text(
                     modifier = Modifier.padding(SmallPadding),
-                    text = "$attackBonusString 0",
+                    text = "$attackBonusString $attackBonus",
                 )
             }
 
@@ -205,9 +212,10 @@ fun SpellsScreen(
 }
 
 @Composable
-fun SpellsLevelColumn(level: Int, spells: List<String>?){
+fun SpellsLevelColumn(level: Int, spells: List<String>?, slots: Int?){
     val slotsString = stringResource(id = R.string.slots)
     val levelString = stringResource(id = R.string.level)
+
 
     val scrollState = rememberScrollState()
     Column {
@@ -261,7 +269,6 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?){
             }
         }
     }
-
 }
 
 @Composable
