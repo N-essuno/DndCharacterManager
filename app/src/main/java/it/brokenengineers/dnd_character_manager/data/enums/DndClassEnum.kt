@@ -14,7 +14,7 @@ enum class DndClassEnum(val dndClass: DndClass) {
                 SkillEnum.PERCEPTION.skill,
                 SkillEnum.SURVIVAL.skill
             ),
-            savingThrowsProficiencies = listOf(
+            savingThrowProficiencies = listOf(
                 AbilityEnum.STRENGTH.ability,
                 AbilityEnum.CONSTITUTION.ability),
             primaryAbility = AbilityEnum.STRENGTH.ability
@@ -32,7 +32,7 @@ enum class DndClassEnum(val dndClass: DndClass) {
                 SkillEnum.PERCEPTION.skill,
                 SkillEnum.RELIGION.skill
             ),
-            savingThrowsProficiencies = listOf(
+            savingThrowProficiencies = listOf(
                 AbilityEnum.INTELLIGENCE.ability,
                 AbilityEnum.WISDOM.ability),
             primaryAbility = AbilityEnum.INTELLIGENCE.ability

@@ -38,25 +38,6 @@
     <string name="wisdom">WISDOM</string>
     <string name="charisma">CHARISMA</string>
 
-    <string name="acrobatics">Acrobatics</string>
-    <string name="animal_handling">Animal Handling</string>
-    <string name="arcana">Arcana</string>
-    <string name="athletics">Athletics</string>
-    <string name="deception">Deception</string>
-    <string name="history">History</string>
-    <string name="insight">Insight</string>
-    <string name="intimidation">Intimidation</string>
-    <string name="investigation">Investigation</string>
-    <string name="medicine">Medicine</string>
-    <string name="nature">Nature</string>
-    <string name="perception">Perception</string>
-    <string name="performance">Performance</string>
-    <string name="persuasion">Persuasion</string>
-    <string name="religion">Religion</string>
-    <string name="sleight_of_hand">Sleight of Hand</string>
-    <string name="stealth">Stealth</string>
-    <string name="survival">Survival</string>
-
     <string name="saving_throws">Saving Throws</string>
 
 <!--    <string name="home_navbar">Home</string>-->
@@ -87,7 +68,7 @@
     <string name="spells_title">Spells</string>
     <string name="melee_title">Melee attack</string>
     <string name="level">Level</string>
-    <string name="dc_saving_throws">DC Saving Throws:</string>
+    <string name="spell_dc_saving_throws">DC Saving Throws:</string>
     <string name="attack_bonus">Attack Bonus:</string>
     <string name="damage_bonus">Damage Bonus:</string>
     <string name="slots">Slots:</string>

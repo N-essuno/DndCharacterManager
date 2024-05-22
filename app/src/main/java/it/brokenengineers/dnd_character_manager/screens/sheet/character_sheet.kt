@@ -3,6 +3,7 @@ package it.brokenengineers.dnd_character_manager.screens.sheet
 //noinspection UsingMaterialAndMaterial3Libraries
 //noinspection UsingMaterialAndMaterial3Libraries
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
@@ -72,13 +74,13 @@ fun CharacterSheetScreen(
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
     }
-    val character = viewModel.selectedCharacter.collectAsState(initial = null)
+    val char by viewModel.selectedCharacter.collectAsState(initial = null)
 
-    character.let {
+    char?.let { character ->
         val savingThrowsString = stringResource(id = R.string.saving_throws)
         val scrollState = rememberScrollState()
         Scaffold(
-            bottomBar = { CharacterSheetNavBar(navController) }
+            bottomBar = { CharacterSheetNavBar(navController, characterId) }
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -92,19 +94,18 @@ fun CharacterSheetScreen(
                 ) {
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
-                    character.value?.let { characterValue ->
-                        CharacterSheetHead(
-                            character = characterValue,
-                            modifier = Modifier
-                                .constrainAs(head) {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                },
-                        )
-                    }
+                    CharacterSheetHead(
+                        character = character,
+                        modifier = Modifier
+                            .constrainAs(head) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                    )
                     ImageAndDamageRow(
-                        character = character.value,
+                        viewModel = viewModel,
+                        character = character,
                         modifier = Modifier
                             .constrainAs(charImage) {
                                 top.linkTo(head.bottom)
@@ -112,21 +113,27 @@ fun CharacterSheetScreen(
                                 end.linkTo(parent.end)
                             }
                     )
-                    MainInfo(modifier = Modifier
+                    MainInfo(
+                        character = character,
+                        modifier = Modifier
                         .constrainAs(mainInfo) {
                             top.linkTo(charImage.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }
                     )
-                    AbilityRow(modifier = Modifier
-                        .constrainAs(abilityRow) {
-                            top.linkTo(mainInfo.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
+                    AbilityRow(
+                        character = character,
+                        modifier = Modifier
+                            .constrainAs(abilityRow) {
+                                top.linkTo(mainInfo.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
                     )
-                    SkillRow(modifier = Modifier
+                    SkillRow(
+                        character = character,
+                        modifier = Modifier
                         .constrainAs(skillsRow) {
                             top.linkTo(abilityRow.bottom)
                             start.linkTo(parent.start)
@@ -144,7 +151,9 @@ fun CharacterSheetScreen(
                                 end.linkTo(parent.end)
                             }
                     )
-                    SavingThrowsRow(modifier = Modifier
+                    SavingThrowsRow(
+                        character = character,
+                        modifier = Modifier
                         .constrainAs(savingThrowsRow) {
                             top.linkTo(savingThrowsTitle.bottom)
                             start.linkTo(parent.start)
@@ -198,6 +207,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
                     }
             )
             HitPointsCard(
+                character = character,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(hpCard) {
@@ -217,9 +227,12 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
 }
 
 @Composable
-fun HitPointsCard(modifier: Modifier) {
+fun HitPointsCard(modifier: Modifier, character: Character) {
     val hpString = stringResource(id = R.string.hp)
     val tempHpString = stringResource(id = R.string.temp_hp)
+    val maxHp = character.getMaxHp().toString()
+    val currentHp = character.remainingHp
+    val tempHp = character.tempHp
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -229,9 +242,14 @@ fun HitPointsCard(modifier: Modifier) {
         Column(
             horizontalAlignment = Alignment.End
         ) {
-            // TODO: get values based on character
-            Text("$hpString: 140/140")
-            Text("$tempHpString: 140/140")
+            Text(
+                modifier = Modifier.padding(SmallPadding),
+                text = "$hpString: $currentHp/$maxHp"
+            )
+            Text(
+                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding, bottom = SmallPadding),
+                text = "$tempHpString: $tempHp"
+            )
         }
     }
 }
@@ -283,7 +301,11 @@ fun RestButton(modifier: Modifier) {
 }
 
 @Composable
-fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
+fun ImageAndDamageRow(
+    modifier: Modifier,
+    character: Character, // TODO: do not remove, maybe needed later to get image URL
+    viewModel: DndCharacterManagerViewModel
+) {
     val hitButtonString = stringResource(id = R.string.hit_button)
     val editHpButtonString = stringResource(id = R.string.edit_hp_button)
     val editTempHpButtonString = stringResource(id = R.string.edit_temp_hp_button)
@@ -381,7 +403,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
         confirmButton = {
             Button(
                 onClick = {
-                    // TODO: handle hit value
+                    viewModel.addHit(hitValue.value.toInt())
                     showDialogHit.value = false
                 }
             ) {
@@ -408,7 +430,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             confirmButton = {
                 Button(
                     onClick = {
-                        // TODO: handle adding hp
+                        viewModel.addHp(hp.value.toInt())
                         showDialogHp.value = false
                     }
                 ) {
@@ -419,7 +441,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             dismissButton = {
                 Button(
                     onClick = {
-                        // TODO handle losing HP
+                        viewModel.loseHp(hp.value.toInt())
                         showDialogHp.value = false
                     }
                 ) {
@@ -445,7 +467,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             confirmButton = {
                 Button(
                     onClick = {
-                        // TODO: handle adding temp hp
+                        viewModel.addTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
                     }
                 ) {
@@ -455,7 +477,7 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
             dismissButton = {
                 Button(
                     onClick = {
-                        // TODO handle losing temp hp
+                        viewModel.loseTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
                     }
                 ) {
@@ -467,11 +489,15 @@ fun ImageAndDamageRow(modifier: Modifier, character: Character?) {
 }
 
 @Composable
-fun MainInfo(modifier: Modifier) {
+fun MainInfo(modifier: Modifier, character: Character) {
     val profBonusString = stringResource(id = R.string.prof_bonus)
     val walkSpeedString = stringResource(id = R.string.walk_speed)
     val initString = stringResource(id = R.string.initiative)
     val armorClassString = stringResource(id = R.string.armor_class)
+    val proficiencyBonus = character.getProficiencyBonus().toString()
+    val walkSpeed = character.getWalkSpeed().toString()
+    val initiative = character.getInitiative().toString()
+    val armorClassValue = character.getArmorClass().toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -482,10 +508,9 @@ fun MainInfo(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ) {
             val (profBonus, speed, init, armorClass) = createRefs()
-            // TODO: get values based on character
             MainInfoElem(
                 name = profBonusString,
-                value = "+3",
+                value = proficiencyBonus,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(profBonus) {
@@ -502,7 +527,7 @@ fun MainInfo(modifier: Modifier) {
                         end.linkTo(init.start)
                     },
                 name = walkSpeedString,
-                value = "30 ft."
+                value = "$walkSpeed ft."
             )
             MainInfoElem(
                 modifier = Modifier
@@ -513,7 +538,7 @@ fun MainInfo(modifier: Modifier) {
                         end.linkTo(armorClass.start)
                     },
                 name = initString,
-                value = "+3"
+                value = initiative
             )
             MainInfoElem(
                 modifier = Modifier
@@ -524,7 +549,7 @@ fun MainInfo(modifier: Modifier) {
                         end.linkTo(parent.end)
                     },
                 name = armorClassString,
-                value = "18"
+                value = armorClassValue
             )
         }
     }
@@ -568,13 +593,26 @@ fun MainInfoElem(modifier: Modifier, name: String, value: String) {
 }
 
 @Composable
-fun AbilityRow(modifier: Modifier) {
+fun AbilityRow(modifier: Modifier, character: Character) {
     val strengthString = stringResource(id = R.string.strength)
     val dexterityString = stringResource(id = R.string.dexterity)
     val constitutionString = stringResource(id = R.string.constitution)
     val intelligenceString = stringResource(id = R.string.intelligence)
     val wisdomString = stringResource(id = R.string.wisdom)
     val charismaString = stringResource(id = R.string.charisma)
+
+    val strValue = character.abilityValues[AbilityEnum.STRENGTH.ability].toString()
+    val strModifier = character.getAbilityModifier(AbilityEnum.STRENGTH).toString()
+    val dexValue = character.abilityValues[AbilityEnum.DEXTERITY.ability].toString()
+    val dexModifier = character.getAbilityModifier(AbilityEnum.DEXTERITY).toString()
+    val conValue = character.abilityValues[AbilityEnum.CONSTITUTION.ability].toString()
+    val conModifier = character.getAbilityModifier(AbilityEnum.CONSTITUTION).toString()
+    val intValue = character.abilityValues[AbilityEnum.INTELLIGENCE.ability].toString()
+    val intModifier = character.getAbilityModifier(AbilityEnum.INTELLIGENCE).toString()
+    val wisValue = character.abilityValues[AbilityEnum.WISDOM.ability].toString()
+    val wisModifier = character.getAbilityModifier(AbilityEnum.WISDOM).toString()
+    val chaValue = character.abilityValues[AbilityEnum.CHARISMA.ability].toString()
+    val chaModifier = character.getAbilityModifier(AbilityEnum.CHARISMA).toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -585,11 +623,10 @@ fun AbilityRow(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ) {
             val (str, dex, con, int, wis, cha) = createRefs()
-            // TODO: get points and bonus based on abilities passed
             AbilityCard(
                 name = strengthString,
-                value = "16",
-                bonus = "+3",
+                value = strValue,
+                bonus = strModifier,
                 modifier = Modifier
                     .constrainAs(str) {
                         start.linkTo(parent.start)
@@ -599,8 +636,8 @@ fun AbilityRow(modifier: Modifier) {
             )
             AbilityCard(
                 name = dexterityString,
-                value = "14",
-                bonus = "+2",
+                value = dexValue,
+                bonus = dexModifier,
                 modifier = Modifier
                     .constrainAs(dex) {
                         start.linkTo(str.end)
@@ -610,8 +647,8 @@ fun AbilityRow(modifier: Modifier) {
             )
             AbilityCard(
                 name = constitutionString,
-                value = "14",
-                bonus = "+2",
+                value = conValue,
+                bonus = conModifier,
                 modifier = Modifier
                     .constrainAs(con) {
                         start.linkTo(dex.end)
@@ -621,8 +658,8 @@ fun AbilityRow(modifier: Modifier) {
             )
             AbilityCard(
                 name = intelligenceString,
-                value = "10",
-                bonus = "+0",
+                value = intValue,
+                bonus = intModifier,
                 modifier = Modifier
                     .constrainAs(int) {
                         start.linkTo(parent.start)
@@ -632,8 +669,8 @@ fun AbilityRow(modifier: Modifier) {
             )
             AbilityCard(
                 name = wisdomString,
-                value = "12",
-                bonus = "+1",
+                value = wisValue,
+                bonus = wisModifier,
                 modifier = Modifier
                     .constrainAs(wis) {
                         start.linkTo(int.end)
@@ -643,8 +680,8 @@ fun AbilityRow(modifier: Modifier) {
             )
             AbilityCard(
                 name = charismaString,
-                value = "8",
-                bonus = "-1",
+                value = chaValue,
+                bonus = chaModifier,
                 modifier = Modifier
                     .constrainAs(cha) {
                         start.linkTo(wis.end)
@@ -706,34 +743,10 @@ fun AbilityCard(modifier: Modifier, name: String, value: String, bonus: String) 
 }
 
 @Composable
-fun SkillRow(modifier: Modifier) {
-    val acrobaticsString = stringResource(id = R.string.acrobatics)
-    val animalHandlingString = stringResource(id = R.string.animal_handling)
-    val arcanaString = stringResource(id = R.string.arcana)
-    val athleticsString = stringResource(id = R.string.athletics)
-    val deceptionString = stringResource(id = R.string.deception)
-    val historyString = stringResource(id = R.string.history)
-    val insightString = stringResource(id = R.string.insight)
-    val intimidationString = stringResource(id = R.string.intimidation)
-    val investigationString = stringResource(id = R.string.investigation)
-    val medicineString = stringResource(id = R.string.medicine)
-    val natureString = stringResource(id = R.string.nature)
-    val perceptionString = stringResource(id = R.string.perception)
-    val performanceString = stringResource(id = R.string.performance)
-    val persuasionString = stringResource(id = R.string.persuasion)
-    val religionString = stringResource(id = R.string.religion)
-    val sleightOfHandString = stringResource(id = R.string.sleight_of_hand)
-    val stealthString = stringResource(id = R.string.stealth)
-    val survivalString = stringResource(id = R.string.survival)
+fun SkillRow(modifier: Modifier, character: Character) {
+    val skills1 = character.getSkills().slice(0..8)
+    val skills2 = character.getSkills().slice(9..17)
 
-    val skills1 = listOf(
-        acrobaticsString, animalHandlingString, arcanaString, athleticsString,
-        deceptionString, historyString, insightString, intimidationString, investigationString
-    )
-    val skills2 = listOf(
-        medicineString, natureString, perceptionString, performanceString,
-        persuasionString, religionString, sleightOfHandString, stealthString, survivalString
-    )
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -742,7 +755,6 @@ fun SkillRow(modifier: Modifier) {
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ) {
-            // TODO: get points based on character
             val (col1, col2) = createRefs()
             Column(
                 modifier = Modifier
@@ -754,8 +766,8 @@ fun SkillRow(modifier: Modifier) {
             ){
                 skills1.forEach {
                     SkillBox(
-                        name = it,
-                        value = "+3"
+                        name = it.first.name,
+                        value = it.second.toString()
                     )
                 }
             }
@@ -769,8 +781,8 @@ fun SkillRow(modifier: Modifier) {
             ) {
                 skills2.forEach {
                     SkillBox(
-                        name = it,
-                        value = "+3"
+                        name = it.first.name,
+                        value = it.second.toString()
                     )
                 }
             }
@@ -813,13 +825,20 @@ fun SkillBox(name: String, value: String) {
 }
 
 @Composable
-fun SavingThrowsRow(modifier: Modifier) {
-    val strenthString = stringResource(id = R.string.strength)
+fun SavingThrowsRow(modifier: Modifier, character: Character) {
+    val strengthString = stringResource(id = R.string.strength)
     val dexterityString = stringResource(id = R.string.dexterity)
     val constitutionString = stringResource(id = R.string.constitution)
     val intelligenceString = stringResource(id = R.string.intelligence)
     val wisdomString = stringResource(id = R.string.wisdom)
     val charismaString = stringResource(id = R.string.charisma)
+
+    val strSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.STRENGTH).toString()
+    val dexSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.DEXTERITY).toString()
+    val conSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.CONSTITUTION).toString()
+    val intSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.INTELLIGENCE).toString()
+    val wisSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.WISDOM).toString()
+    val chaSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.CHARISMA).toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -830,10 +849,10 @@ fun SavingThrowsRow(modifier: Modifier) {
             modifier = Modifier.fillMaxSize()
         ) {
             val (str, dex, con, int, wis, cha) = createRefs()
-            // TODO: get bonus based on character
             SavingThrowCard(
-                name = strenthString,
-                bonus = "+3",
+                name = strengthString,
+                bonus = strSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.STRENGTH),
                 modifier = Modifier
                     .constrainAs(str) {
                         start.linkTo(parent.start)
@@ -842,61 +861,66 @@ fun SavingThrowsRow(modifier: Modifier) {
                     }
             )
             SavingThrowCard(
-                name = dexterityString,
-                bonus = "+2",
                 modifier = Modifier
                     .constrainAs(dex) {
                         start.linkTo(str.end)
                         top.linkTo(parent.top)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = dexterityString,
+                bonus = dexSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.DEXTERITY)
             )
             SavingThrowCard(
-                name = constitutionString,
-                bonus = "+2",
                 modifier = Modifier
                     .constrainAs(con) {
                         start.linkTo(parent.start)
                         top.linkTo(str.bottom)
                         end.linkTo(int.start)
-                    }
+                    },
+                name = constitutionString,
+                bonus = conSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.CONSTITUTION)
             )
             SavingThrowCard(
-                name = intelligenceString,
-                bonus = "+0",
                 modifier = Modifier
                     .constrainAs(int) {
                         start.linkTo(con.end)
                         top.linkTo(dex.bottom)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = intelligenceString,
+                bonus = intSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.INTELLIGENCE)
             )
             SavingThrowCard(
-                name = wisdomString,
-                bonus = "+1",
                 modifier = Modifier
                     .constrainAs(wis) {
                         start.linkTo(parent.start)
                         top.linkTo(con.bottom)
                         end.linkTo(cha.start)
-                    }
+                    },
+                name = wisdomString,
+                bonus = wisSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.WISDOM)
             )
             SavingThrowCard(
-                name = charismaString,
-                bonus = "-1",
                 modifier = Modifier
                     .constrainAs(cha) {
                         start.linkTo(wis.end)
                         top.linkTo(con.bottom)
                         end.linkTo(parent.end)
-                    }
+                    },
+                name = charismaString,
+                bonus = chaSavingThrowBonus,
+                proficiency = character.isProficientInAbility(AbilityEnum.CHARISMA)
             )
         }
     }
 }
 
 @Composable
-fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
+fun SavingThrowCard(modifier: Modifier, name: String, bonus: String, proficiency: Boolean){
     Card (
         modifier = modifier
             .fillMaxWidth(0.50f)
@@ -910,6 +934,7 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
         ){
             val (nameText, bonusText, proficiencyCheckBok) = createRefs()
             RoundCheckbox(
+                check = proficiency,
                 modifier = Modifier
                     .size(CheckBoxMedium)
                     .constrainAs(proficiencyCheckBok) {
@@ -945,15 +970,13 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String){
 }
 
 @Composable
-fun RoundCheckbox(modifier: Modifier) {
-    // TODO: get checked based on character
-    val checkedState = remember { mutableStateOf(true) }
+fun RoundCheckbox(modifier: Modifier, check: Boolean) {
     MaterialTheme(
         shapes = Shapes(small = CircleShape)
     ) {
         Checkbox(
             modifier = modifier,
-            checked = checkedState.value,
+            checked = check,
             onCheckedChange = { },
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.primary,
@@ -975,7 +998,7 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun CharacterSheetNavBar(navController: NavHostController) {
+fun CharacterSheetNavBar(navController: NavHostController, characterId: Int) {
     BottomNavigation (
         backgroundColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
@@ -988,7 +1011,12 @@ fun CharacterSheetNavBar(navController: NavHostController) {
                 label = { Text(screen.label) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
-                    navController.navigate(screen.route) {
+                    var route = "home"
+                    if (screen.route != "home"){
+                        route = "${screen.route}/$characterId"
+                    }
+                    Log.i("CharacterSheetNavBar", "route: $route")
+                    navController.navigate(route) {
                         popUpTo(navController.graph.findStartDestination().id)
 
                         launchSingleTop = true
