@@ -124,14 +124,14 @@ fun BuildCharacterStart(navController: NavController) {
 
         Button(
             onClick = {
-                // TODO instead of setting each property, create character directly
-                val ch = viewModel.createCharacter(
-                    name = characterName,
-                    race = characterRace,
-                    dndClass = characterClass,
-                    image = characterImage
-                )
-                navController.navigate("sheet/${ch.id}")
+//                // TODO instead of setting each property, create character directly
+//                val ch = viewModel.createCharacter(
+//                    name = characterName,
+//                    race = characterRace,
+//                    dndClass = characterClass,
+//                    image = characterImage
+//                )
+//                navController.navigate("sheet/${ch.id}")
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

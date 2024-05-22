@@ -25,11 +25,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -43,7 +43,6 @@ import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
-import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -52,7 +51,6 @@ import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 class MainActivity : ComponentActivity() {
-    val TAG = "MY_TAG"
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

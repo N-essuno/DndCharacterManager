@@ -1,11 +1,9 @@
 package it.brokenengineers.dnd_character_manager.data
 
-import android.net.Uri
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
-import it.brokenengineers.dnd_character_manager.data.Race
 
 data class Character (
     val id: Int,
@@ -57,62 +55,24 @@ data class Character (
             if (level == 1) {
                 return 12 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
-                return 12 + (7 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level-1)
+                return 12 + (7 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level - 1)
             }
         } else if (dndClass == DndClassEnum.WIZARD.dndClass) {
             if (level == 1) {
                 return 6 + getAbilityModifier(AbilityEnum.CONSTITUTION)
             } else {
-                return 6 + (4 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level-1)
+                return 6 + (4 + getAbilityModifier(AbilityEnum.CONSTITUTION)) * (level - 1)
             }
         } else {
             return -1
         }
     }
 
-    fun getAbilityModifier(abilityEnum: AbilityEnum): Int{
+    fun getAbilityModifier(abilityEnum: AbilityEnum): Int {
         return (abilityValues[abilityEnum.ability]!! - 10) / 2
     }
-}
 
-private fun initializeSpellSlots(dndClass: DndClass): Map<Int, Int> {
-    return when (dndClass) {
-        DndClassEnum.BARBARIAN.dndClass -> mapOf()
-        DndClassEnum.WIZARD.dndClass -> mapOf(
-            1 to 2
-        )
-        else -> mapOf()
-    }
-}
-private fun getAbilityValuesForRace(race: Race): Map<Ability, Int> {
-    when (race) {
-        RaceEnum.DWARF.race -> return mapOf(
-            AbilityEnum.STRENGTH.ability to 14,
-            AbilityEnum.DEXTERITY.ability to 10,
-            AbilityEnum.CONSTITUTION.ability to 16,
-            AbilityEnum.INTELLIGENCE.ability to 8,
-            AbilityEnum.WISDOM.ability to 12,
-            AbilityEnum.CHARISMA.ability to 10
-        )
-        RaceEnum.ELADRIN.race -> return mapOf(
-            AbilityEnum.STRENGTH.ability to 10,
-            AbilityEnum.DEXTERITY.ability to 12,
-            AbilityEnum.CONSTITUTION.ability to 8,
-            AbilityEnum.INTELLIGENCE.ability to 14,
-            AbilityEnum.WISDOM.ability to 10,
-            AbilityEnum.CHARISMA.ability to 16
-        )
-        else -> return mapOf(
-            AbilityEnum.STRENGTH.ability to 10,
-            AbilityEnum.DEXTERITY.ability to 10,
-            AbilityEnum.CONSTITUTION.ability to 10,
-            AbilityEnum.INTELLIGENCE.ability to 10,
-            AbilityEnum.WISDOM.ability to 10,
-            AbilityEnum.CHARISMA.ability to 10
-        )
-    }
-}
-    private fun getAbilityModifier(ability: Ability): Int{
+    private fun getAbilityModifier(ability: Ability): Int {
         return (abilityValues[ability]!! - 10) / 2
     }
 
@@ -142,11 +102,11 @@ private fun getAbilityValuesForRace(race: Race): Map<Ability, Int> {
         return dndClass.savingThrowProficiencies.contains(abilityEnum.ability)
     }
 
-    fun getMaxCarryWeight (): Double {
+    fun getMaxCarryWeight(): Double {
         return abilityValues[AbilityEnum.STRENGTH.ability]!! * 15.0
     }
 
-    fun getCurrentCarryWeight (): Double {
+    fun getCurrentCarryWeight(): Double {
         var totalWeight = 0.0
         inventoryItems?.forEach {
             totalWeight += it.weight * it.quantity
@@ -254,9 +214,52 @@ private fun getAbilityValuesForRace(race: Race): Map<Ability, Int> {
         }
     }
 
-fun computeId(): Int {
-    // TODO when database is implemented, return the id from the database
-    return 0
+    fun computeId(): Int {
+        // TODO when database is implemented, return the id from the database
+        return 0
+    }
+}
+
+private fun getAbilityValuesForRace(race: Race): Map<Ability, Int> {
+    when (race) {
+        RaceEnum.DWARF.race -> return mapOf(
+            AbilityEnum.STRENGTH.ability to 14,
+            AbilityEnum.DEXTERITY.ability to 10,
+            AbilityEnum.CONSTITUTION.ability to 16,
+            AbilityEnum.INTELLIGENCE.ability to 8,
+            AbilityEnum.WISDOM.ability to 12,
+            AbilityEnum.CHARISMA.ability to 10
+        )
+
+        RaceEnum.ELADRIN.race -> return mapOf(
+            AbilityEnum.STRENGTH.ability to 10,
+            AbilityEnum.DEXTERITY.ability to 12,
+            AbilityEnum.CONSTITUTION.ability to 8,
+            AbilityEnum.INTELLIGENCE.ability to 14,
+            AbilityEnum.WISDOM.ability to 10,
+            AbilityEnum.CHARISMA.ability to 16
+        )
+
+        else -> return mapOf(
+            AbilityEnum.STRENGTH.ability to 10,
+            AbilityEnum.DEXTERITY.ability to 10,
+            AbilityEnum.CONSTITUTION.ability to 10,
+            AbilityEnum.INTELLIGENCE.ability to 10,
+            AbilityEnum.WISDOM.ability to 10,
+            AbilityEnum.CHARISMA.ability to 10
+        )
+    }
+}
+
+private fun initializeSpellSlots(dndClass: DndClass): Map<Int, Int> {
+    return when (dndClass) {
+        DndClassEnum.BARBARIAN.dndClass -> mapOf()
+        DndClassEnum.WIZARD.dndClass -> mapOf(
+            1 to 2
+        )
+
+        else -> mapOf()
+    }
 }
 
 private fun getProficienciesForClass(dndClass: DndClass): Set<Skill> {
@@ -266,11 +269,13 @@ private fun getProficienciesForClass(dndClass: DndClass): Set<Skill> {
             SkillEnum.ATHLETICS.skill,
             SkillEnum.INTIMIDATION.skill,
         )
+
         DndClassEnum.WIZARD.dndClass -> setOf(
             SkillEnum.ARCANA.skill,
             SkillEnum.HISTORY.skill,
             SkillEnum.INSIGHT.skill,
         )
+
         else -> setOf()
     }
 }
