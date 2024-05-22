@@ -32,7 +32,7 @@ class BuildCharacterViewModel: ViewModel(){
         this.characterImage = it
     }
 
-    fun createCharacter() {
-
+    fun createCharacter(): Character {
+        return Character(characterName, characterClass, characterRace, characterImage)
     }
 }

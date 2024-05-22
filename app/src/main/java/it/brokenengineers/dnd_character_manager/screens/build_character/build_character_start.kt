@@ -36,6 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -57,7 +59,6 @@ fun BuildCharacterStart(navController: NavController) {
         // photo picker.
         if (uri != null) {
             characterImage = uri
-// Now you have the InputStream containing the image data.
             Log.d("ImagePicker", "Selected URI: $uri")
             Toast.makeText(context, "Character image added", Toast.LENGTH_SHORT).show()
         } else {
@@ -94,14 +95,15 @@ fun BuildCharacterStart(navController: NavController) {
             Spacer(modifier = Modifier.padding(SmallPadding))
             OptionGroup(
                 label = "Race",
-                options = listOf("Dwarf", "Eladryn"),
+                // get races from race enum
+                options = RaceEnum.entries.map { it.name },
                 selectedOption = characterRace,
                 onSelected = { characterRace = it }
             )
             Spacer(modifier = Modifier.padding(MediumPadding))
             OptionGroup(
                 label = "Class",
-                options = listOf("Barbarian", "Bard"),
+                options = DndClassEnum.entries.map { it.name },
                 selectedOption = characterClass,
                 onSelected = { characterClass = it }
             )
@@ -112,35 +114,47 @@ fun BuildCharacterStart(navController: NavController) {
             }) {
                 Text(text = "Add character image")
             }
-            characterImage?.let {
-                Card(modifier = Modifier.size(200.dp)) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        AsyncImage(
-                            model = characterImage,
-                            contentDescription = "Character Image",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        IconButton(onClick = { characterImage = null}, modifier = Modifier.align(Alignment.TopEnd)) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Delete Button")
-                        }
-                    }
-                }
-            }
+            CharacterImageCard(characterImage)
         }
 
 
         Button(
             onClick = {
+                // TODO instead of setting each property, create character directly
                 viewModel.setCharacterName(characterName)
                 viewModel.setCharacterRace(characterRace)
                 viewModel.setCharacterClass(characterClass)
                 characterImage?.let { viewModel.setCharacterImage(it) }
+                val ch = viewModel.createCharacter()
+                navController.navigate("sheet/${ch.id}")
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&
                         characterClass.isNotEmpty()
         ) {
             Text(text = "Confirm")
+        }
+    }
+}
+
+@Composable
+private fun CharacterImageCard(characterImage: Uri?) {
+    var characterImage1 = characterImage
+    characterImage1?.let {
+        Card(modifier = Modifier.size(200.dp)) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = characterImage1,
+                    contentDescription = "Character Image",
+                    modifier = Modifier.fillMaxSize()
+                )
+                IconButton(
+                    onClick = { characterImage1 = null },
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete Button")
+                }
+            }
         }
     }
 }
