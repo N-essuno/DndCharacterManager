@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
@@ -23,11 +23,11 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
-fun CharacterCard(character: Character, navController: NavHostController) {
-    Card(
-        modifier = Modifier
-            // to fill the width of the screen
-            //            .fillMaxWidth()
+fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavHostController) {
+    val cardModifier: Modifier
+    val columnModifier: Modifier
+    if (onHomePage) {
+        cardModifier = Modifier
             .width(CharacterCardWidth)
             .clickable {
                 // navigate to character sheet
@@ -36,13 +36,21 @@ fun CharacterCard(character: Character, navController: NavHostController) {
                     popUpTo("home_route") { inclusive = false }
                 }
             }
+        columnModifier = Modifier.fillMaxWidth()
+    } else {
+        cardModifier = Modifier
+        columnModifier = Modifier
+    }
+
+    Card(
+        modifier = cardModifier
             .padding(start = MediumPadding, end = MediumPadding),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = columnModifier,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image( // TODO meybe use async image to retrieve image from url

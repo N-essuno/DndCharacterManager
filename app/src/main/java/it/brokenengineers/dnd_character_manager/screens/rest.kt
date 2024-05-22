@@ -16,6 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,86 +29,101 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.view_model.RestViewModel
 
 @Composable
-fun Rest(character: Character, navController: NavHostController) {
+fun Rest(
+    characterId: Int,
+    navController: NavHostController,
+    viewModel: DndCharacterManagerViewModel
+) {
     val context = LocalContext.current
     val shortRestClicked = remember { mutableStateOf(false) }
     val longRestClicked = remember { mutableStateOf(false) }
 
     // init view model
-    val restViewModel = RestViewModel()
+    val restViewModel = RestViewModel() // TODO review this, maybe remove it
 
-    Scaffold { innerPadding ->
+    LaunchedEffect(characterId) {
+        viewModel.fetchCharacterById(characterId)
+    }
+    val char by viewModel.selectedCharacter.collectAsState(initial = null)
+    char?.let { character ->
+        Scaffold { innerPadding ->
 
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Text(
-                text = "Even the mightiest warriors need to rest sometimes.",
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.height(SmallPadding))
-            // summary of character hp and spell slots
-            // button to take either a short or long rest
+            Column(
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                Text(
+                    text = "Even the mightiest warriors need to rest sometimes.",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(SmallPadding))
+                // summary of character hp and spell slots
+                // button to take either a short or long rest
 
-            Row(modifier = Modifier.padding(SmallPadding)){
-                Column {
-                    CharacterCard(character, navController)
+                Row(modifier = Modifier.padding(SmallPadding)) {
+                    Column {
+                        CharacterCard(
+                            character = character,
+                            navController = navController,
+                            onHomePage = false
+                        )
+                    }
+                    Column {
+                        SpellSlotsLeft()
+                        Spacer(modifier = Modifier.height(MediumPadding))
+                        HpRecovery()
+                    }
                 }
-                Column {
-                    SpellSlotsLeft()
-                    Spacer(modifier = Modifier.height(MediumPadding))
-                    HpRecovery()
-                }
-            }
 
 
-            Row {
-                // Short Rest Button
-                Button(
-                    onClick = {
-                        shortRestClicked.value = true
-                        longRestClicked.value = false
+                Row {
+                    // Short Rest Button
+                    Button(
+                        onClick = {
+                            shortRestClicked.value = true
+                            longRestClicked.value = false
 //                        Toast.makeText(context, "Short Rest taken", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier.padding(SmallPadding)
-                ) {
-                    Text("Short Rest")
-                }
-                // Long Rest Button
-                Button(
-                    onClick = {
-                        longRestClicked.value = true
-                        shortRestClicked.value = false
+                        },
+                        modifier = Modifier.padding(SmallPadding)
+                    ) {
+                        Text("Short Rest")
+                    }
+                    // Long Rest Button
+                    Button(
+                        onClick = {
+                            longRestClicked.value = true
+                            shortRestClicked.value = false
 //                        Toast.makeText(context, "Long Rest taken", Toast.LENGTH_SHORT).show()
-                    },
-                    modifier = Modifier.padding(SmallPadding)
-                ) {
-                    Text("Long Rest")
+                        },
+                        modifier = Modifier.padding(SmallPadding)
+                    ) {
+                        Text("Long Rest")
+                    }
                 }
-            }
 
-            if(shortRestClicked.value){
-                ShortRest(restViewModel)
-            }
-            if(longRestClicked.value){
-                LongRest(restViewModel)
+                if (shortRestClicked.value) {
+                    ShortRest(restViewModel, character = character, navController = navController)
+                }
+                if (longRestClicked.value) {
+                    LongRest(restViewModel, character = character, navController = navController)
+                }
             }
         }
     }
-
 }
 
 @Composable
@@ -124,7 +141,7 @@ fun HpRecovery() {
 }
 
 @Composable
-fun LongRest(viewModel: RestViewModel) {
+fun LongRest(viewModel: RestViewModel, navController: NavHostController, character: Character) {
     val spellsKnown by remember { derivedStateOf { viewModel.spellsKnown } }
 
     Column {
@@ -146,7 +163,15 @@ fun LongRest(viewModel: RestViewModel) {
         }
         Spacer(modifier = Modifier.height(SmallPadding))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                // TODO save changes to character via viewModel
+                navController.navigate("sheet/${character.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Confirm")
@@ -155,7 +180,7 @@ fun LongRest(viewModel: RestViewModel) {
 }
 
 @Composable
-fun ShortRest(viewModel: RestViewModel) {
+fun ShortRest(viewModel: RestViewModel, navController: NavHostController, character: Character) {
     val slotsAvailable by remember { derivedStateOf { viewModel.slotsAvailable } }
     Text("Choose magics to recover",
         style = MaterialTheme.typography.titleMedium)
@@ -185,7 +210,15 @@ fun ShortRest(viewModel: RestViewModel) {
     }
 
     Spacer(modifier = Modifier.height(SmallPadding))
-    Button(onClick = { /*TODO*/ }) {
+    Button(onClick = {
+        // TODO save changes to character via viewModel
+        navController.navigate("sheet/${character.id}") {
+            popUpTo(navController.graph.findStartDestination().id)
+
+            launchSingleTop = true
+            restoreState = true
+        }
+    }) {
         Text("Confirm")
     }
 }

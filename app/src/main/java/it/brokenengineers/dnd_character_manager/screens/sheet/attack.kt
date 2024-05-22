@@ -53,7 +53,6 @@ fun AttackScreen(
         viewModel.fetchCharacterById(characterId)
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
-    // TODO get character class from view model
     char?.let {character ->
         val characterClass = character.dndClass
 

@@ -95,6 +95,7 @@ fun CharacterSheetScreen(
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
                     CharacterSheetHead(
+                        navController = navController,
                         character = character,
                         modifier = Modifier
                             .constrainAs(head) {
@@ -167,7 +168,7 @@ fun CharacterSheetScreen(
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier, character: Character) {
+fun CharacterSheetHead(modifier: Modifier, character: Character, navController: NavHostController) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +177,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (cName, cRace, cClass, hpCard, restButton) = createRefs()
+            val (cName, cRace, cClass, hpCard, restButton, levelUpButton) = createRefs()
             Text(
                 text = character.name,
                 modifier = Modifier
@@ -216,9 +217,20 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
                     }
             )
             RestButton(
+                character = character,
+                navController = navController,
                 modifier = Modifier
                     .constrainAs(restButton) {
                         end.linkTo(hpCard.start)
+                        top.linkTo(parent.top)
+                    }
+            )
+            LevelUpButton(
+                character = character,
+                navController = navController,
+                modifier = Modifier
+                    .constrainAs(levelUpButton) {
+                        end.linkTo(restButton.start)
                         top.linkTo(parent.top)
                     }
             )
@@ -255,49 +267,45 @@ fun HitPointsCard(modifier: Modifier, character: Character) {
 }
 
 @Composable
-fun RestButton(modifier: Modifier) {
-    val showDialog = remember { mutableStateOf(false) }
+fun RestButton(modifier: Modifier, navController: NavHostController, character: Character) {
     MaterialTheme(
         shapes = Shapes(small = CircleShape)
     ) {
         IconButton(
             modifier = modifier,
-            onClick = { showDialog.value = true },
+            onClick = {
+                navController.navigate("rest/${character.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
         ) {
             Icon(Icons.Default.Favorite, contentDescription = "Delete")
         }
     }
-// TODO: maybe no longer needed because of new screen by @Marco
+}
 
-//    if (showDialog.value) {
-//        AlertDialog(
-//            onDismissRequest = {
-//                showDialog.value = false
-//            },
-//            title = { Text("Rest Options") },
-//            text = { Text("Choose an option") },
-//            confirmButton = {
-//                Button(
-//                    onClick = {
-//                        // TODO: handle short rest
-//                        showDialog.value = false
-//                    }
-//                ) {
-//                    Text("Short Rest")
-//                }
-//            },
-//            dismissButton = {
-//                Button(
-//                    onClick = {
-//                        // TODO handle long rest
-//                        showDialog.value = false
-//                    }
-//                ) {
-//                    Text("Long Rest")
-//                }
-//            }
-//        )
-//    }
+@Composable
+fun LevelUpButton(modifier: Modifier, navController: NavHostController, character: Character) {
+    MaterialTheme(
+        shapes = Shapes(small = CircleShape)
+    ) {
+        IconButton(
+            modifier = modifier,
+            onClick = {
+                navController.navigate("rest/${character.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+        ) {
+            Icon(Icons.Default.Favorite, contentDescription = "Delete")
+        }
+    }
 }
 
 @Composable

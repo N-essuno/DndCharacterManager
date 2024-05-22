@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import it.brokenengineers.dnd_character_manager.screens.Rest
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -119,6 +120,20 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 }
             }
         }
+        navigation(startDestination = "rest", route = "rest_route") {
+            composable("rest/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    Rest(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -155,7 +170,11 @@ fun HomePage(
                 characters?.let {
                     items(characters!!.size) {index ->
                         val character = characters!![index]
-                        CharacterCard(character, navController)
+                        CharacterCard(
+                            character = character,
+                            navController = navController,
+                            onHomePage = true
+                        )
                         Spacer(modifier = Modifier.padding(SmallPadding))
                     }
                 }

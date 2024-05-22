@@ -29,7 +29,12 @@ fun LevelUp(character: Character, navController: NavHostController){
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ){
-        item {CharacterCard(character, navController)}
+        item {CharacterCard(
+            character = character,
+            navController = navController,
+            onHomePage = false
+            )
+        }
         item {Text(text = "Level Up!", style = MaterialTheme.typography.titleLarge) }
         // hp upgrade from previous to current level
         item { HPUpgrade(10, 12)}
