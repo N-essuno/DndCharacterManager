@@ -104,7 +104,13 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             tempHp = 0,
             spellsKnown = setOf(fireball, magicMissile),
             preparedSpells = setOf(fireball),
-            availableSpellSlots = mapOf(1 to 2),
+            availableSpellSlots = mapOf(
+                1 to 2,
+                2 to 1,
+                3 to 3,
+                4 to 2,
+                5 to 1
+            ),
             inventoryItems = setOf(item1, item2),
             weapon = null
         )
