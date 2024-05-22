@@ -1,14 +1,23 @@
 package it.brokenengineers.dnd_character_manager.viewModel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.Character
-import it.brokenengineers.dnd_character_manager.data.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
+import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
+import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
+import it.brokenengineers.dnd_character_manager.data.initProficienciesForClass
+import it.brokenengineers.dnd_character_manager.data.initSpellSlotsForClass
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
 import kotlinx.coroutines.launch
 
-class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
-    private val repository = DndCharacterManagerRepository(this /* TODO add Database */)
+class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
+    private var characterDao = db.characterDao()
+    private val repository = DndCharacterManagerRepository(this, characterDao)
     var characters = repository.allCharacters
         private set
     var selectedCharacter = repository.selectedCharacter
@@ -19,6 +28,42 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
 
     fun fetchCharacterById(id: Int) {
         repository.getCharacterById(id)
+    }
+
+    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): Character?{
+        // convert to Race and DndClass
+        val raceObj = RaceEnum.valueOf(race.uppercase()).race
+        val dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
+        if(raceObj == null || dndClassObj == null){
+            // TODO check that the enum conversion was successful, if condition should be different
+            return null
+        }
+        var newCharacter: Character? = null
+        viewModelScope.launch {
+            val abilityValues = initAbilityValuesForRace(raceObj)
+            val spellSlots = initSpellSlotsForClass(dndClassObj)
+            val proficiencies = initProficienciesForClass(dndClassObj)
+            val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
+
+            newCharacter = Character(
+                name = name,
+                race = raceObj,
+                dndClass = dndClassObj,
+                image = image?.toString(),
+                level = 1,
+                abilityValues = abilityValues,
+                skillProficiencies = proficiencies,
+                remainingHp = maxHp,
+                tempHp = 0,
+                spellsKnown = emptySet(),
+                preparedSpells = emptySet(),
+                availableSpellSlots = spellSlots,
+                inventoryItems = emptySet(),
+                weapon = null
+            )
+            newCharacter?.let { repository.addCharacter(newCharacter!!) }
+        }
+        return newCharacter
     }
 
     fun addHit(hitValue: Int) {

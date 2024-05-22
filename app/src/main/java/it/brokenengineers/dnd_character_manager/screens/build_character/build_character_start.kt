@@ -41,12 +41,11 @@ import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
-import it.brokenengineers.dnd_character_manager.view_model.BuildCharacterViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 @Composable
-fun BuildCharacterStart(navController: NavController) {
+fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterManagerViewModel) {
     val context = LocalContext.current
-    val viewModel = BuildCharacterViewModel()
 
     var characterName by remember { mutableStateOf("") }
     var characterRace by remember { mutableStateOf("") }
@@ -124,14 +123,17 @@ fun BuildCharacterStart(navController: NavController) {
 
         Button(
             onClick = {
-//                // TODO instead of setting each property, create character directly
-//                val ch = viewModel.createCharacter(
-//                    name = characterName,
-//                    race = characterRace,
-//                    dndClass = characterClass,
-//                    image = characterImage
-//                )
-//                navController.navigate("sheet/${ch.id}")
+                val ch = viewModel.createCharacter(
+                    name = characterName,
+                    race = characterRace,
+                    dndClass = characterClass,
+                    image = characterImage
+                )
+                if (ch != null) {
+                    navController.navigate("sheet/${ch.id}")
+                } else {
+                    Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
+                }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

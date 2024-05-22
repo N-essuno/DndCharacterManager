@@ -39,7 +39,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -57,13 +58,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             // init database here
+            val db = DndCharacterManagerDB.getDatabase(this)
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 val viewModel: DndCharacterManagerViewModel by viewModels {
                     object : ViewModelProvider.Factory {
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             if (modelClass.isAssignableFrom(DndCharacterManagerViewModel::class.java)) {
                                 @Suppress("UNCHECKED_CAST")
-                                return DndCharacterManagerViewModel(/*pass DB here*/) as T
+                                return db?.let { DndCharacterManagerViewModel(it) } as T
                             }
                             throw IllegalArgumentException("Unknown ViewModel class")
                         }
@@ -79,10 +81,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
 @Composable
 fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
+
             composable("home") { HomePage(Modifier, navController, viewModel) }
         }
         navigation(startDestination = "sheet", route = "character_sheet") {

@@ -2,10 +2,11 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.Character
-import it.brokenengineers.dnd_character_manager.data.InventoryItem
-import it.brokenengineers.dnd_character_manager.data.Spell
-import it.brokenengineers.dnd_character_manager.data.Weapon
+import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
+import it.brokenengineers.dnd_character_manager.data.database.CharacterDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -14,14 +15,23 @@ import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerVie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/* TODO add DAOs */) {
-    val TAG = "MY"
+class DndCharacterManagerRepository(
+    private val viewModel: DndCharacterManagerViewModel,
+    val characterDao: CharacterDao
+) {
+    private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<Character>> = MutableStateFlow(mutableListOf())
     val selectedCharacter: MutableStateFlow<Character?> = MutableStateFlow(null)
 
     fun init() {
         viewModel.viewModelScope.launch {
             getAllCharacters()
+        }
+    }
+
+    fun addCharacter(character: Character) {
+        viewModel.viewModelScope.launch {
+            allCharacters.value.add(character)
         }
     }
 
@@ -35,7 +45,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
     fun getCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             selectedCharacter.value = allCharacters.value.find { it.id == id }
-            Log.i(TAG, "Repository: selectedCharacter updated: $selectedCharacter")
+            Log.i(tag, "Repository: selectedCharacter updated: $selectedCharacter")
         }
     }
 
@@ -112,6 +122,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
                 5 to 1
             ),
             inventoryItems = setOf(item1, item2),
+            image = null,
             weapon = null
         )
 
@@ -121,6 +132,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             race = dwarf,
             dndClass = barbarian,
             level = 1,
+            image = null,
             abilityValues = abilityValues2,
             skillProficiencies = setOf(athletics, acrobatics),
             remainingHp = 12,
@@ -132,7 +144,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             weapon = weapon1
         )
 
-        Log.i(TAG, "Repository: created mock characters")
+        Log.i(tag, "Repository: created mock characters")
 
         return mutableListOf(
             character1,

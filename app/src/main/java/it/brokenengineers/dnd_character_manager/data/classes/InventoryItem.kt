@@ -1,4 +1,4 @@
-package it.brokenengineers.dnd_character_manager.data
+package it.brokenengineers.dnd_character_manager.data.classes
 
 data class InventoryItem (
     val id: Int,

@@ -1,6 +1,6 @@
 package it.brokenengineers.dnd_character_manager.data.enums
 
-import it.brokenengineers.dnd_character_manager.data.DndClass
+import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 
 enum class DndClassEnum(val dndClass: DndClass) {
     BARBARIAN(

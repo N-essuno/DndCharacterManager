@@ -1,6 +1,6 @@
 package it.brokenengineers.dnd_character_manager.data.enums
 
-import it.brokenengineers.dnd_character_manager.data.Skill
+import it.brokenengineers.dnd_character_manager.data.classes.Skill
 
 enum class SkillEnum(val skill: Skill) {
     ACROBATICS(Skill("Acrobatics", AbilityEnum.STRENGTH.ability)),
