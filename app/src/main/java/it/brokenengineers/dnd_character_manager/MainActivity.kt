@@ -6,9 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -39,10 +34,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
+import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -160,7 +155,7 @@ fun HomePage(
                 characters?.let {
                     items(characters!!.size) {index ->
                         val character = characters!![index]
-                        CharacterCard(navController, character)
+                        CharacterCard(character, navController)
                         Spacer(modifier = Modifier.padding(SmallPadding))
                     }
                 }
@@ -177,48 +172,6 @@ fun HomePage(
             onClick = { /*TODO*/ }
         ) {
             Text(createCharacterString)
-        }
-    }
-
-}
-
-@Composable
-fun CharacterCard(navController: NavHostController, character: Character){
-    // TODO change to Card defined in ui.composables
-    Card(
-        modifier = Modifier
-            // to fill the width of the screen
-//            .fillMaxWidth()
-            .clickable {
-                // navigate to character sheet
-                navController.navigate("sheet/${character.id}") {
-                    // pop up to the home screen
-                    popUpTo("home_route") { inclusive = false }
-                }
-            }
-            .padding(start = MediumPadding, end = MediumPadding),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ){
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // TODO retrieve character info
-            Image( // TODO meybe use async image to retrieve image from url
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Character Image"
-            )
-            Text(
-                text = character.name,
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = character.dndClass.name,
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = character.level.toString(),
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Spacer(modifier = Modifier.padding(SmallPadding))
         }
     }
 }

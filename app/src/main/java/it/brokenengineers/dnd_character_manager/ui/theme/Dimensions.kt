@@ -22,3 +22,4 @@ val RadioButtonMedium = 32.dp
 val ScrollColumnHeightMedium = 140.dp
 
 val OverBottomNavBar = 60.dp
+val CharacterCardWidth = 250.dp

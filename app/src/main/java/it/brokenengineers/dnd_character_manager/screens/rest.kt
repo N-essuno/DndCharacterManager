@@ -27,13 +27,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.data.Character
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.view_model.RestViewModel
 
 @Composable
-fun Rest() {
+fun Rest(character: Character, navController: NavHostController) {
     val context = LocalContext.current
     val shortRestClicked = remember { mutableStateOf(false) }
     val longRestClicked = remember { mutableStateOf(false) }
@@ -61,7 +63,7 @@ fun Rest() {
 
             Row(modifier = Modifier.padding(SmallPadding)){
                 Column {
-                    CharacterCard(20)
+                    CharacterCard(character, navController)
                 }
                 Column {
                     SpellSlotsLeft()
