@@ -120,4 +120,97 @@ data class Character (
     fun getSpellDcSavingThrow(): Int {
         return 8 + getProficiencyBonus() + getAbilityModifier(dndClass.primaryAbility)
     }
+
+    fun isSpellPrepared(spell: Spell): Boolean {
+        return preparedSpells?.map { it.name }?.contains(spell.name) ?: false
+    }
+
+    fun getMaxPreparedSpells(): Int {
+        if (dndClass == DndClassEnum.WIZARD.dndClass) {
+            return level + getAbilityModifier(dndClass.primaryAbility)
+        } else {
+            return 0
+        }
+    }
+
+    fun getMaxSpellSlots(spellLevel: Int): Int {
+        if (dndClass == DndClassEnum.WIZARD.dndClass) {
+            when (level) {
+                1 -> return when (spellLevel) {
+                    1 -> 2
+                    else -> 0
+                }
+
+                2 -> return when (spellLevel) {
+                    1 -> 3
+                    else -> 0
+                }
+
+                3 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 2
+                    else -> 0
+                }
+
+                4 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    else -> 0
+                }
+
+                5 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 2
+                    else -> 0
+                }
+
+                6 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 3
+                    else -> 0
+                }
+
+                7 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 3
+                    4 -> 1
+                    else -> 0
+                }
+
+                8 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 3
+                    4 -> 2
+                    else -> 0
+                }
+
+                9 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 3
+                    4 -> 3
+                    5 -> 1
+                    else -> 0
+                }
+
+                10 -> return when (spellLevel) {
+                    1 -> 4
+                    2 -> 3
+                    3 -> 3
+                    4 -> 3
+                    5 -> 2
+                    else -> 0
+                }
+
+                else -> return 0
+            }
+        } else {
+            return 0
+        }
+    }
+
 }

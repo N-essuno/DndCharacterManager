@@ -58,7 +58,7 @@ fun AttackScreen(
         val characterClass = character.dndClass
 
         if (characterClass == DndClassEnum.WIZARD.dndClass) {
-            SpellsScreen(navController, character)
+            SpellsScreen(navController, character, viewModel)
         } else if (characterClass == DndClassEnum.BARBARIAN.dndClass) {
             MeleeScreen(navController, character)
         }
@@ -127,27 +127,12 @@ fun MeleeScreen(
 @Composable
 fun SpellsScreen(
     navController: NavHostController,
-    character: Character
+    character: Character,
+    viewModel: DndCharacterManagerViewModel
 ) {
     val spellDcSavingThrowsString = stringResource(id = R.string.spell_dc_saving_throws)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
-    val cantrips = character.spellsKnown?.filter { it.level == 0 }?.map { it.name }
-    val lev1Spells = character.spellsKnown?.filter { it.level == 1 }?.map { it.name }
-    val lev2Spells = character.spellsKnown?.filter { it.level == 2 }?.map { it.name }
-    val lev3Spells = character.spellsKnown?.filter { it.level == 3 }?.map { it.name }
-    val lev4Spells = character.spellsKnown?.filter { it.level == 4 }?.map { it.name }
-    val lev5Spells = character.spellsKnown?.filter { it.level == 5 }?.map { it.name }
-    val lev6Spells = character.spellsKnown?.filter { it.level == 6 }?.map { it.name }
-    val lev7Spells = character.spellsKnown?.filter { it.level == 7 }?.map { it.name }
-    val lev8Spells = character.spellsKnown?.filter { it.level == 8 }?.map { it.name }
-    val lev1Slots = character.availableSpellSlots?.get(1)
-    val lev2Slots = character.availableSpellSlots?.get(2)
-    val lev3Slots = character.availableSpellSlots?.get(3)
-    val lev4Slots = character.availableSpellSlots?.get(4)
-    val lev5Slots = character.availableSpellSlots?.get(5)
-    val lev6Slots = character.availableSpellSlots?.get(6)
-    val lev7Slots = character.availableSpellSlots?.get(7)
-    val lev8Slots = character.availableSpellSlots?.get(8)
+
     val spellDcSavingThrow = character.getSpellDcSavingThrow()
     val attackBonus = character.getAttackBonus()
 
@@ -168,18 +153,30 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 0, spells = cantrips, null)
-                SpellsLevelColumn(level = 1, spells = lev1Spells, lev1Slots)
-                SpellsLevelColumn(level = 2, spells = lev2Spells, lev2Slots)
+                SpellsLevelColumn(
+                    level = 0,
+                    character = character,
+                    viewModel = viewModel
+                )
+                SpellsLevelColumn(
+                    level = 1,
+                    character = character,
+                    viewModel = viewModel
+                )
+                SpellsLevelColumn(
+                    level = 2,
+                    character = character,
+                    viewModel = viewModel
+                )
             }
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 3, spells = lev3Spells, lev3Slots)
-                SpellsLevelColumn(level = 4, spells = lev4Spells, lev4Slots)
-                SpellsLevelColumn(level = 5, spells = lev5Spells, lev5Slots)
+                SpellsLevelColumn(level = 3, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 4, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 5, character = character, viewModel = viewModel)
             }
 
             Spacer(modifier = Modifier.height(MediumVerticalSpacing))
@@ -188,9 +185,9 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 6, spells = lev6Spells, lev6Slots)
-                SpellsLevelColumn(level = 7, spells = lev7Spells, lev7Slots)
-                SpellsLevelColumn(level = 8, spells = lev8Spells, lev8Slots)
+                SpellsLevelColumn(level = 6, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 7, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 8, character = character, viewModel = viewModel)
             }
 
             Row(
@@ -212,9 +209,12 @@ fun SpellsScreen(
 }
 
 @Composable
-fun SpellsLevelColumn(level: Int, spells: List<String>?, slots: Int?){
+fun SpellsLevelColumn(level: Int, character: Character, viewModel: DndCharacterManagerViewModel){
     val slotsString = stringResource(id = R.string.slots)
     val levelString = stringResource(id = R.string.level)
+    val spells = character.spellsKnown?.filter { it.level == level }
+    val slots = character.availableSpellSlots?.get(level)
+
 
 
     val scrollState = rememberScrollState()
@@ -227,7 +227,7 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?, slots: Int?){
             )
             IconButton(
                 // TODO implement slot use and use better icon
-                onClick = { /*TODO*/ }
+                onClick = { viewModel.useSpellSlot(level)}
             ) {
                 Icon(
                     Icons.Default.Build,
@@ -236,12 +236,13 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?, slots: Int?){
                     contentDescription = "Delete")
             }
         }
-        Text(
-            // TODO set depending on available slots
-            modifier = Modifier.padding(start = SmallPadding, bottom = SmallPadding),
-            text = "$slotsString 0/0",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        if (slots != null) {
+            Text(
+                modifier = Modifier.padding(start = SmallPadding, bottom = SmallPadding),
+                text = "$slotsString $slots",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -255,13 +256,12 @@ fun SpellsLevelColumn(level: Int, spells: List<String>?, slots: Int?){
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
-                            // TODO set depending on prepared spells
                             modifier = Modifier.size(RadioButtonMedium),
-                            selected = true,
+                            selected = character.isSpellPrepared(spell),
                             onClick = { }
                         )
                         Text(
-                            text = spell,
+                            text = spell.name,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

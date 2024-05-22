@@ -158,6 +158,21 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
         }
     }
 
+    fun useSpellSlot(spellLevel: Int) {
+        viewModelScope.launch {
+            val character = selectedCharacter.value
+            if (character != null) {
+                val newSpellSlots = character.availableSpellSlots?.toMutableMap()
+                val newSpellSlotValue = newSpellSlots?.get(spellLevel)!! - 1
+                newSpellSlots[spellLevel] = newSpellSlotValue
+                val newCharacter = character.copy(availableSpellSlots = newSpellSlots)
+                repository.selectedCharacter.value = newCharacter
+                updateCharactersList(character, newCharacter)
+                // TODO update character in database by repository
+            }
+        }
+    }
+
     // TODO to remove after DB implementation, used just for testing
     fun updateCharactersList(oldCharacter: Character, newCharacter: Character) {
         viewModelScope.launch {
