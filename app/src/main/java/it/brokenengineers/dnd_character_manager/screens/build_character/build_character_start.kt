@@ -77,6 +77,7 @@ fun BuildCharacterStart(navController: NavController) {
             Text(text = "Character Builder", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(SmallPadding))
             Text(text = "Name", style = MaterialTheme.typography.bodyLarge)
+            // text field for character name
             OutlinedTextField(
                 value = characterName,
                 onValueChange = { characterName = it },
@@ -86,6 +87,7 @@ fun BuildCharacterStart(navController: NavController) {
                 ),
                 singleLine = true
             )
+            // display character name
             Text(
                 text = characterName,
                 style = MaterialTheme.typography.bodyLarge,
@@ -93,6 +95,7 @@ fun BuildCharacterStart(navController: NavController) {
                 color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.padding(SmallPadding))
+            // option group for race
             OptionGroup(
                 label = "Race",
                 // get races from race enum
@@ -101,6 +104,7 @@ fun BuildCharacterStart(navController: NavController) {
                 onSelected = { characterRace = it }
             )
             Spacer(modifier = Modifier.padding(MediumPadding))
+            // option group for class
             OptionGroup(
                 label = "Class",
                 options = DndClassEnum.entries.map { it.name },
@@ -108,7 +112,7 @@ fun BuildCharacterStart(navController: NavController) {
                 onSelected = { characterClass = it }
             )
             Spacer(modifier = Modifier.padding(MediumPadding))
-            // insert image
+            // image picker button
             Button(onClick = {
                 pickMedia.launch(PickVisualMediaRequest())
             }) {
@@ -121,11 +125,12 @@ fun BuildCharacterStart(navController: NavController) {
         Button(
             onClick = {
                 // TODO instead of setting each property, create character directly
-                viewModel.setCharacterName(characterName)
-                viewModel.setCharacterRace(characterRace)
-                viewModel.setCharacterClass(characterClass)
-                characterImage?.let { viewModel.setCharacterImage(it) }
-                val ch = viewModel.createCharacter()
+                val ch = viewModel.createCharacter(
+                    name = characterName,
+                    race = characterRace,
+                    dndClass = characterClass,
+                    image = characterImage
+                )
                 navController.navigate("sheet/${ch.id}")
             },
             enabled = characterName.isNotEmpty() &&
