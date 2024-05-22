@@ -84,7 +84,6 @@ fun InventoryScreen(
 
                 Spacer(modifier = Modifier.height(MediumVerticalSpacing))
                 WeightRow(weight = currentWeight, maxWeight = maxWeight)
-
             }
         }
     }

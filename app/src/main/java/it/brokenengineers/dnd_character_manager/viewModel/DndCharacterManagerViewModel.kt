@@ -114,6 +114,7 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
             if (character != null) {
                 val newInventoryItems = character.inventoryItems?.toMutableSet()
                 newInventoryItems?.remove(item)
+
                 val newItem = item.copy(quantity = item.quantity + 1)
                 newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)

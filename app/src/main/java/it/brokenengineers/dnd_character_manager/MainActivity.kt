@@ -111,7 +111,6 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                         viewModel = viewModel
                     )
                 }
-
             }
             composable("attack/{characterId}", arguments = listOf(navArgument("characterId"){
                 type = NavType.IntType
