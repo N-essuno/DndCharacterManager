@@ -34,19 +34,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.view_model.BuildCharacterViewModel
 
 @Composable
-fun BuildCharacterStart(navController: NavController) {
+fun BuildCharacterStart(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
     val context = LocalContext.current
-    val viewModel = BuildCharacterViewModel()
+    val buildCharViewModel = BuildCharacterViewModel()
 
     var characterName by remember { mutableStateOf("") }
     var characterRace by remember { mutableStateOf("") }
@@ -131,7 +132,12 @@ fun BuildCharacterStart(navController: NavController) {
 //                    dndClass = characterClass,
 //                    image = characterImage
 //                )
-//                navController.navigate("sheet/${ch.id}")
+//                navController.navigate("sheet/${ch.id}") {
+//                    popUpTo(navController.graph.findStartDestination().id)
+//
+//                    launchSingleTop = true
+//                    restoreState = true
+//                }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

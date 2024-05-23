@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -35,6 +36,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import it.brokenengineers.dnd_character_manager.screens.Rest
+import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
@@ -149,6 +151,9 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 }
             }
         }
+        navigation(startDestination = "build_character", route = "build_character_route") {
+            composable("build_character") { BuildCharacterStart(navController, viewModel) }
+        }
     }
 }
 
@@ -203,7 +208,14 @@ fun HomePage(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
-            onClick = { /*TODO*/ }
+            onClick = {
+                navController.navigate("build_character"){
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         ) {
             Text(createCharacterString)
         }
