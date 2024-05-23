@@ -53,7 +53,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
@@ -95,7 +95,7 @@ fun CharacterSheetScreen(
                     val (head, charImage, mainInfo, abilityRow,
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
                     CharacterSheetHead(
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                             .constrainAs(head) {
                                 top.linkTo(parent.top)
@@ -105,7 +105,7 @@ fun CharacterSheetScreen(
                     )
                     ImageAndDamageRow(
                         viewModel = viewModel,
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                             .constrainAs(charImage) {
                                 top.linkTo(head.bottom)
@@ -114,7 +114,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     MainInfo(
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                         .constrainAs(mainInfo) {
                             top.linkTo(charImage.bottom)
@@ -123,7 +123,7 @@ fun CharacterSheetScreen(
                         }
                     )
                     AbilityRow(
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                             .constrainAs(abilityRow) {
                                 top.linkTo(mainInfo.bottom)
@@ -132,7 +132,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     SkillRow(
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                         .constrainAs(skillsRow) {
                             top.linkTo(abilityRow.bottom)
@@ -152,7 +152,7 @@ fun CharacterSheetScreen(
                             }
                     )
                     SavingThrowsRow(
-                        character = character,
+                        dndCharacter = character,
                         modifier = Modifier
                         .constrainAs(savingThrowsRow) {
                             top.linkTo(savingThrowsTitle.bottom)
@@ -167,7 +167,7 @@ fun CharacterSheetScreen(
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier, character: Character) {
+fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -178,7 +178,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
         ){
             val (cName, cRace, cClass, hpCard, restButton) = createRefs()
             Text(
-                text = character.name,
+                text = dndCharacter.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cName) {
@@ -188,7 +188,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = character.race.name,
+                text = dndCharacter.race.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cRace) {
@@ -198,7 +198,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = character.dndClass.name,
+                text = dndCharacter.dndClass.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cClass) {
@@ -207,7 +207,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
                     }
             )
             HitPointsCard(
-                character = character,
+                dndCharacter = dndCharacter,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(hpCard) {
@@ -227,12 +227,12 @@ fun CharacterSheetHead(modifier: Modifier, character: Character) {
 }
 
 @Composable
-fun HitPointsCard(modifier: Modifier, character: Character) {
+fun HitPointsCard(modifier: Modifier, dndCharacter: DndCharacter) {
     val hpString = stringResource(id = R.string.hp)
     val tempHpString = stringResource(id = R.string.temp_hp)
-    val maxHp = character.getMaxHp().toString()
-    val currentHp = character.remainingHp
-    val tempHp = character.tempHp
+    val maxHp = dndCharacter.getMaxHp().toString()
+    val currentHp = dndCharacter.remainingHp
+    val tempHp = dndCharacter.tempHp
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -303,7 +303,7 @@ fun RestButton(modifier: Modifier) {
 @Composable
 fun ImageAndDamageRow(
     modifier: Modifier,
-    character: Character, // TODO: do not remove, maybe needed later to get image URL
+    dndCharacter: DndCharacter, // TODO: do not remove, maybe needed later to get image URL
     viewModel: DndCharacterManagerViewModel
 ) {
     val hitButtonString = stringResource(id = R.string.hit_button)
@@ -489,15 +489,15 @@ fun ImageAndDamageRow(
 }
 
 @Composable
-fun MainInfo(modifier: Modifier, character: Character) {
+fun MainInfo(modifier: Modifier, dndCharacter: DndCharacter) {
     val profBonusString = stringResource(id = R.string.prof_bonus)
     val walkSpeedString = stringResource(id = R.string.walk_speed)
     val initString = stringResource(id = R.string.initiative)
     val armorClassString = stringResource(id = R.string.armor_class)
-    val proficiencyBonus = character.getProficiencyBonus().toString()
-    val walkSpeed = character.getWalkSpeed().toString()
-    val initiative = character.getInitiative().toString()
-    val armorClassValue = character.getArmorClass().toString()
+    val proficiencyBonus = dndCharacter.getProficiencyBonus().toString()
+    val walkSpeed = dndCharacter.getWalkSpeed().toString()
+    val initiative = dndCharacter.getInitiative().toString()
+    val armorClassValue = dndCharacter.getArmorClass().toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -593,7 +593,7 @@ fun MainInfoElem(modifier: Modifier, name: String, value: String) {
 }
 
 @Composable
-fun AbilityRow(modifier: Modifier, character: Character) {
+fun AbilityRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val strengthString = stringResource(id = R.string.strength)
     val dexterityString = stringResource(id = R.string.dexterity)
     val constitutionString = stringResource(id = R.string.constitution)
@@ -601,18 +601,18 @@ fun AbilityRow(modifier: Modifier, character: Character) {
     val wisdomString = stringResource(id = R.string.wisdom)
     val charismaString = stringResource(id = R.string.charisma)
 
-    val strValue = character.abilityValues[AbilityEnum.STRENGTH.ability].toString()
-    val strModifier = character.getAbilityModifier(AbilityEnum.STRENGTH).toString()
-    val dexValue = character.abilityValues[AbilityEnum.DEXTERITY.ability].toString()
-    val dexModifier = character.getAbilityModifier(AbilityEnum.DEXTERITY).toString()
-    val conValue = character.abilityValues[AbilityEnum.CONSTITUTION.ability].toString()
-    val conModifier = character.getAbilityModifier(AbilityEnum.CONSTITUTION).toString()
-    val intValue = character.abilityValues[AbilityEnum.INTELLIGENCE.ability].toString()
-    val intModifier = character.getAbilityModifier(AbilityEnum.INTELLIGENCE).toString()
-    val wisValue = character.abilityValues[AbilityEnum.WISDOM.ability].toString()
-    val wisModifier = character.getAbilityModifier(AbilityEnum.WISDOM).toString()
-    val chaValue = character.abilityValues[AbilityEnum.CHARISMA.ability].toString()
-    val chaModifier = character.getAbilityModifier(AbilityEnum.CHARISMA).toString()
+    val strValue = dndCharacter.abilityValues[AbilityEnum.STRENGTH.ability].toString()
+    val strModifier = dndCharacter.getAbilityModifier(AbilityEnum.STRENGTH).toString()
+    val dexValue = dndCharacter.abilityValues[AbilityEnum.DEXTERITY.ability].toString()
+    val dexModifier = dndCharacter.getAbilityModifier(AbilityEnum.DEXTERITY).toString()
+    val conValue = dndCharacter.abilityValues[AbilityEnum.CONSTITUTION.ability].toString()
+    val conModifier = dndCharacter.getAbilityModifier(AbilityEnum.CONSTITUTION).toString()
+    val intValue = dndCharacter.abilityValues[AbilityEnum.INTELLIGENCE.ability].toString()
+    val intModifier = dndCharacter.getAbilityModifier(AbilityEnum.INTELLIGENCE).toString()
+    val wisValue = dndCharacter.abilityValues[AbilityEnum.WISDOM.ability].toString()
+    val wisModifier = dndCharacter.getAbilityModifier(AbilityEnum.WISDOM).toString()
+    val chaValue = dndCharacter.abilityValues[AbilityEnum.CHARISMA.ability].toString()
+    val chaModifier = dndCharacter.getAbilityModifier(AbilityEnum.CHARISMA).toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -743,9 +743,9 @@ fun AbilityCard(modifier: Modifier, name: String, value: String, bonus: String) 
 }
 
 @Composable
-fun SkillRow(modifier: Modifier, character: Character) {
-    val skills1 = character.getSkills().slice(0..8)
-    val skills2 = character.getSkills().slice(9..17)
+fun SkillRow(modifier: Modifier, dndCharacter: DndCharacter) {
+    val skills1 = dndCharacter.getSkills().slice(0..8)
+    val skills2 = dndCharacter.getSkills().slice(9..17)
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -825,7 +825,7 @@ fun SkillBox(name: String, value: String) {
 }
 
 @Composable
-fun SavingThrowsRow(modifier: Modifier, character: Character) {
+fun SavingThrowsRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val strengthString = stringResource(id = R.string.strength)
     val dexterityString = stringResource(id = R.string.dexterity)
     val constitutionString = stringResource(id = R.string.constitution)
@@ -833,12 +833,12 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
     val wisdomString = stringResource(id = R.string.wisdom)
     val charismaString = stringResource(id = R.string.charisma)
 
-    val strSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.STRENGTH).toString()
-    val dexSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.DEXTERITY).toString()
-    val conSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.CONSTITUTION).toString()
-    val intSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.INTELLIGENCE).toString()
-    val wisSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.WISDOM).toString()
-    val chaSavingThrowBonus = character.getSavingThrowBonus(AbilityEnum.CHARISMA).toString()
+    val strSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.STRENGTH).toString()
+    val dexSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.DEXTERITY).toString()
+    val conSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.CONSTITUTION).toString()
+    val intSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.INTELLIGENCE).toString()
+    val wisSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.WISDOM).toString()
+    val chaSavingThrowBonus = dndCharacter.getSavingThrowBonus(AbilityEnum.CHARISMA).toString()
 
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -852,7 +852,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
             SavingThrowCard(
                 name = strengthString,
                 bonus = strSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.STRENGTH),
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.STRENGTH),
                 modifier = Modifier
                     .constrainAs(str) {
                         start.linkTo(parent.start)
@@ -869,7 +869,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     },
                 name = dexterityString,
                 bonus = dexSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.DEXTERITY)
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.DEXTERITY)
             )
             SavingThrowCard(
                 modifier = Modifier
@@ -880,7 +880,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     },
                 name = constitutionString,
                 bonus = conSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.CONSTITUTION)
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.CONSTITUTION)
             )
             SavingThrowCard(
                 modifier = Modifier
@@ -891,7 +891,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     },
                 name = intelligenceString,
                 bonus = intSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.INTELLIGENCE)
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.INTELLIGENCE)
             )
             SavingThrowCard(
                 modifier = Modifier
@@ -902,7 +902,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     },
                 name = wisdomString,
                 bonus = wisSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.WISDOM)
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.WISDOM)
             )
             SavingThrowCard(
                 modifier = Modifier
@@ -913,7 +913,7 @@ fun SavingThrowsRow(modifier: Modifier, character: Character) {
                     },
                 name = charismaString,
                 bonus = chaSavingThrowBonus,
-                proficiency = character.isProficientInAbility(AbilityEnum.CHARISMA)
+                proficiency = dndCharacter.isProficientInAbility(AbilityEnum.CHARISMA)
             )
         }
     }

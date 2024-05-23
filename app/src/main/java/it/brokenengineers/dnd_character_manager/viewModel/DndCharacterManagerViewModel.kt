@@ -3,7 +3,7 @@ package it.brokenengineers.dnd_character_manager.viewModel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
@@ -20,7 +20,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private val repository = DndCharacterManagerRepository(this, characterDao)
     var characters = repository.allCharacters
         private set
-    var selectedCharacter = repository.selectedCharacter
+    var selectedCharacter = repository.selectedDndCharacter
 
     fun init() {
         repository.init()
@@ -30,7 +30,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         repository.getCharacterById(id)
     }
 
-    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): Character?{
+    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): DndCharacter?{
         // convert to Race and DndClass
         val raceObj = RaceEnum.valueOf(race.uppercase()).race
         val dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
@@ -38,14 +38,14 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             // TODO check that the enum conversion was successful, if condition should be different
             return null
         }
-        var newCharacter: Character? = null
+        var newDndCharacter: DndCharacter? = null
         viewModelScope.launch {
             val abilityValues = initAbilityValuesForRace(raceObj)
             val spellSlots = initSpellSlotsForClass(dndClassObj)
             val proficiencies = initProficienciesForClass(dndClassObj)
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
 
-            newCharacter = Character(
+            newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
                 dndClass = dndClassObj,
@@ -61,9 +61,9 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 inventoryItems = emptySet(),
                 weapon = null
             )
-            newCharacter?.let { repository.addCharacter(newCharacter!!) }
+            newDndCharacter?.let { repository.addCharacter(newDndCharacter!!) }
         }
-        return newCharacter
+        return newDndCharacter
     }
 
     fun addHit(hitValue: Int) {
@@ -80,7 +80,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     val newRemainHp = character.remainingHp - newHitValue
                     newCharacter = character.copy(tempHp = newTempHp, remainingHp = newRemainHp)
                 }
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -93,7 +93,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newRemainingHp = character.remainingHp + hp
                 val newCharacter = character.copy(remainingHp = newRemainingHp)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -106,7 +106,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newRemainingHp = character.remainingHp - hp
                 val newCharacter = character.copy(remainingHp = newRemainingHp)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -119,7 +119,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newTempHp = character.tempHp + tempHp
                 val newCharacter = character.copy(tempHp = newTempHp)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -132,7 +132,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newTempHp = character.tempHp - tempHp
                 val newCharacter = character.copy(tempHp = newTempHp)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -146,7 +146,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 val newInventoryItems = character.inventoryItems?.toMutableSet()
                 newInventoryItems?.remove(item)
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -163,7 +163,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 val newItem = item.copy(quantity = item.quantity + 1)
                 newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -181,7 +181,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
                 }
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -196,7 +196,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 val newItem = InventoryItem(id = 99, name = name, quantity = quantity.toInt(), weight = weight.toDouble())
                 newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -211,7 +211,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 val newSpellSlotValue = newSpellSlots?.get(spellLevel)!! - 1
                 newSpellSlots[spellLevel] = newSpellSlotValue
                 val newCharacter = character.copy(availableSpellSlots = newSpellSlots)
-                repository.selectedCharacter.value = newCharacter
+                repository.selectedDndCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
                 // TODO update character in database by repository
             }
@@ -219,11 +219,11 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     }
 
     // TODO to remove after DB implementation, used just for testing
-    fun updateCharactersList(oldCharacter: Character, newCharacter: Character) {
+    fun updateCharactersList(oldDndCharacter: DndCharacter, newDndCharacter: DndCharacter) {
         viewModelScope.launch {
             val newChars = repository.allCharacters.value.toMutableList()
-            newChars.remove(oldCharacter)
-            newChars.add(newCharacter)
+            newChars.remove(oldDndCharacter)
+            newChars.add(newDndCharacter)
             repository.allCharacters.value = newChars
         }
     }

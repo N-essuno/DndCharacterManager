@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
@@ -72,17 +72,17 @@ fun AttackScreen(
 @Composable
 fun MeleeScreen(
     navController: NavHostController,
-    character: Character
+    dndCharacter: DndCharacter
 ) {
     val meleeTitle = stringResource(id = R.string.melee_title)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
 //    val damageBonusString = stringResource(id = R.string.damage_bonus)
-    val weapon = character.weapon
+    val weapon = dndCharacter.weapon
     val weaponList = listOf(weapon)
-    val attackBonus = character.getAttackBonus()
+    val attackBonus = dndCharacter.getAttackBonus()
 
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController, character.id) }
+        bottomBar = { CharacterSheetNavBar(navController, dndCharacter.id) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -127,18 +127,18 @@ fun MeleeScreen(
 @Composable
 fun SpellsScreen(
     navController: NavHostController,
-    character: Character,
+    dndCharacter: DndCharacter,
     viewModel: DndCharacterManagerViewModel
 ) {
     val spellDcSavingThrowsString = stringResource(id = R.string.spell_dc_saving_throws)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
 
-    val spellDcSavingThrow = character.getSpellDcSavingThrow()
-    val attackBonus = character.getAttackBonus()
+    val spellDcSavingThrow = dndCharacter.getSpellDcSavingThrow()
+    val attackBonus = dndCharacter.getAttackBonus()
 
     val scrollState = rememberScrollState()
     Scaffold(
-        bottomBar = { CharacterSheetNavBar(navController, character.id) }
+        bottomBar = { CharacterSheetNavBar(navController, dndCharacter.id) }
     ) { innerPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -155,17 +155,17 @@ fun SpellsScreen(
             ) {
                 SpellsLevelColumn(
                     level = 0,
-                    character = character,
+                    dndCharacter = dndCharacter,
                     viewModel = viewModel
                 )
                 SpellsLevelColumn(
                     level = 1,
-                    character = character,
+                    dndCharacter = dndCharacter,
                     viewModel = viewModel
                 )
                 SpellsLevelColumn(
                     level = 2,
-                    character = character,
+                    dndCharacter = dndCharacter,
                     viewModel = viewModel
                 )
             }
@@ -174,9 +174,9 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 3, character = character, viewModel = viewModel)
-                SpellsLevelColumn(level = 4, character = character, viewModel = viewModel)
-                SpellsLevelColumn(level = 5, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 3, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 4, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 5, dndCharacter = dndCharacter, viewModel = viewModel)
             }
 
             Spacer(modifier = Modifier.height(MediumVerticalSpacing))
@@ -185,9 +185,9 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 6, character = character, viewModel = viewModel)
-                SpellsLevelColumn(level = 7, character = character, viewModel = viewModel)
-                SpellsLevelColumn(level = 8, character = character, viewModel = viewModel)
+                SpellsLevelColumn(level = 6, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 7, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 8, dndCharacter = dndCharacter, viewModel = viewModel)
             }
 
             Row(
@@ -209,11 +209,11 @@ fun SpellsScreen(
 }
 
 @Composable
-fun SpellsLevelColumn(level: Int, character: Character, viewModel: DndCharacterManagerViewModel){
+fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndCharacterManagerViewModel){
     val slotsString = stringResource(id = R.string.slots)
     val levelString = stringResource(id = R.string.level)
-    val spells = character.spellsKnown?.filter { it.level == level }
-    val slots = character.availableSpellSlots?.get(level)
+    val spells = dndCharacter.spellsKnown?.filter { it.level == level }
+    val slots = dndCharacter.availableSpellSlots?.get(level)
 
 
 
@@ -257,7 +257,7 @@ fun SpellsLevelColumn(level: Int, character: Character, viewModel: DndCharacterM
                     ) {
                         RadioButton(
                             modifier = Modifier.size(RadioButtonMedium),
-                            selected = character.isSpellPrepared(spell),
+                            selected = dndCharacter.isSpellPrepared(spell),
                             onClick = { }
                         )
                         Text(

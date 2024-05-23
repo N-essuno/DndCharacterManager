@@ -1,19 +1,28 @@
-package it.brokenengineers.dnd_character_manager.data.classes
+package it.brokenengineers.dnd_character_manager.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import it.brokenengineers.dnd_character_manager.data.classes.Ability
+import it.brokenengineers.dnd_character_manager.data.classes.DndClass
+import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Skill
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 
+@TypeConverters(Converters::class)
 @Entity
-data class Character (
+data class DndCharacter (
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val race: Race,
     val dndClass: DndClass,
-    val image: String?,
+    val image: String? = null,
     val level: Int,
     val abilityValues: Map<Ability, Int>,
     val skillProficiencies: Set<Skill>,
@@ -116,8 +125,8 @@ data class Character (
         return preparedSpells?.map { it.name }?.contains(spell.name) ?: false
     }
 
-    fun computeId(): Int {
-        // TODO when database is implemented, return the id from the database
-        return 0
-    }
+//    fun computeId(): Int {
+//        // TODO when database is implemented, return the id from the database
+//        return 0
+//    }
 }

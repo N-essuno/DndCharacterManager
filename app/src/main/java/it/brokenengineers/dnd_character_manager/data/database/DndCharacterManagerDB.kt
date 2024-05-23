@@ -3,11 +3,10 @@ package it.brokenengineers.dnd_character_manager.data.database
 import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Character::class], version = 1)
+@Database(entities = [DndCharacter::class], version = 1, exportSchema = false)
 abstract class DndCharacterManagerDB: RoomDatabase() {
-    abstract fun characterDao(): CharacterDao
+    abstract fun characterDao(): DndCharacterDao
 
     companion object {
         // marking the instance as volatile to ensure atomic access to the variable

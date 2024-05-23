@@ -39,7 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
@@ -188,7 +188,7 @@ fun HomePage(
 }
 
 @Composable
-fun CharacterCard(navController: NavHostController, character: Character){
+fun CharacterCard(navController: NavHostController, dndCharacter: DndCharacter){
     // TODO change to Card defined in ui.composables
     Card(
         modifier = Modifier
@@ -196,7 +196,7 @@ fun CharacterCard(navController: NavHostController, character: Character){
 //            .fillMaxWidth()
             .clickable {
                 // navigate to character sheet
-                navController.navigate("sheet/${character.id}") {
+                navController.navigate("sheet/${dndCharacter.id}") {
                     // pop up to the home screen
                     popUpTo("home_route") { inclusive = false }
                 }
@@ -215,13 +215,13 @@ fun CharacterCard(navController: NavHostController, character: Character){
                 contentDescription = "Character Image"
             )
             Text(
-                text = character.name,
+                text = dndCharacter.name,
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Text(
-                text = character.dndClass.name,
+                text = dndCharacter.dndClass.name,
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Text(
-                text = character.level.toString(),
+                text = dndCharacter.level.toString(),
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
             Spacer(modifier = Modifier.padding(SmallPadding))
         }

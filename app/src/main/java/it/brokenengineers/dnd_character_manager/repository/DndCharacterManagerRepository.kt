@@ -2,11 +2,11 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.classes.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
-import it.brokenengineers.dnd_character_manager.data.database.CharacterDao
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 
 class DndCharacterManagerRepository(
     private val viewModel: DndCharacterManagerViewModel,
-    val characterDao: CharacterDao
+    val dndCharacterDao: DndCharacterDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
-    var allCharacters: MutableStateFlow<MutableList<Character>> = MutableStateFlow(mutableListOf())
-    val selectedCharacter: MutableStateFlow<Character?> = MutableStateFlow(null)
+    var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
+    val selectedDndCharacter: MutableStateFlow<DndCharacter?> = MutableStateFlow(null)
 
     fun init() {
         viewModel.viewModelScope.launch {
@@ -29,9 +29,9 @@ class DndCharacterManagerRepository(
         }
     }
 
-    fun addCharacter(character: Character) {
+    fun addCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
-            allCharacters.value.add(character)
+            allCharacters.value.add(dndCharacter)
         }
     }
 
@@ -44,12 +44,12 @@ class DndCharacterManagerRepository(
 
     fun getCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
-            selectedCharacter.value = allCharacters.value.find { it.id == id }
-            Log.i(tag, "Repository: selectedCharacter updated: $selectedCharacter")
+            selectedDndCharacter.value = allCharacters.value.find { it.id == id }
+            Log.i(tag, "Repository: selectedCharacter updated: $selectedDndCharacter")
         }
     }
 
-    private fun createMockCharacters(): MutableList<Character> {
+    private fun createMockCharacters(): MutableList<DndCharacter> {
         // Mock Abilities
         val strength = AbilityEnum.STRENGTH.ability
         val dexterity = AbilityEnum.DEXTERITY.ability
@@ -102,7 +102,7 @@ class DndCharacterManagerRepository(
 
         val weapon1 = Weapon(1, "Sword", "1d6")
 
-        val character1 = Character(
+        val dndCharacter1 = DndCharacter(
             id = 5,
             name = "Silvano",
             race = eladrin,
@@ -126,7 +126,7 @@ class DndCharacterManagerRepository(
             weapon = null
         )
 
-        val character2 = Character(
+        val dndCharacter2 = DndCharacter(
             id = 6,
             name = "Broken",
             race = dwarf,
@@ -147,8 +147,8 @@ class DndCharacterManagerRepository(
         Log.i(tag, "Repository: created mock characters")
 
         return mutableListOf(
-            character1,
-            character2
+            dndCharacter1,
+            dndCharacter2
         )
     }
 }
