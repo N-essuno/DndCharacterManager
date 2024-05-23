@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -40,109 +41,108 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
-class BuildCharacter{
-    private val tag = BuildCharacter::class.java.simpleName
-    @Composable
-    fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterManagerViewModel) {
-        val context = LocalContext.current
+@Composable
+fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterManagerViewModel) {
+    val tag = "BuildCharacterStart"
+    val context = LocalContext.current
 
-        var characterName by remember { mutableStateOf("") }
-        var characterRace by remember { mutableStateOf("") }
-        var characterClass by remember { mutableStateOf("") }
-        var characterImage by remember { mutableStateOf<Uri?>(null) }
+    var characterName by remember { mutableStateOf("") }
+    var characterRace by remember { mutableStateOf("") }
+    var characterClass by remember { mutableStateOf("") }
+    var characterImage by remember { mutableStateOf<Uri?>(null) }
 
-        // Registers a photo picker activity launcher in single-select mode.
-        val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
-            // Callback is invoked after the user selects a media item or closes the
-            // photo picker.
-            if (uri != null) {
-                characterImage = uri
-                Log.d(tag, "Selected URI: $uri")
-                Toast.makeText(context, "Character image added", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(LargePadding),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Column {
-
-                Text(text = "Character Builder", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.padding(SmallPadding))
-                Text(text = "Name", style = MaterialTheme.typography.bodyLarge)
-                // text field for character name
-                OutlinedTextField(
-                    value = characterName,
-                    onValueChange = { characterName = it },
-                    label = { Text("Character Name") },
-                    textStyle = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    singleLine = true
-                )
-                // display character name
-                Text(
-                    text = characterName,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(SmallPadding),
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(modifier = Modifier.padding(SmallPadding))
-                // option group for race
-                OptionGroup(
-                    label = "Race",
-                    // get races from race enum
-                    options = RaceEnum.entries.map { it.name },
-                    selectedOption = characterRace,
-                    onSelected = { characterRace = it }
-                )
-                Spacer(modifier = Modifier.padding(MediumPadding))
-                // option group for class
-                OptionGroup(
-                    label = "Class",
-                    options = DndClassEnum.entries.map { it.name },
-                    selectedOption = characterClass,
-                    onSelected = { characterClass = it }
-                )
-                Spacer(modifier = Modifier.padding(MediumPadding))
-                // image picker button
-                Button(onClick = {
-                    pickMedia.launch(PickVisualMediaRequest())
-                }) {
-                    Text(text = "Add character image")
-                }
-                CharacterImageCard(characterImage)
-            }
-
-
-            Button(
-                onClick = {
-                    val ch = viewModel.createCharacter(
-                        name = characterName,
-                        race = characterRace,
-                        dndClass = characterClass,
-                        image = characterImage
-                    )
-                    if (ch != null) {
-                        navController.navigate("sheet/${ch.id}")
-                    } else {
-                        Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                enabled = characterName.isNotEmpty() &&
-                            characterRace.isNotEmpty() &&
-                            characterClass.isNotEmpty()
-            ) {
-                Text(text = "Confirm")
-            }
+    // Registers a photo picker activity launcher in single-select mode.
+    val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        if (uri != null) {
+            characterImage = uri
+            Log.d(tag, "Selected URI: $uri")
+            Toast.makeText(context, "Character image added", Toast.LENGTH_SHORT).show()
         }
     }
 
-}
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(LargePadding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column {
 
+            Text(text = "Character Builder", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.padding(SmallPadding))
+            Text(text = "Name", style = MaterialTheme.typography.bodyLarge)
+            // text field for character name
+            OutlinedTextField(
+                value = characterName,
+                onValueChange = { characterName = it },
+                label = { Text("Character Name") },
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onBackground
+                ),
+                singleLine = true
+            )
+            // display character name
+            Text(
+                text = characterName,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .testTag("character_name_field"),
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.padding(SmallPadding))
+            // option group for race
+            OptionGroup(
+                label = "Race",
+                // get races from race enum
+                options = RaceEnum.entries.map { it.name },
+                selectedOption = characterRace,
+                onSelected = { characterRace = it }
+            )
+            Spacer(modifier = Modifier.padding(MediumPadding))
+            // option group for class
+            OptionGroup(
+                label = "Class",
+                options = DndClassEnum.entries.map { it.name },
+                selectedOption = characterClass,
+                onSelected = { characterClass = it }
+            )
+            Spacer(modifier = Modifier.padding(MediumPadding))
+            // image picker button
+            Button(onClick = {
+                pickMedia.launch(PickVisualMediaRequest())
+            }) {
+                Text(text = "Add character image")
+            }
+            CharacterImageCard(characterImage)
+        }
+
+
+        Button(
+            modifier = Modifier.testTag("create_character_button"),
+            onClick = {
+                val ch = viewModel.createCharacter(
+                    name = characterName,
+                    race = characterRace,
+                    dndClass = characterClass,
+                    image = characterImage
+                )
+                if (ch != null) {
+                    navController.navigate("sheet/${ch.id}")
+                } else {
+                    Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
+                }
+            },
+            enabled = characterName.isNotEmpty() &&
+                        characterRace.isNotEmpty() &&
+                        characterClass.isNotEmpty()
+        ) {
+            Text(text = "Confirm")
+        }
+    }
+}
 @Composable
 private fun CharacterImageCard(characterImage: Uri?) {
     var characterImage1 = characterImage

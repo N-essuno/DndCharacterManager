@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 /**
@@ -22,13 +23,19 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
  * selectedOption to the option label
  */
 @Composable
-fun OptionGroup(label: String, options: List<String>, selectedOption: String, onSelected: (String) -> Unit) {
+fun OptionGroup(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onSelected: (String) -> Unit,
+    testTags: Boolean? = false
+) {
     Column {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.padding(SmallPadding))
         Row {
             options.forEach { option ->
-                Option(option, selectedOption, onSelected)
+                Option(option, selectedOption, onSelected, testTags)
                 Spacer(modifier = Modifier.width(SmallPadding))
             }
         }
@@ -43,11 +50,18 @@ fun OptionGroup(label: String, options: List<String>, selectedOption: String, on
  * selectedOption to the option label
  */
 @Composable
-fun Option(label: String, selectedOption: String, onSelected: (String) -> Unit) {
+fun Option(
+    label: String,
+    selectedOption: String,
+    onSelected: (String) -> Unit,
+    testTags: Boolean? = false
+) {
     Surface(
         color = if (label == selectedOption) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary,
         contentColor = if (label == selectedOption) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onTertiary,
-        modifier = Modifier.clickable { onSelected(label) }
+        modifier = Modifier
+            .clickable { onSelected(label) }
+            .testTag(testTags?.let { "option_$label" } ?: "")
     ) {
         Text(
             text = label,

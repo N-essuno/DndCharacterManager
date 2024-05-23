@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
@@ -41,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -90,6 +92,11 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
 
             composable("home") { HomePage(Modifier, navController, viewModel) }
         }
+        navigation(startDestination = "create_character", route = "character_creation") {
+            composable("create_character") {
+                BuildCharacterStart(navController, viewModel)
+            }
+        }
         navigation(startDestination = "sheet", route = "character_sheet") {
             composable("sheet/{characterId}", arguments = listOf(navArgument("characterId"){
                 type = NavType.IntType
@@ -131,6 +138,8 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
         }
     }
 }
+
+private const val s = "create_character_button"
 
 @Composable
 fun HomePage(
@@ -174,12 +183,15 @@ fun HomePage(
         Button(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(MediumPadding),
+                .padding(MediumPadding)
+                .testTag("create_character_button"),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
-            onClick = { /*TODO*/ }
+            onClick = {
+                navController.navigate("character_creation")
+            }
         ) {
             Text(createCharacterString)
         }

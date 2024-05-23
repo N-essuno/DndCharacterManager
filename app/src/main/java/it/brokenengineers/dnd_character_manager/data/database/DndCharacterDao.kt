@@ -7,7 +7,9 @@ import androidx.room.Query
 @Dao
 interface DndCharacterDao {
     @Query("SELECT * FROM DndCharacter WHERE id = :id LIMIT 1")
-    fun getCharacterById(id: Int): DndCharacter
+    suspend fun getCharacterById(id: Int): DndCharacter
+    @Query("SELECT * FROM DndCharacter WHERE name = :name LIMIT 1")
+    suspend fun getCharacterByName(name: String): DndCharacter
 
     @Insert
     suspend fun insert(dndCharacter: DndCharacter)
