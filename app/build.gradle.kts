@@ -56,14 +56,12 @@ android {
 val room_version = "2.6.1"
 
 dependencies {
-
+    // rooms dependencies
+    implementation (libs.androidx.room.ktx.v261)
     implementation("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
-    implementation(libs.compose.preview.renderer)
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
-    // To use Kotlin annotation processing tool (kapt)
-    kapt("androidx.room:room-compiler:$room_version")
     // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$room_version")
     // optional - Test helpers
@@ -84,6 +82,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation("io.coil-kt:coil-compose:2.6.0")
     testImplementation(libs.junit)
+    implementation ("com.google.code.gson:gson:2.8.9")
     // testing dependencies
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
