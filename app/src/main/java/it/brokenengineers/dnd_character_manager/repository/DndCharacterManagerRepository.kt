@@ -93,7 +93,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
         val weapon1 = Weapon(1, "Sword", "1d6")
 
         val character1 = Character(
-            id = 5,
+            id = 1,
             name = "Silvano",
             race = eladrin,
             dndClass = wizard,
@@ -116,7 +116,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
         )
 
         val character2 = Character(
-            id = 6,
+            id = 2,
             name = "Broken",
             race = dwarf,
             dndClass = barbarian,

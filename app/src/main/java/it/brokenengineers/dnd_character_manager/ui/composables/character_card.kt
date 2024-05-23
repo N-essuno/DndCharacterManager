@@ -14,7 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.Character
@@ -23,8 +26,8 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
-fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavHostController) {
-    val cardModifier: Modifier
+fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavHostController, testCard : Boolean = false) {
+    var cardModifier: Modifier
     val columnModifier: Modifier
     if (onHomePage) {
         cardModifier = Modifier
@@ -36,10 +39,15 @@ fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavH
                     popUpTo("home_route") { inclusive = false }
                 }
             }
+            .semantics { contentDescription = "Character Card"}
         columnModifier = Modifier.fillMaxWidth()
     } else {
         cardModifier = Modifier
         columnModifier = Modifier
+    }
+
+    if (testCard) {
+        cardModifier = cardModifier.testTag("test_card")
     }
 
     Card(

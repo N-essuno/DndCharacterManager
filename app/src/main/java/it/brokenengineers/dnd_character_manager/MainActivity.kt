@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
 fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
-            composable("home") { HomePage(Modifier, navController, viewModel) }
+            composable("home") { HomePage(navController, viewModel) }
         }
         navigation(startDestination = "sheet", route = "character_sheet") {
             composable("sheet/{characterId}", arguments = listOf(navArgument("characterId"){
@@ -159,7 +159,6 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
 
 @Composable
 fun HomePage(
-    modifier: Modifier,
     navController: NavHostController,
     viewModel: DndCharacterManagerViewModel
 ){
@@ -187,15 +186,18 @@ fun HomePage(
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var testCard = true
                 characters?.let {
                     items(characters!!.size) {index ->
                         val character = characters!![index]
                         CharacterCard(
                             character = character,
                             navController = navController,
-                            onHomePage = true
+                            onHomePage = true,
+                            testCard = testCard
                         )
                         Spacer(modifier = Modifier.padding(SmallPadding))
+                        testCard = false
                     }
                 }
             }

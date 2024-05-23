@@ -6,6 +6,13 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.test.espresso:espresso-core:3.5.1")
+        }
+    }
+}
 
 android {
     namespace = "it.brokenengineers.dnd_character_manager"
@@ -54,10 +61,13 @@ android {
 }
 
 val room_version = "2.6.1"
+val compose_version = "2.0.0"
 
 dependencies {
 
     implementation("androidx.room:room-runtime:$room_version")
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.androidx.navigation.testing)
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
     // To use Kotlin annotation processing tool (kapt)
@@ -89,5 +99,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
