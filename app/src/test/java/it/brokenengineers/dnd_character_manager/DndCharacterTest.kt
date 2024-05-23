@@ -54,9 +54,5 @@ class DndCharacterTest {
         assert(newDndCharacter.availableSpellSlots == spellSlots)
         assert(newDndCharacter.inventoryItems == emptySet<String>())
         assert(newDndCharacter.weapon == null)
-
-
-
-//        val character = Character(name, race, dndClass)
     }
 }
