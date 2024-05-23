@@ -1,11 +1,13 @@
 package it.brokenengineers.dnd_character_manager
 
+import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
@@ -22,14 +24,15 @@ class SheetScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
+    lateinit var appContext: Context
     var viewModel: DndCharacterManagerViewModel = DndCharacterManagerViewModel()
 
     @Before
     fun setUp() {
-        viewModel.init()
-
         composeTestRule.setContent {
+            viewModel.init()
             navController = TestNavHostController(LocalContext.current)
+            appContext = LocalContext.current
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             CustomNavigationHost(navController = navController, viewModel = viewModel)
         }
@@ -37,16 +40,80 @@ class SheetScreenTest {
 
     @Test
     fun testStartScreen() {
-        val welcomeMessageString = "Welcome back adventurer!"
+        val welcomeMessageString = appContext.getString(R.string.welcome_message)
         composeTestRule.onNodeWithText(welcomeMessageString).assertIsDisplayed()
     }
 
     @Test
     fun testSelectCharacter() {
-        // Perform click action on the card
         composeTestRule.onNodeWithTag("test_card").performClick()
-
         navController.assertCurrentRouteWithIdEqual("sheet/1")
+    }
+
+    @Test
+    fun testCharacterSheetDisplayed() {
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Silvano").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Eladrin").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Wizard").assertIsDisplayed()
+    }
+
+    @Test
+    fun testAddTempHp() {
+        val tempHpString = appContext.getString(R.string.temp_hp)
+        val addTempHpString = appContext.getString(R.string.add_temp_hp)
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Edit temp HP").performClick()
+        composeTestRule.onNodeWithText(tempHpString).performTextInput("5")
+        composeTestRule.onNodeWithText(addTempHpString).performClick()
+        composeTestRule.onNodeWithText("Temp HP: 5").assertIsDisplayed()
+    }
+
+    @Test
+    fun testLoseTempHp() {
+        val tempHpString = appContext.getString(R.string.temp_hp)
+        val addTempHpString = appContext.getString(R.string.add_temp_hp)
+        val loseTempHpString = appContext.getString(R.string.lose_temp_hp)
+        val editTempHpString = appContext.getString(R.string.edit_temp_hp_button)
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText(editTempHpString).performClick()
+        composeTestRule.onNodeWithText(tempHpString).performTextInput("5")
+        composeTestRule.onNodeWithText(addTempHpString).performClick()
+        composeTestRule.onNodeWithText("Temp HP: 5").assertIsDisplayed()
+
+        composeTestRule.onNodeWithText(editTempHpString).performClick()
+        composeTestRule.onNodeWithText(tempHpString).performTextInput("5")
+        composeTestRule.onNodeWithText(loseTempHpString).performClick()
+        composeTestRule.onNodeWithText("Temp HP: 0").assertIsDisplayed()
+    }
+
+    @Test
+    fun testHit(){
+        val hitButtonString = appContext.getString(R.string.hit_button)
+        val addHitString = appContext.getString(R.string.add_hit)
+        val hitManagementString = appContext.getString(R.string.hit_management)
+        val hpString = appContext.getString(R.string.hp)
+
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+
+        composeTestRule.onNodeWithText(hitButtonString).performClick()
+        composeTestRule.onNodeWithText(hitManagementString).assertIsDisplayed()
+
+        composeTestRule.onNodeWithText(hpString).performTextInput("7")
+        composeTestRule.onNodeWithText(addHitString).performClick()
+        composeTestRule.onNodeWithText("HP: 0/7").assertIsDisplayed()
+    }
+
+    @Test
+    fun testNavigateToInventory() {
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Inventory").performClick()
+        navController.assertCurrentRouteWithIdEqual("inventory/1")
     }
 
     fun NavController.assertCurrentRouteWithIdEqual(expectedRouteName: String) {

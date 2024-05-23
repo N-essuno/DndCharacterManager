@@ -100,7 +100,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             level = 1,
             abilityValues = abilityValues1,
             skillProficiencies = setOf(arcana, history),
-            remainingHp = 8,
+            remainingHp = 7,
             tempHp = 0,
             spellsKnown = setOf(fireball, magicMissile),
             preparedSpells = setOf(fireball),

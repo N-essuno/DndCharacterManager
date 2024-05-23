@@ -397,33 +397,35 @@ fun ImageAndDamageRow(
     val loseTempHpString = stringResource(id = R.string.lose_temp_hp)
 
     if (showDialogHit.value) {
-    AlertDialog(
-        onDismissRequest = {
-            showDialogHit.value = false
-        },
-        title = { Text(hitManagementString) },
-        text = {
-            OutlinedTextField(
-                value = hitValue.value,
-                onValueChange = { hitValue.value = it },
-                label = { Text(hpString) }
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    viewModel.addHit(hitValue.value.toInt())
-                    showDialogHit.value = false
+        hitValue.value = ""
+        AlertDialog(
+            onDismissRequest = {
+                showDialogHit.value = false
+            },
+            title = { Text(hitManagementString) },
+            text = {
+                OutlinedTextField(
+                    value = hitValue.value,
+                    onValueChange = { hitValue.value = it },
+                    label = { Text(hpString) }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.addHit(hitValue.value.toInt())
+                        showDialogHit.value = false
+                    },
+                ) {
+                    Text(addHitString)
                 }
-            ) {
-                Text(addHitString)
-            }
-        },
-    )
+            },
+        )
     }
 
 
     if (showDialogHp.value) {
+        hp.value = ""
         AlertDialog(
             onDismissRequest = {
                 showDialogHp.value = false
@@ -461,6 +463,7 @@ fun ImageAndDamageRow(
         }
 
     if (showDialogTempHp.value) {
+        tempHp.value = ""
         AlertDialog(
             onDismissRequest = {
                 showDialogTempHp.value = false
