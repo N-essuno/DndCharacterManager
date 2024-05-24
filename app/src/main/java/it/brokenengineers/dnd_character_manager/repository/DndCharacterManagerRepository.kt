@@ -85,7 +85,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             charisma to 11
         )
 
-        val item1 = InventoryItem(1, "Health potion", 1, 1.5)
+        val item1 = InventoryItem(1, "Health potion", 5, 1.5)
         val item2 = InventoryItem(2, "Paper", 1, 0.2)
         val item3 = InventoryItem(3, "Brick", 1, 2.5)
         val item4 = InventoryItem(4, "Book", 1, 2.0)
