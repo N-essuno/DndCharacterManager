@@ -60,6 +60,8 @@ dependencies {
     implementation (libs.androidx.room.ktx.v261)
     implementation("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.ui.test.junit4.android)
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
     // To use Kotlin Symbol Processing (KSP)

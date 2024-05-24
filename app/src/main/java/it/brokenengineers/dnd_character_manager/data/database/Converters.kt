@@ -2,6 +2,7 @@ package it.brokenengineers.dnd_character_manager.data.database
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
@@ -12,12 +13,13 @@ import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 
 class Converters {
-    private val gson = Gson()
+    private val gson = GsonBuilder()
+        .registerTypeAdapter(Ability::class.java, AbilityTypeAdapter())
+        .create()
 
     @TypeConverter
     fun fromRace(race: Race): String {
-        val raceName = race.name
-        return gson.toJson(raceName)
+        return gson.toJson(race)
     }
 
     @TypeConverter
@@ -39,13 +41,17 @@ class Converters {
 
     @TypeConverter
     fun fromAbilityMap(abilityMap: Map<Ability, Int>): String {
-        return gson.toJson(abilityMap)
+        // convert map to json string
+        val abilityNamesMap: Map<String, Int> = abilityMap.mapKeys { it.key.name }
+        return gson.toJson(abilityNamesMap)
     }
 
     @TypeConverter
     fun toAbilityMap(abilityMapString: String): Map<Ability, Int> {
         val type = object : TypeToken<Map<Ability, Int>>() {}.type
-        return gson.fromJson(abilityMapString, type)
+        val abilityNamesMap: Map<String, Int> = gson.fromJson(abilityMapString, type)
+        // convert string map to Ability map
+        return abilityNamesMap.mapKeys { Ability(it.key) }
     }
 
     @TypeConverter

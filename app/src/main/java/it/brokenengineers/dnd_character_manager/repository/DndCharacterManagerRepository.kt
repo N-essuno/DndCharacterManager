@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class DndCharacterManagerRepository(
     private val viewModel: DndCharacterManagerViewModel,
-    val dndCharacterDao: DndCharacterDao
+    private val dndCharacterDao: DndCharacterDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -32,6 +32,9 @@ class DndCharacterManagerRepository(
     fun addCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
             allCharacters.value.add(dndCharacter)
+
+            // Insert character into database
+            dndCharacterDao.insert(dndCharacter)
         }
     }
 
@@ -49,7 +52,7 @@ class DndCharacterManagerRepository(
         }
     }
 
-    private fun createMockCharacters(): MutableList<DndCharacter> {
+    fun createMockCharacters(): MutableList<DndCharacter> {
         // Mock Abilities
         val strength = AbilityEnum.STRENGTH.ability
         val dexterity = AbilityEnum.DEXTERITY.ability
@@ -145,6 +148,13 @@ class DndCharacterManagerRepository(
         )
 
         Log.i(tag, "Repository: created mock characters")
+
+        val gson = com.google.gson.Gson()
+
+        Log.i(tag, "Repository: dndCharacter1 race JSON: ${gson.toJson(dndCharacter1.race)}")
+        Log.i(tag, "Repository: dndCharacter1 abilityValues JSON: ${gson.toJson(dndCharacter1.abilityValues)}")
+        Log.i(tag, "Repository: dndCharacter2 race JSON: ${gson.toJson(dndCharacter2.race)}")
+        Log.i(tag, "Repository: dndCharacter2 abilityValues JSON: ${gson.toJson(dndCharacter2.abilityValues)}")
 
         return mutableListOf(
             dndCharacter1,

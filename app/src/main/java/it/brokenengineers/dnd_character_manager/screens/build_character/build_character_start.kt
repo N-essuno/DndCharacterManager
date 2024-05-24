@@ -75,6 +75,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
             Text(text = "Name", style = MaterialTheme.typography.bodyLarge)
             // text field for character name
             OutlinedTextField(
+                modifier = Modifier.testTag("character_name_field"),
                 value = characterName,
                 onValueChange = { characterName = it },
                 label = { Text("Character Name") },
@@ -88,8 +89,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                 text = characterName,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .padding(SmallPadding)
-                    .testTag("character_name_field"),
+                    .padding(SmallPadding),
                 color = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.padding(SmallPadding))
