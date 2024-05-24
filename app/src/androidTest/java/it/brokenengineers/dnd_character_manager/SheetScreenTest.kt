@@ -3,6 +3,7 @@ package it.brokenengineers.dnd_character_manager
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -41,6 +42,7 @@ class SheetScreenTest {
     @Test
     fun testStartScreen() {
         val welcomeMessageString = appContext.getString(R.string.welcome_message)
+        navController.assertCurrentRouteEqual("home")
         composeTestRule.onNodeWithText(welcomeMessageString).assertIsDisplayed()
     }
 
@@ -91,6 +93,42 @@ class SheetScreenTest {
     }
 
     @Test
+    fun testLoseHp(){
+        val hpString = appContext.getString(R.string.hp)
+        val loseHpString = appContext.getString(R.string.lose_hp)
+        val editHpString = appContext.getString(R.string.edit_hp_button)
+
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+
+        composeTestRule.onNodeWithText(editHpString).performClick()
+        composeTestRule.onNodeWithText(hpString).performTextInput("7")
+        composeTestRule.onNodeWithText(loseHpString).performClick()
+        composeTestRule.onNodeWithText("HP: 0/7").assertIsDisplayed()
+    }
+
+    @Test
+    fun testAddHp(){
+        val hpString = appContext.getString(R.string.hp)
+        val addHpString = appContext.getString(R.string.add_hp)
+        val loseHpString = appContext.getString(R.string.lose_hp)
+        val editHpString = appContext.getString(R.string.edit_hp_button)
+
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+
+        composeTestRule.onNodeWithText(editHpString).performClick()
+        composeTestRule.onNodeWithText(hpString).performTextInput("7")
+        composeTestRule.onNodeWithText(loseHpString).performClick()
+        composeTestRule.onNodeWithText("HP: 0/7").assertIsDisplayed()
+
+        composeTestRule.onNodeWithText(editHpString).performClick()
+        composeTestRule.onNodeWithText(hpString).performTextInput("7")
+        composeTestRule.onNodeWithText(addHpString).performClick()
+        composeTestRule.onNodeWithText("HP: 7/7").assertIsDisplayed()
+    }
+
+    @Test
     fun testHit(){
         val hitButtonString = appContext.getString(R.string.hit_button)
         val addHitString = appContext.getString(R.string.add_hit)
@@ -114,6 +152,28 @@ class SheetScreenTest {
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Inventory").performClick()
         navController.assertCurrentRouteWithIdEqual("inventory/1")
+    }
+
+    @Test
+    fun testIncreaseItem() {
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Inventory").performClick()
+        navController.assertCurrentRouteWithIdEqual("inventory/1")
+
+        composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag("weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("quantity").assertTextEquals("5")
+
+        composeTestRule.onNodeWithTag("add_item", useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag("weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("quantity").assertTextEquals("6")
+    }
+
+    fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
+        val currentRoute = currentBackStackEntry?.destination?.route.toString()
+        Assert.assertEquals(expectedRouteName, currentRoute)
     }
 
     fun NavController.assertCurrentRouteWithIdEqual(expectedRouteName: String) {
