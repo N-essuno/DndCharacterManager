@@ -107,7 +107,7 @@ class DndCharacterManagerRepository(val viewModel: DndCharacterManagerViewModel/
             availableSpellSlots = mapOf(
                 1 to 2,
                 2 to 1,
-                3 to 3,
+                3 to 6,
                 4 to 2,
                 5 to 1
             ),
