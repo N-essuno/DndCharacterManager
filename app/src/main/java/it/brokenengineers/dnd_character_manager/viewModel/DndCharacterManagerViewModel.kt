@@ -112,11 +112,14 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
-                val newInventoryItems = character.inventoryItems?.toMutableSet()
+                var newInventoryItems = character.inventoryItems?.toMutableSet()
                 newInventoryItems?.remove(item)
 
                 val newItem = item.copy(quantity = item.quantity + 1)
                 newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
+
+                newInventoryItems = orderSetById(newInventoryItems!!)
+
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
                 repository.selectedCharacter.value = newCharacter
                 updateCharactersList(character, newCharacter)
@@ -129,11 +132,12 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
-                val newInventoryItems = character.inventoryItems?.toMutableSet()
+                var newInventoryItems = character.inventoryItems?.toMutableSet()
                 newInventoryItems?.remove(item)
                 val newItem = item.copy(quantity = item.quantity - 1)
                 if (newItem.quantity > 0) {
                     newInventoryItems?.add(newItem) // TODO check if the id is managed properly in DB
+                    newInventoryItems = orderSetById(newInventoryItems!!)
                 }
                 val newCharacter = character.copy(inventoryItems = newInventoryItems)
                 repository.selectedCharacter.value = newCharacter
@@ -171,6 +175,12 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
                 // TODO update character in database by repository
             }
         }
+    }
+
+    private fun orderSetById(inventoryItems: MutableSet<InventoryItem>): MutableSet<InventoryItem> {
+        val newInventoryItemsList = inventoryItems.toMutableList()
+        newInventoryItemsList.sortBy { it.id }
+        return newInventoryItemsList.toMutableSet()
     }
 
     // TODO to remove after DB implementation, used just for testing
