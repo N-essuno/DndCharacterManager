@@ -23,6 +23,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -96,6 +98,7 @@ fun CharacterSheetScreen(
                         skillsRow, savingThrowsTitle, savingThrowsRow) = createRefs()
                     CharacterSheetHead(
                         dndCharacter = character,
+                        navController = navController,
                         modifier = Modifier
                             .constrainAs(head) {
                                 top.linkTo(parent.top)
@@ -167,7 +170,7 @@ fun CharacterSheetScreen(
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter) {
+fun CharacterSheetHead(modifier: Modifier, dndCharacter: Character, navController: NavHostController) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +179,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter) {
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (cName, cRace, cClass, hpCard, restButton) = createRefs()
+            val (cName, cRace, cClass, hpCard, restButton, levelUpButton) = createRefs()
             Text(
                 text = dndCharacter.name,
                 modifier = Modifier
@@ -216,11 +219,24 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter) {
                     }
             )
             RestButton(
+                dndCharacter = character,
+                navController = navController,
                 modifier = Modifier
                     .constrainAs(restButton) {
                         end.linkTo(hpCard.start)
                         top.linkTo(parent.top)
                     }
+                    .testTag("rest_button")
+            )
+            LevelUpButton(
+                dndCharacter = character,
+                navController = navController,
+                modifier = Modifier
+                    .constrainAs(levelUpButton) {
+                        end.linkTo(restButton.start)
+                        top.linkTo(parent.top)
+                    }
+                    .testTag("levelup_button")
             )
         }
     }
@@ -255,49 +271,45 @@ fun HitPointsCard(modifier: Modifier, dndCharacter: DndCharacter) {
 }
 
 @Composable
-fun RestButton(modifier: Modifier) {
-    val showDialog = remember { mutableStateOf(false) }
+fun RestButton(modifier: Modifier, navController: NavHostController, dndCharacter: DndCharacter) {
     MaterialTheme(
         shapes = Shapes(small = CircleShape)
     ) {
         IconButton(
             modifier = modifier,
-            onClick = { showDialog.value = true },
+            onClick = {
+                navController.navigate("rest/${dndCharacter.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
         ) {
             Icon(Icons.Default.Favorite, contentDescription = "Delete")
         }
     }
-// TODO: maybe no longer needed because of new screen by @Marco
+}
 
-//    if (showDialog.value) {
-//        AlertDialog(
-//            onDismissRequest = {
-//                showDialog.value = false
-//            },
-//            title = { Text("Rest Options") },
-//            text = { Text("Choose an option") },
-//            confirmButton = {
-//                Button(
-//                    onClick = {
-//                        // TODO: handle short rest
-//                        showDialog.value = false
-//                    }
-//                ) {
-//                    Text("Short Rest")
-//                }
-//            },
-//            dismissButton = {
-//                Button(
-//                    onClick = {
-//                        // TODO handle long rest
-//                        showDialog.value = false
-//                    }
-//                ) {
-//                    Text("Long Rest")
-//                }
-//            }
-//        )
-//    }
+@Composable
+fun LevelUpButton(modifier: Modifier, navController: NavHostController, dndCharacter: DndCharacter) {
+    MaterialTheme(
+        shapes = Shapes(small = CircleShape)
+    ) {
+        IconButton(
+            modifier = modifier,
+            onClick = {
+                navController.navigate("levelup/${dndCharacter.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+        ) {
+            Icon(Icons.Default.Star, contentDescription = "Delete")
+        }
+    }
 }
 
 @Composable
@@ -388,33 +400,35 @@ fun ImageAndDamageRow(
     val loseTempHpString = stringResource(id = R.string.lose_temp_hp)
 
     if (showDialogHit.value) {
-    AlertDialog(
-        onDismissRequest = {
-            showDialogHit.value = false
-        },
-        title = { Text(hitManagementString) },
-        text = {
-            OutlinedTextField(
-                value = hitValue.value,
-                onValueChange = { hitValue.value = it },
-                label = { Text(hpString) }
-            )
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    viewModel.addHit(hitValue.value.toInt())
-                    showDialogHit.value = false
+        hitValue.value = ""
+        AlertDialog(
+            onDismissRequest = {
+                showDialogHit.value = false
+            },
+            title = { Text(hitManagementString) },
+            text = {
+                OutlinedTextField(
+                    value = hitValue.value,
+                    onValueChange = { hitValue.value = it },
+                    label = { Text(hpString) }
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.addHit(hitValue.value.toInt())
+                        showDialogHit.value = false
+                    },
+                ) {
+                    Text(addHitString)
                 }
-            ) {
-                Text(addHitString)
-            }
-        },
-    )
+            },
+        )
     }
 
 
     if (showDialogHp.value) {
+        hp.value = ""
         AlertDialog(
             onDismissRequest = {
                 showDialogHp.value = false
@@ -452,6 +466,7 @@ fun ImageAndDamageRow(
         }
 
     if (showDialogTempHp.value) {
+        tempHp.value = ""
         AlertDialog(
             onDismissRequest = {
                 showDialogTempHp.value = false

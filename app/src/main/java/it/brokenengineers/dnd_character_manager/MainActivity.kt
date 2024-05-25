@@ -6,9 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,10 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -40,12 +36,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import it.brokenengineers.dnd_character_manager.screens.Rest
+import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
+import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
-import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
+import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -90,7 +89,7 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
 
-            composable("home") { HomePage(Modifier, navController, viewModel) }
+            composable("home") { HomePage(navController, viewModel) }
         }
         navigation(startDestination = "create_character", route = "character_creation") {
             composable("create_character") {
@@ -136,14 +135,42 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 }
             }
         }
+        navigation(startDestination = "rest", route = "rest_route") {
+            composable("rest/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    Rest(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+            }
+        }
+        navigation(startDestination = "levelup", route = "levelup_route") {
+            composable("levelup/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    LevelUp(
+                        characterId = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+            }
+        }
+        navigation(startDestination = "build_character", route = "build_character_route") {
+            composable("build_character") { BuildCharacterStart(navController, viewModel) }
+        }
     }
 }
 
-private const val s = "create_character_button"
-
 @Composable
 fun HomePage(
-    modifier: Modifier,
     navController: NavHostController,
     viewModel: DndCharacterManagerViewModel
 ){
@@ -171,17 +198,25 @@ fun HomePage(
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var testCard = true
                 characters?.let {
                     items(characters!!.size) {index ->
                         val character = characters!![index]
-                        CharacterCard(navController, character)
+                        CharacterCard(
+                            character = character,
+                            navController = navController,
+                            onHomePage = true,
+                            testCard = testCard
+                        )
                         Spacer(modifier = Modifier.padding(SmallPadding))
+                        testCard = false
                     }
                 }
             }
         }
         Button(
             modifier = Modifier
+                .testTag("create_character_button")
                 .align(Alignment.BottomCenter)
                 .padding(MediumPadding)
                 .testTag("create_character_button"),
@@ -190,52 +225,15 @@ fun HomePage(
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             onClick = {
-                navController.navigate("character_creation")
+                navController.navigate("build_character"){
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
         ) {
             Text(createCharacterString)
-        }
-    }
-
-}
-
-@Composable
-fun CharacterCard(navController: NavHostController, dndCharacter: DndCharacter){
-    // TODO change to Card defined in ui.composables
-    Card(
-        modifier = Modifier
-            // to fill the width of the screen
-//            .fillMaxWidth()
-            .clickable {
-                // navigate to character sheet
-                navController.navigate("sheet/${dndCharacter.id}") {
-                    // pop up to the home screen
-                    popUpTo("home_route") { inclusive = false }
-                }
-            }
-            .padding(start = MediumPadding, end = MediumPadding),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ){
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            // TODO retrieve character info
-            Image( // TODO meybe use async image to retrieve image from url
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "Character Image"
-            )
-            Text(
-                text = dndCharacter.name,
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = dndCharacter.dndClass.name,
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Text(
-                text = dndCharacter.level.toString(),
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding))
-            Spacer(modifier = Modifier.padding(SmallPadding))
         }
     }
 }

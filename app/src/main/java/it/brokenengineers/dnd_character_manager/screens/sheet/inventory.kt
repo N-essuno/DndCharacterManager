@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
@@ -78,8 +79,11 @@ fun InventoryScreen(
                 Spacer(modifier = Modifier.height(MediumVerticalSpacing))
                 InventoryLegend()
 
+                var testUse = true
+
                 items?.forEach {inventoryItem ->
-                    InventoryItemRow(inventoryItem, viewModel)
+                    InventoryItemRow(inventoryItem, viewModel, testUse)
+                    testUse = false
                 }
 
                 Spacer(modifier = Modifier.height(MediumVerticalSpacing))
@@ -137,7 +141,8 @@ fun InventoryLegend() {
             Text(
                 text = itemString,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = MediumPadding, end = SmallPadding, top = SmallPadding, bottom = SmallPadding)
+                modifier = Modifier.padding(start = MediumPadding, end = SmallPadding,
+                    top = SmallPadding, bottom = SmallPadding)
             )
         }
         Column (
@@ -179,13 +184,29 @@ fun InventoryLegend() {
 @Composable
 fun InventoryItemRow(
     item: InventoryItem,
-    viewModel: DndCharacterManagerViewModel
+    viewModel: DndCharacterManagerViewModel,
+    testUse: Boolean = false
 ) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
     )
     {
+        var deleteTag = ""
+        var incrementTag = ""
+        var decrementTag = ""
+        var itemTag = ""
+        var quantityTag = ""
+        var weightTag = ""
+        if (testUse) {
+            deleteTag = "delete_item"
+            incrementTag = "increment_item"
+            decrementTag = "decrement_item"
+            itemTag = "item_name"
+            quantityTag = "item_quantity"
+            weightTag = "item_weight"
+        }
+
         Column (
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
@@ -194,7 +215,7 @@ fun InventoryItemRow(
             Text(
                 style = MaterialTheme.typography.bodyLarge,
                 text = item.name,
-                modifier = Modifier.padding(MediumPadding)
+                modifier = Modifier.padding(MediumPadding).testTag(itemTag)
                 )
         }
         Column (
@@ -205,7 +226,7 @@ fun InventoryItemRow(
             Text(
                 style = MaterialTheme.typography.bodyLarge,
                 text = item.quantity.toString(),
-                modifier = Modifier.padding(MediumPadding)
+                modifier = Modifier.padding(MediumPadding).testTag(quantityTag)
             )
         }
         Column (
@@ -217,7 +238,7 @@ fun InventoryItemRow(
             Text(
                 style = MaterialTheme.typography.bodyLarge,
                 text = item.weight.toString(),
-                modifier = Modifier.padding(MediumPadding)
+                modifier = Modifier.padding(MediumPadding).testTag(weightTag)
             )
         }
         Column (
@@ -228,17 +249,29 @@ fun InventoryItemRow(
                 IconButton(
                     onClick = { viewModel.deleteInventoryItem(item) }
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        modifier = Modifier.testTag(deleteTag)
+                        )
                 }
                 IconButton(
                     onClick = { viewModel.incrementInventoryItem(item) }
                 ) {
-                    Icon(Icons.Default.AddCircle, contentDescription = "Add")
+                    Icon(
+                        Icons.Default.AddCircle,
+                        contentDescription = "Add",
+                        modifier = Modifier.testTag(incrementTag)
+                    )
                 }
                 IconButton(
                     onClick = { viewModel.decrementInventoryItem(item) }
                 ) {
-                    Icon(Icons.Default.Clear, contentDescription = "Remove")
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = "Remove",
+                        modifier = Modifier.testTag(decrementTag)
+                    )
                 }
             }
 
@@ -262,29 +295,36 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
     val weight = remember { mutableStateOf("") }
 
     Button(
-        modifier = modifier.padding(end = SmallPadding),
+        modifier = modifier.padding(end = SmallPadding).testTag("add_item"),
         onClick = { openDialog.value = true }
     ) {
         Text(addItemString)
     }
 
     if (openDialog.value) {
+        itemName.value = ""
+        quantity.value = "1"
+        weight.value = ""
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
             title = { Text(text = addItemToInventoryString) },
             text = {
                 Column {
+
                     TextField(
+                        modifier = Modifier.testTag("add_item_name"),
                         value = itemName.value,
                         onValueChange = { itemName.value = it },
                         label = { Text(itemNameString) }
                     )
                     TextField(
+                        modifier = Modifier.testTag("add_item_quantity"),
                         value = quantity.value,
                         onValueChange = { quantity.value = it },
                         label = { Text(quantityString) }
                     )
                     TextField(
+                        modifier = Modifier.testTag("add_item_weight"),
                         value = weight.value,
                         onValueChange = { weight.value = it },
                         label = { Text(weightString) }
@@ -292,12 +332,14 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    viewModel.addItemToInventory(
-                        name = itemName.value,
-                        quantity = quantity.value,
-                        weight = weight.value
-                    )
+                Button(
+                    modifier = Modifier.testTag("add_item_confirm"),
+                    onClick = {
+                        viewModel.addItemToInventory(
+                            name = itemName.value,
+                            quantity = quantity.value,
+                            weight = weight.value
+                        )
                     openDialog.value = false
                 }) {
                     Text(confirmString)
@@ -326,7 +368,7 @@ fun WeightRow(weight: String, maxWeight: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.padding(start = SmallPadding),
+                modifier = Modifier.padding(start = SmallPadding).testTag("total_weight"),
                 text = "$totalWeightString $weight",
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -335,7 +377,7 @@ fun WeightRow(weight: String, maxWeight: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.padding(end = SmallPadding),
+                modifier = Modifier.padding(end = SmallPadding).testTag("max_weight"),
                 text = "$maxWeightString $maxWeight",
                 style = MaterialTheme.typography.bodyLarge
             )

@@ -98,7 +98,7 @@ class DndCharacterManagerRepository(
             charisma to 11
         )
 
-        val item1 = InventoryItem(1, "Health potion", 1, 1.5)
+        val item1 = InventoryItem(1, "Health potion", 5, 1.5)
         val item2 = InventoryItem(2, "Paper", 1, 0.2)
         val item3 = InventoryItem(3, "Brick", 1, 2.5)
         val item4 = InventoryItem(4, "Book", 1, 2.0)
@@ -106,21 +106,21 @@ class DndCharacterManagerRepository(
         val weapon1 = Weapon(1, "Sword", "1d6")
 
         val dndCharacter1 = DndCharacter(
-            id = 5,
+            id = 1,
             name = "Silvano",
             race = eladrin,
             dndClass = wizard,
             level = 1,
             abilityValues = abilityValues1,
             skillProficiencies = setOf(arcana, history),
-            remainingHp = 8,
+            remainingHp = 7,
             tempHp = 0,
             spellsKnown = setOf(fireball, magicMissile),
             preparedSpells = setOf(fireball),
             availableSpellSlots = mapOf(
                 1 to 2,
                 2 to 1,
-                3 to 3,
+                3 to 6,
                 4 to 2,
                 5 to 1
             ),
@@ -130,7 +130,7 @@ class DndCharacterManagerRepository(
         )
 
         val dndCharacter2 = DndCharacter(
-            id = 6,
+            id = 2,
             name = "Broken",
             race = dwarf,
             dndClass = barbarian,

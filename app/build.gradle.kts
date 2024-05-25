@@ -6,6 +6,14 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
+// TODO: check if working
+//allprojects {
+//    configurations.all {
+//        resolutionStrategy {
+//            force("androidx.test.espresso:espresso-core:3.5.1")
+//        }
+//    }
+//}
 
 android {
     namespace = "it.brokenengineers.dnd_character_manager"
@@ -54,6 +62,7 @@ android {
 }
 
 val room_version = "2.6.1"
+val compose_version = "2.0.0"
 
 dependencies {
     // rooms dependencies
@@ -61,8 +70,10 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
     implementation(libs.core.ktx)
-    implementation(libs.androidx.ui.test.junit4.android)
     annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.androidx.navigation.testing)
 
     // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:$room_version")
@@ -82,6 +93,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.activity.compose)
+    // add accompanist dependency
     implementation("io.coil-kt:coil-compose:2.6.0")
     testImplementation(libs.junit)
     implementation ("com.google.code.gson:gson:2.8.9")

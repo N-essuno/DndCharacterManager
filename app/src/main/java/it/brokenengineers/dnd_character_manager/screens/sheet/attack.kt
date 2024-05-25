@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
@@ -53,7 +54,6 @@ fun AttackScreen(
         viewModel.fetchCharacterById(characterId)
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
-    // TODO get character class from view model
     char?.let {character ->
         val characterClass = character.dndClass
 
@@ -147,27 +147,15 @@ fun SpellsScreen(
                 .verticalScroll(scrollState)
                 .padding(bottom = OverBottomNavBar)
         ) {
-            SpellsTitleRow(title = "Spells")
+            SpellsTitleRow()
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(
-                    level = 0,
-                    dndCharacter = dndCharacter,
-                    viewModel = viewModel
-                )
-                SpellsLevelColumn(
-                    level = 1,
-                    dndCharacter = dndCharacter,
-                    viewModel = viewModel
-                )
-                SpellsLevelColumn(
-                    level = 2,
-                    dndCharacter = dndCharacter,
-                    viewModel = viewModel
-                )
+                SpellsLevelColumn(level = 0, character = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 1, character = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 2, character = dndCharacter, viewModel = viewModel)
             }
 
             Row(
@@ -215,6 +203,12 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
     val spells = dndCharacter.spellsKnown?.filter { it.level == level }
     val slots = dndCharacter.availableSpellSlots?.get(level)
 
+    var useSlotTag = ""
+    var nSlotTag = ""
+    if (level == 3){
+        useSlotTag = "use_slot"
+        nSlotTag = "n_slot"
+    }
 
 
     val scrollState = rememberScrollState()
@@ -226,8 +220,8 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
                 style = MaterialTheme.typography.titleMedium
             )
             IconButton(
-                // TODO implement slot use and use better icon
-                onClick = { viewModel.useSpellSlot(level)}
+                modifier = Modifier.testTag(useSlotTag),
+                onClick = { viewModel.useSpellSlot(level) }
             ) {
                 Icon(
                     Icons.Default.Build,
@@ -238,7 +232,9 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
         }
         if (slots != null) {
             Text(
-                modifier = Modifier.padding(start = SmallPadding, bottom = SmallPadding),
+                modifier = Modifier
+                    .padding(start = SmallPadding, bottom = SmallPadding)
+                    .testTag(nSlotTag),
                 text = "$slotsString $slots",
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -272,7 +268,8 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
 }
 
 @Composable
-fun SpellsTitleRow(title: String){
+fun SpellsTitleRow(){
+    val spellsTitleString = stringResource(id = R.string.spells_title)
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxSize()
@@ -282,8 +279,8 @@ fun SpellsTitleRow(title: String){
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                modifier = Modifier.padding(SmallPadding),
-                text = title,
+                modifier = Modifier.padding(SmallPadding).testTag("spells_title"),
+                text = spellsTitleString,
                 style = MaterialTheme.typography.titleLarge
             )
         }

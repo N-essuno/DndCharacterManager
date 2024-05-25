@@ -148,6 +148,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         }
     }
 }
+
 @Composable
 private fun CharacterImageCard(characterImage: Uri?) {
     var characterImage1 = characterImage
