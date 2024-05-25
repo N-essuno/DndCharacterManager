@@ -43,7 +43,7 @@ fun LevelUp(
         ) {
             item {
                 CharacterCard(
-                    character = character,
+                    dndCharacter = character,
                     navController = navController,
                     onHomePage = false
                 )

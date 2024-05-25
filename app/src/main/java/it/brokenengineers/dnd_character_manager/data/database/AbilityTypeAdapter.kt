@@ -1,10 +1,9 @@
 package it.brokenengineers.dnd_character_manager.data.database
 
-import android.util.Log
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonWriter
 import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonWriter
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 
 class AbilityTypeAdapter : TypeAdapter<Ability>() {
@@ -20,12 +19,10 @@ class AbilityTypeAdapter : TypeAdapter<Ability>() {
         var name = ""
         val token = input.peek() // check next token type
         if (token == JsonToken.STRING) {
-            Log.d(tag, "token is STRING")
             name = input.nextString()
                 .removePrefix("Ability(name=")
                 .removeSuffix(")")
         } else if (token == JsonToken.BEGIN_OBJECT) {
-            Log.d(tag, "token is BEGIN_OBJECT")
             input.beginObject()
             while (input.hasNext()) {
                 if (input.nextName() == "name") {

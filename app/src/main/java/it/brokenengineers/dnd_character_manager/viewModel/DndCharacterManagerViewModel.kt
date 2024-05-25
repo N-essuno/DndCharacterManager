@@ -4,9 +4,9 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -75,7 +75,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
-                val newCharacter: Character?
+                val newCharacter: DndCharacter?
                 if (character.tempHp >= hitValue) {
                     val newTempHp = character.tempHp - hitValue
                     newCharacter = character.copy(tempHp = newTempHp)

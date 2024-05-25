@@ -36,11 +36,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.screens.Rest
 import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -203,7 +202,7 @@ fun HomePage(
                     items(characters!!.size) {index ->
                         val character = characters!![index]
                         CharacterCard(
-                            character = character,
+                            dndCharacter = character,
                             navController = navController,
                             onHomePage = true,
                             testCard = testCard

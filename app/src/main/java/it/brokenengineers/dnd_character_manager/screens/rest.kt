@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -77,7 +77,7 @@ fun Rest(
                 Row(modifier = Modifier.padding(SmallPadding)) {
                     Column {
                         CharacterCard(
-                            character = character,
+                            dndCharacter = character,
                             navController = navController,
                             onHomePage = false
                         )
@@ -141,7 +141,7 @@ fun HpRecovery() {
 }
 
 @Composable
-fun LongRest(viewModel: RestViewModel, navController: NavHostController, character: Character) {
+fun LongRest(viewModel: RestViewModel, navController: NavHostController, character: DndCharacter) {
     val spellsKnown by remember { derivedStateOf { viewModel.spellsKnown } }
 
     Column {
@@ -180,7 +180,7 @@ fun LongRest(viewModel: RestViewModel, navController: NavHostController, charact
 }
 
 @Composable
-fun ShortRest(viewModel: RestViewModel, navController: NavHostController, character: Character) {
+fun ShortRest(viewModel: RestViewModel, navController: NavHostController, character: DndCharacter) {
     val slotsAvailable by remember { derivedStateOf { viewModel.slotsAvailable } }
     Text("Choose magics to recover",
         style = MaterialTheme.typography.titleMedium)

@@ -170,7 +170,7 @@ fun CharacterSheetScreen(
 }
 
 @Composable
-fun CharacterSheetHead(modifier: Modifier, dndCharacter: Character, navController: NavHostController) {
+fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navController: NavHostController) {
     Row (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -219,7 +219,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: Character, navControlle
                     }
             )
             RestButton(
-                dndCharacter = character,
+                dndCharacter = dndCharacter,
                 navController = navController,
                 modifier = Modifier
                     .constrainAs(restButton) {
@@ -229,7 +229,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: Character, navControlle
                     .testTag("rest_button")
             )
             LevelUpButton(
-                dndCharacter = character,
+                dndCharacter = dndCharacter,
                 navController = navController,
                 modifier = Modifier
                     .constrainAs(levelUpButton) {

@@ -20,13 +20,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.Character
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.theme.CharacterCardWidth
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
-fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavHostController, testCard : Boolean = false) {
+fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController: NavHostController, testCard : Boolean = false) {
     var cardModifier: Modifier
     val columnModifier: Modifier
     if (onHomePage) {
@@ -34,7 +34,7 @@ fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavH
             .width(CharacterCardWidth)
             .clickable {
                 // navigate to character sheet
-                navController.navigate("sheet/${character.id}") {
+                navController.navigate("sheet/${dndCharacter.id}") {
                     // pop up to the home screen
                     popUpTo("home_route") { inclusive = false }
                 }
@@ -66,19 +66,19 @@ fun CharacterCard(onHomePage: Boolean, character: Character, navController: NavH
                 contentDescription = "Character Image"
             )
             Text(
-                text = character.name,
+                text = dndCharacter.name,
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
-                text = character.dndClass.name,
+                text = dndCharacter.dndClass.name,
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
-                text = character.level.toString(),
+                text = dndCharacter.level.toString(),
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
-                text = "Max Hp: ${character.getMaxHp()} left: ${character.remainingHp}",
+                text = "Max Hp: ${dndCharacter.getMaxHp()} left: ${dndCharacter.remainingHp}",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Spacer(modifier = Modifier.padding(SmallPadding))

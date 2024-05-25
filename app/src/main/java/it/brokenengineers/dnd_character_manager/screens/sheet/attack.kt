@@ -30,8 +30,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
@@ -153,9 +153,9 @@ fun SpellsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxSize()
             ) {
-                SpellsLevelColumn(level = 0, character = dndCharacter, viewModel = viewModel)
-                SpellsLevelColumn(level = 1, character = dndCharacter, viewModel = viewModel)
-                SpellsLevelColumn(level = 2, character = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 0, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 1, dndCharacter = dndCharacter, viewModel = viewModel)
+                SpellsLevelColumn(level = 2, dndCharacter = dndCharacter, viewModel = viewModel)
             }
 
             Row(

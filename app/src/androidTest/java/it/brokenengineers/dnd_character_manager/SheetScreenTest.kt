@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import org.junit.Assert
 import org.junit.Before
@@ -27,14 +28,18 @@ class SheetScreenTest {
     val composeTestRule = createComposeRule()
     private lateinit var navController: TestNavHostController
     private lateinit var appContext: Context
-    private var viewModel: DndCharacterManagerViewModel = DndCharacterManagerViewModel()
+    private lateinit var viewModel: DndCharacterManagerViewModel
 
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            viewModel.init()
-            navController = TestNavHostController(LocalContext.current)
             appContext = LocalContext.current
+            // DB not used in this test but needed for ViewModel
+            val db = DndCharacterManagerDB.getDatabase(appContext)
+            assert(db != null)
+            viewModel = DndCharacterManagerViewModel(db!!)
+            viewModel.init()
+            navController = TestNavHostController(appContext)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             CustomNavigationHost(navController = navController, viewModel = viewModel)
         }

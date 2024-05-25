@@ -67,18 +67,20 @@ val compose_version = "2.0.0"
 dependencies {
     // rooms dependencies
     implementation (libs.androidx.room.ktx.v261)
+    implementation(libs.core.ktx)
+    implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.room:room-runtime:$room_version")
     implementation ("androidx.room:room-ktx:$room_version")
-    implementation(libs.core.ktx)
     annotationProcessor("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    testImplementation("androidx.room:room-testing:$room_version")
 
     implementation(libs.androidx.ui.test.junit4.android)
     implementation(libs.androidx.navigation.testing)
 
     // To use Kotlin Symbol Processing (KSP)
-    ksp("androidx.room:room-compiler:$room_version")
+
     // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

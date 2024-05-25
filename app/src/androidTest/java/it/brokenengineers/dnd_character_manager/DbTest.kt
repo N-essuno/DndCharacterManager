@@ -1,29 +1,21 @@
 package it.brokenengineers.dnd_character_manager
 
 import android.content.Context
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.IOException
 
+@RunWith(AndroidJUnit4::class)
 class DbTest {
-    private lateinit var db: DndCharacterManagerDB
-
-    @Before
-    fun testOpenDb() {
-        // get application context
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        // Get the database
-        val db = DndCharacterManagerDB.getDatabase(context)
-        assert(db != null)
-    }
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    private val db: DndCharacterManagerDB = DndCharacterManagerDB.getDatabase(context)!!
 
     @After
     @Throws(IOException::class)
