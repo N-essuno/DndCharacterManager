@@ -193,18 +193,18 @@ fun InventoryItemRow(
     )
     {
         var deleteTag = ""
-        var addTag = ""
-        var removeTag = ""
+        var incrementTag = ""
+        var decrementTag = ""
         var itemTag = ""
         var quantityTag = ""
         var weightTag = ""
         if (testUse) {
             deleteTag = "delete_item"
-            addTag = "add_item"
-            removeTag = "remove_item"
+            incrementTag = "increment_item"
+            decrementTag = "decrement_item"
             itemTag = "item_name"
-            quantityTag = "quantity"
-            weightTag = "weight"
+            quantityTag = "item_quantity"
+            weightTag = "item_weight"
         }
 
         Column (
@@ -261,7 +261,7 @@ fun InventoryItemRow(
                     Icon(
                         Icons.Default.AddCircle,
                         contentDescription = "Add",
-                        modifier = Modifier.testTag(addTag)
+                        modifier = Modifier.testTag(incrementTag)
                     )
                 }
                 IconButton(
@@ -270,7 +270,7 @@ fun InventoryItemRow(
                     Icon(
                         Icons.Default.Clear,
                         contentDescription = "Remove",
-                        modifier = Modifier.testTag(removeTag)
+                        modifier = Modifier.testTag(decrementTag)
                     )
                 }
             }
@@ -295,29 +295,36 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
     val weight = remember { mutableStateOf("") }
 
     Button(
-        modifier = modifier.padding(end = SmallPadding),
+        modifier = modifier.padding(end = SmallPadding).testTag("add_item"),
         onClick = { openDialog.value = true }
     ) {
         Text(addItemString)
     }
 
     if (openDialog.value) {
+        itemName.value = ""
+        quantity.value = "1"
+        weight.value = ""
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
             title = { Text(text = addItemToInventoryString) },
             text = {
                 Column {
+
                     TextField(
+                        modifier = Modifier.testTag("add_item_name"),
                         value = itemName.value,
                         onValueChange = { itemName.value = it },
                         label = { Text(itemNameString) }
                     )
                     TextField(
+                        modifier = Modifier.testTag("add_item_quantity"),
                         value = quantity.value,
                         onValueChange = { quantity.value = it },
                         label = { Text(quantityString) }
                     )
                     TextField(
+                        modifier = Modifier.testTag("add_item_weight"),
                         value = weight.value,
                         onValueChange = { weight.value = it },
                         label = { Text(weightString) }
@@ -325,12 +332,14 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    viewModel.addItemToInventory(
-                        name = itemName.value,
-                        quantity = quantity.value,
-                        weight = weight.value
-                    )
+                Button(
+                    modifier = Modifier.testTag("add_item_confirm"),
+                    onClick = {
+                        viewModel.addItemToInventory(
+                            name = itemName.value,
+                            quantity = quantity.value,
+                            weight = weight.value
+                        )
                     openDialog.value = false
                 }) {
                     Text(confirmString)
@@ -359,7 +368,7 @@ fun WeightRow(weight: String, maxWeight: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.padding(start = SmallPadding),
+                modifier = Modifier.padding(start = SmallPadding).testTag("total_weight"),
                 text = "$totalWeightString $weight",
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -368,7 +377,7 @@ fun WeightRow(weight: String, maxWeight: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.padding(end = SmallPadding),
+                modifier = Modifier.padding(end = SmallPadding).testTag("max_weight"),
                 text = "$maxWeightString $maxWeight",
                 style = MaterialTheme.typography.bodyLarge
             )

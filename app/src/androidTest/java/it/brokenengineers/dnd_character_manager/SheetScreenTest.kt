@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.NavController
 import androidx.navigation.compose.ComposeNavigator
@@ -24,9 +25,9 @@ import org.junit.runner.RunWith
 class SheetScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
-    lateinit var navController: TestNavHostController
-    lateinit var appContext: Context
-    var viewModel: DndCharacterManagerViewModel = DndCharacterManagerViewModel()
+    private lateinit var navController: TestNavHostController
+    private lateinit var appContext: Context
+    private var viewModel: DndCharacterManagerViewModel = DndCharacterManagerViewModel()
 
     @Before
     fun setUp() {
@@ -148,35 +149,106 @@ class SheetScreenTest {
 
     @Test
     fun testNavigateToInventory() {
+        val totalWeightString = appContext.getString(R.string.total_weight)
         composeTestRule.onNodeWithTag("test_card").performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Inventory").performClick()
         navController.assertCurrentRouteWithIdEqual("inventory/1")
+        composeTestRule.onNodeWithTag("total_weight")
+            .assertTextEquals("$totalWeightString 7.7")
     }
 
     @Test
     fun testIncreaseItem() {
+        val totalWeightString = appContext.getString(R.string.total_weight)
         composeTestRule.onNodeWithTag("test_card").performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Inventory").performClick()
         navController.assertCurrentRouteWithIdEqual("inventory/1")
 
         composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
-        composeTestRule.onNodeWithTag("weight").assertTextEquals("1.5")
-        composeTestRule.onNodeWithTag("quantity").assertTextEquals("5")
+        composeTestRule.onNodeWithTag("item_weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("item_quantity").assertTextEquals("5")
 
-        composeTestRule.onNodeWithTag("add_item", useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag("increment_item", useUnmergedTree = true).performClick()
         composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
-        composeTestRule.onNodeWithTag("weight").assertTextEquals("1.5")
-        composeTestRule.onNodeWithTag("quantity").assertTextEquals("6")
+        composeTestRule.onNodeWithTag("item_weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("item_quantity").assertTextEquals("6")
+        composeTestRule.onNodeWithTag("total_weight")
+            .assertTextEquals("$totalWeightString 9.2")
     }
 
-    fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
+    @Test
+    fun testDecreaseItem() {
+        val totalWeightString = appContext.getString(R.string.total_weight)
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Inventory").performClick()
+        navController.assertCurrentRouteWithIdEqual("inventory/1")
+
+        composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag("item_weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("item_quantity").assertTextEquals("5")
+
+        composeTestRule.onNodeWithTag("decrement_item", useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag("item_weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("item_quantity").assertTextEquals("4")
+        composeTestRule.onNodeWithTag("total_weight")
+            .assertTextEquals("$totalWeightString 6.2")
+    }
+
+    @Test
+    fun testDeleteItem() {
+        val totalWeightString = appContext.getString(R.string.total_weight)
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Inventory").performClick()
+        navController.assertCurrentRouteWithIdEqual("inventory/1")
+
+        composeTestRule.onNodeWithTag("item_name").assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag("item_weight").assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag("item_quantity").assertTextEquals("5")
+
+        composeTestRule.onNodeWithTag("delete_item", useUnmergedTree = true).performClick()
+        composeTestRule.onNodeWithText("Health potion").assertDoesNotExist()
+        composeTestRule.onNodeWithText("1.5").assertDoesNotExist()
+        composeTestRule.onNodeWithText("5").assertDoesNotExist()
+        composeTestRule.onNodeWithTag("total_weight")
+            .assertTextEquals("$totalWeightString 0.2")
+    }
+
+    @Test
+    fun testAddNewItem() {
+        val totalWeightString = appContext.getString(R.string.total_weight)
+        val addItemToInventoryString = appContext.getString(R.string.add_item_to_inventory)
+
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Inventory").performClick()
+        navController.assertCurrentRouteWithIdEqual("inventory/1")
+
+        composeTestRule.onNodeWithTag("add_item").performClick()
+        composeTestRule.onNodeWithText(addItemToInventoryString).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("add_item_name").performTextInput("Test item")
+        composeTestRule.onNodeWithTag("add_item_quantity").performTextClearance()
+        composeTestRule.onNodeWithTag("add_item_quantity").performTextInput("4")
+        composeTestRule.onNodeWithTag("add_item_weight").performTextInput("3.0")
+        composeTestRule.onNodeWithTag("add_item_confirm").performClick()
+
+        composeTestRule.onNodeWithText("Test item").assertIsDisplayed()
+        composeTestRule.onNodeWithText("3.0").assertIsDisplayed()
+        composeTestRule.onNodeWithText("4").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("total_weight")
+            .assertTextEquals("$totalWeightString 19.7")
+    }
+
+    private fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
         val currentRoute = currentBackStackEntry?.destination?.route.toString()
         Assert.assertEquals(expectedRouteName, currentRoute)
     }
 
-    fun NavController.assertCurrentRouteWithIdEqual(expectedRouteName: String) {
+    private fun NavController.assertCurrentRouteWithIdEqual(expectedRouteName: String) {
         val id = currentBackStackEntry?.arguments?.getInt("characterId")
         val currentRoute = currentBackStackEntry?.destination?.route
             .toString().replace("{characterId}", id.toString())
