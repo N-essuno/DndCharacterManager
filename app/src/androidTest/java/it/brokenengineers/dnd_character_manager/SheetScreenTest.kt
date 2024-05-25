@@ -243,6 +243,32 @@ class SheetScreenTest {
             .assertTextEquals("$totalWeightString 19.7")
     }
 
+    @Test
+    fun testNavigateToAttack() {
+        val spellsTitleString = appContext.getString(R.string.spells_title)
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Attack & Spells").performClick()
+        navController.assertCurrentRouteWithIdEqual("attack/1")
+
+        composeTestRule.onNodeWithTag("spells_title").assertTextEquals(spellsTitleString)
+        composeTestRule.onNodeWithText("Magic Missile").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fireball").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 6")
+    }
+
+    @Test
+    fun testUseSlot(){
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithText("Attack & Spells").performClick()
+        navController.assertCurrentRouteWithIdEqual("attack/1")
+
+        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 6")
+        composeTestRule.onNodeWithTag("use_slot").performClick()
+        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 5")
+    }
+
     private fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
         val currentRoute = currentBackStackEntry?.destination?.route.toString()
         Assert.assertEquals(expectedRouteName, currentRoute)
