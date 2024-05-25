@@ -19,6 +19,7 @@ interface DndCharacterDao {
     @Insert
     suspend fun insertAll(dndCharacters: List<DndCharacter>)
 
+    // TODO check if delete annotation is more appropriate
     @Query("DELETE FROM DndCharacter WHERE id = :id")
     suspend fun deleteCharacterById(id: Int)
     @Query("DELETE FROM DndCharacter WHERE id IN (:ids)")

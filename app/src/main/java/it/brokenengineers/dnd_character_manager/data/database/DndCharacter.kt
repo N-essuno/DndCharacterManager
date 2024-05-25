@@ -124,9 +124,4 @@ data class DndCharacter (
     fun isSpellPrepared(spell: Spell): Boolean {
         return preparedSpells?.map { it.name }?.contains(spell.name) ?: false
     }
-
-//    fun computeId(): Int {
-//        // TODO when database is implemented, return the id from the database
-//        return 0
-//    }
 }

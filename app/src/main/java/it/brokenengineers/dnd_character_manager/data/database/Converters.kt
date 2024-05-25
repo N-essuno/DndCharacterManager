@@ -1,8 +1,6 @@
 package it.brokenengineers.dnd_character_manager.data.database
 
-import android.util.Log
 import androidx.room.TypeConverter
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
@@ -14,7 +12,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 
 class Converters {
-    val tag = Converters::class.java.simpleName
+    val tag: String = Converters::class.java.simpleName
 
     private val gson = GsonBuilder()
         .registerTypeAdapter(Ability::class.java, AbilityTypeAdapter())
@@ -52,8 +50,7 @@ class Converters {
     @TypeConverter
     fun toAbilityMap(abilityMapString: String): Map<Ability, Int> {
         val type = object : TypeToken<Map<Ability, Int>>() {}.type
-        val abilityNamesMap: Map<Ability, Int> = gson.fromJson(abilityMapString, type)
-        return abilityNamesMap
+        return gson.fromJson(abilityMapString, type)
     }
 
     @TypeConverter

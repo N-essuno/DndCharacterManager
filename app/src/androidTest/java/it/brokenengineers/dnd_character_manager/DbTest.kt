@@ -38,7 +38,7 @@ class DbTest {
         // Get the database
         val db = DndCharacterManagerDB.getDatabase(context)
 
-        // get repository
+        // get repository for retrieving mock characters
         val repo = db?.let { DndCharacterManagerViewModel(it) }?.let {
             DndCharacterManagerRepository(
                 it,

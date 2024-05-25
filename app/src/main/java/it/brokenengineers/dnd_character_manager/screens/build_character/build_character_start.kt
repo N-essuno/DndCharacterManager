@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -130,7 +131,11 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     image = characterImage
                 )
                 if (ch != null) {
-                    navController.navigate("sheet/${ch.id}")
+                    navController.navigate("sheet/${ch.id}"){
+                        popUpTo(navController.graph.findStartDestination().id)
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 } else {
                     Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
                 }

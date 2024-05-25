@@ -40,6 +40,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
          */
         private val roomDatabaseCallback: Callback =
             object : Callback() {
+                // TODO potential improvement. When we have RACE and DNDCLASS or other tables populate with enum values for each of those
             }
     }
 
