@@ -25,7 +25,7 @@ class DndCharacterManagerViewModel(/* TODO add Database */) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
-                var newCharacter = character
+                val newCharacter: Character?
                 if (character.tempHp >= hitValue) {
                     val newTempHp = character.tempHp - hitValue
                     newCharacter = character.copy(tempHp = newTempHp)
