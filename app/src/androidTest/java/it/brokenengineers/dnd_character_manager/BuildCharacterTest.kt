@@ -55,6 +55,11 @@ class BuildCharacterTest {
             assertEquals("Test Character", character?.name)
             assertEquals("Dwarf", character?.race?.name)
             assertEquals("Barbarian", character?.dndClass?.name)
+
+            // clean up the database
+            composeTestRule.runOnIdle {
+                runBlocking { characterDao.deleteCharacterById(character!!.id) }
+            }
         }
     }
 }

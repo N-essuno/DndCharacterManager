@@ -8,17 +8,27 @@ import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRe
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 
 class DbTest {
-    @Test
+    private lateinit var db: DndCharacterManagerDB
+
+    @Before
     fun testOpenDb() {
         // get application context
         val context = ApplicationProvider.getApplicationContext<Context>()
         // Get the database
         val db = DndCharacterManagerDB.getDatabase(context)
         assert(db != null)
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun testCloseDb() {
+        db.close()
     }
 
     @Test
@@ -48,7 +58,7 @@ class DbTest {
             assert(characters.size == testCharacters?.size)
 
             // Clean up
-            runBlocking { characterDao.deleteAll() }
+            runBlocking { characterDao.deleteCharacters(testCharacters) }
         }
     }
 }

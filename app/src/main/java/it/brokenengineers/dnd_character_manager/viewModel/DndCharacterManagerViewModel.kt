@@ -3,8 +3,10 @@ package it.brokenengineers.dnd_character_manager.viewModel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -32,10 +34,13 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
 
     fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): DndCharacter?{
         // convert to Race and DndClass
-        val raceObj = RaceEnum.valueOf(race.uppercase()).race
-        val dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
-        if(raceObj == null || dndClassObj == null){
-            // TODO check that the enum conversion was successful, if condition should be different
+        val raceObj: Race
+        val dndClassObj: DndClass
+        try{
+            raceObj = RaceEnum.valueOf(race.uppercase()).race
+            dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
+        } catch (e: IllegalArgumentException){
+            // IllegalArgument exception is thrown if the string is not a valid enum value
             return null
         }
         var newDndCharacter: DndCharacter? = null

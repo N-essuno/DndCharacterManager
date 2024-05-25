@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.data.database
 
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -20,6 +19,16 @@ interface DndCharacterDao {
     @Insert
     suspend fun insertAll(dndCharacters: List<DndCharacter>)
 
+    @Query("DELETE FROM DndCharacter WHERE id = :id")
+    suspend fun deleteCharacterById(id: Int)
+    @Query("DELETE FROM DndCharacter WHERE id IN (:ids)")
+    suspend fun deleteCharactersByIds(ids: List<Int>)
+    suspend fun deleteCharacters(testCharacters: List<DndCharacter>?){
+        val ids = testCharacters?.map { it.id }
+        if (ids != null) {
+            deleteCharactersByIds(ids)
+        }
+    }
     @Query("DELETE FROM DndCharacter")
     suspend fun deleteAll()
 }
