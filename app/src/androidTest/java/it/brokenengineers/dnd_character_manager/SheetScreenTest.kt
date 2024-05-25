@@ -269,6 +269,28 @@ class SheetScreenTest {
         composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 5")
     }
 
+    @Test
+    fun testNavigateToLevelUp(){
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithTag("levelup_button").performClick()
+        navController.assertCurrentRouteWithIdEqual("levelup/1")
+    }
+
+    @Test
+    fun testNavigateToRest(){
+        composeTestRule.onNodeWithTag("test_card").performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        composeTestRule.onNodeWithTag("rest_button").performClick()
+        navController.assertCurrentRouteWithIdEqual("rest/1")
+    }
+
+    @Test
+    fun testNavigateToBuildCharacter(){
+        composeTestRule.onNodeWithTag("create_character_button").performClick()
+        navController.assertCurrentRouteEqual("build_character")
+    }
+
     private fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
         val currentRoute = currentBackStackEntry?.destination?.route.toString()
         Assert.assertEquals(expectedRouteName, currentRoute)

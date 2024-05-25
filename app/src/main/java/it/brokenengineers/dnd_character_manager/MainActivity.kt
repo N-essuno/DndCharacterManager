@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -204,6 +205,7 @@ fun HomePage(
         }
         Button(
             modifier = Modifier
+                .testTag("create_character_button")
                 .align(Alignment.BottomCenter)
                 .padding(MediumPadding),
             colors = ButtonDefaults.buttonColors(

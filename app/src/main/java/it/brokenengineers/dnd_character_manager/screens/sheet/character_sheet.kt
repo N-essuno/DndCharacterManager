@@ -46,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -225,6 +226,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character, navController: 
                         end.linkTo(hpCard.start)
                         top.linkTo(parent.top)
                     }
+                    .testTag("rest_button")
             )
             LevelUpButton(
                 character = character,
@@ -234,6 +236,7 @@ fun CharacterSheetHead(modifier: Modifier, character: Character, navController: 
                         end.linkTo(restButton.start)
                         top.linkTo(parent.top)
                     }
+                    .testTag("levelup_button")
             )
         }
     }
