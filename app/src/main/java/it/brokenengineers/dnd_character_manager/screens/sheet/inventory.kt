@@ -43,6 +43,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallVerticalSpacing
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 // TODO add gold visualization
 
@@ -199,12 +200,12 @@ fun InventoryItemRow(
         var quantityTag = ""
         var weightTag = ""
         if (testUse) {
-            deleteTag = "delete_item"
-            incrementTag = "increment_item"
-            decrementTag = "decrement_item"
-            itemTag = "item_name"
-            quantityTag = "item_quantity"
-            weightTag = "item_weight"
+            deleteTag = TestTags.ITEM_DELETE_BUTTON
+            incrementTag = TestTags.ITEM_INCREMENT_BUTTON
+            decrementTag = TestTags.ITEM_DECREMENT_BUTTON
+            itemTag = TestTags.ITEM_NAME_TEXT
+            quantityTag = TestTags.ITEM_QUANTITY_TEXT
+            weightTag = TestTags.ITEM_WEIGHT_TEXT
         }
 
         Column (
@@ -274,7 +275,6 @@ fun InventoryItemRow(
                     )
                 }
             }
-
         }
     }
 }
@@ -368,7 +368,7 @@ fun WeightRow(weight: String, maxWeight: String){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                modifier = Modifier.padding(start = SmallPadding).testTag("total_weight"),
+                modifier = Modifier.padding(start = SmallPadding).testTag(TestTags.TOTAL_WEIGHT_TEXT),
                 text = "$totalWeightString $weight",
                 style = MaterialTheme.typography.bodyLarge
             )

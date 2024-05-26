@@ -24,6 +24,7 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.theme.CharacterCardWidth
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @Composable
 fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController: NavHostController, testCard : Boolean = false) {
@@ -47,7 +48,7 @@ fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController
     }
 
     if (testCard) {
-        cardModifier = cardModifier.testTag("test_card")
+        cardModifier = cardModifier.testTag(TestTags.TEST_CARD)
     }
 
     Card(

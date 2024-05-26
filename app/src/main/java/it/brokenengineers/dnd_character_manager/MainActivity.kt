@@ -50,6 +50,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XLPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,7 +88,6 @@ class MainActivity : ComponentActivity() {
 fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
-
             composable("home") { HomePage(navController, viewModel) }
         }
         navigation(startDestination = "create_character", route = "character_creation") {
@@ -192,7 +192,7 @@ fun HomePage(
                 text = welcomeMessage,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(top = XLPadding, bottom = MediumPadding)
+                modifier = Modifier.padding(top = XLPadding, bottom = MediumPadding).testTag(TestTags.WELCOME_MESSAGE)
             )
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally

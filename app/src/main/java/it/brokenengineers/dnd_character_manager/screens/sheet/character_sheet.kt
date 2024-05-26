@@ -64,6 +64,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XSPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
@@ -188,6 +189,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                     }
+                    .testTag(TestTags.CHARACTER_NAME_TEXT)
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
@@ -198,6 +200,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         start.linkTo(parent.start)
                         top.linkTo(cName.bottom)
                     }
+                    .testTag(TestTags.CHARACTER_RACE_TEXT)
             )
             Text(
                 style = MaterialTheme.typography.bodyMedium,
@@ -208,6 +211,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         start.linkTo(cRace.end)
                         top.linkTo(cName.bottom)
                     }
+                    .testTag(TestTags.CHARACTER_CLASS_TEXT)
             )
             HitPointsCard(
                 dndCharacter = dndCharacter,
@@ -259,11 +263,15 @@ fun HitPointsCard(modifier: Modifier, dndCharacter: DndCharacter) {
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                modifier = Modifier.padding(SmallPadding),
+                modifier = Modifier
+                    .testTag(TestTags.HP_TEXT)
+                    .padding(SmallPadding),
                 text = "$hpString: $currentHp/$maxHp"
             )
             Text(
-                modifier = Modifier.padding(start = SmallPadding, end = SmallPadding, bottom = SmallPadding),
+                modifier = Modifier
+                    .testTag(TestTags.TEMP_HP_TEXT)
+                    .padding(start = SmallPadding, end = SmallPadding, bottom = SmallPadding),
                 text = "$tempHpString: $tempHp"
             )
         }
@@ -352,6 +360,7 @@ fun ImageAndDamageRow(
             )
             MyButton(
                 modifier = Modifier
+                    .testTag(TestTags.EDIT_HP_BUTTON)
                     .constrainAs(editHpButton) {
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)
@@ -367,13 +376,15 @@ fun ImageAndDamageRow(
                         top.linkTo(editHpButton.bottom)
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
-                    },
+                    }
+                    .testTag(TestTags.EDIT_TEMP_HP_BUTTON),
                 text = editTempHpButtonString,
             ) {
                 showDialogTempHp.value = true
             }
             MyButton(
                 modifier = Modifier
+                    .testTag(TestTags.HIT_BUTTON)
                     .constrainAs(hitButton) {
                         top.linkTo(parent.top)
                         end.linkTo(editHpButton.start)
@@ -408,6 +419,7 @@ fun ImageAndDamageRow(
             title = { Text(hitManagementString) },
             text = {
                 OutlinedTextField(
+                    modifier = Modifier.testTag(TestTags.DIALOG_HIT_FIELD),
                     value = hitValue.value,
                     onValueChange = { hitValue.value = it },
                     label = { Text(hpString) }
@@ -415,6 +427,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HIT),
                     onClick = {
                         viewModel.addHit(hitValue.value.toInt())
                         showDialogHit.value = false
@@ -436,6 +449,7 @@ fun ImageAndDamageRow(
             title = { Text(hpManagementString) },
             text = {
                 OutlinedTextField(
+                    modifier = Modifier.testTag(TestTags.DIALOG_HP_FIELD),
                     value = hp.value,
                     onValueChange = { hp.value = it },
                     label = { Text(hpString) }
@@ -443,6 +457,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HP),
                     onClick = {
                         viewModel.addHp(hp.value.toInt())
                         showDialogHp.value = false
@@ -454,6 +469,7 @@ fun ImageAndDamageRow(
 
             dismissButton = {
                 Button(
+                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_HP),
                     onClick = {
                         viewModel.loseHp(hp.value.toInt())
                         showDialogHp.value = false
@@ -474,6 +490,7 @@ fun ImageAndDamageRow(
             title = { Text(tempHpManagementString) },
             text = {
                 OutlinedTextField(
+                    modifier = Modifier.testTag(TestTags.DIALOG_TEMP_HP_FIELD),
                     value = tempHp.value,
                     onValueChange = { tempHp.value = it },
                     label = { Text(tempHpString) }
@@ -481,6 +498,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_TEMP_HP),
                     onClick = {
                         viewModel.addTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
@@ -491,6 +509,7 @@ fun ImageAndDamageRow(
             },
             dismissButton = {
                 Button(
+                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_TEMP_HP),
                     onClick = {
                         viewModel.loseTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
