@@ -215,10 +215,9 @@ fun HomePage(
         }
         Button(
             modifier = Modifier
-                .testTag("create_character_button")
+                .testTag(TestTags.CREATE_CHARACTER_BUTTON)
                 .align(Alignment.BottomCenter)
-                .padding(MediumPadding)
-                .testTag("create_character_button"),
+                .padding(MediumPadding),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary

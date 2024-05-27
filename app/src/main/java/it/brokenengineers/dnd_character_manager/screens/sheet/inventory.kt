@@ -295,7 +295,7 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
     val weight = remember { mutableStateOf("") }
 
     Button(
-        modifier = modifier.padding(end = SmallPadding).testTag("add_item"),
+        modifier = modifier.padding(end = SmallPadding).testTag(TestTags.ADD_ITEM_BUTTON),
         onClick = { openDialog.value = true }
     ) {
         Text(addItemString)
@@ -307,24 +307,30 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
         weight.value = ""
         AlertDialog(
             onDismissRequest = { openDialog.value = false },
-            title = { Text(text = addItemToInventoryString) },
+            title = {
+                Text(
+                    text = addItemToInventoryString,
+                    modifier = Modifier
+                        .testTag(TestTags.DIALOG_ADD_ITEM_TITLE)
+                )
+                    },
             text = {
                 Column {
 
                     TextField(
-                        modifier = Modifier.testTag("add_item_name"),
+                        modifier = Modifier.testTag(TestTags.DIALOG_ITEM_NAME_FIELD),
                         value = itemName.value,
                         onValueChange = { itemName.value = it },
                         label = { Text(itemNameString) }
                     )
                     TextField(
-                        modifier = Modifier.testTag("add_item_quantity"),
+                        modifier = Modifier.testTag(TestTags.DIALOG_ITEM_QUANTITY_FIELD),
                         value = quantity.value,
                         onValueChange = { quantity.value = it },
                         label = { Text(quantityString) }
                     )
                     TextField(
-                        modifier = Modifier.testTag("add_item_weight"),
+                        modifier = Modifier.testTag(TestTags.DIALOG_ITEM_WEIGHT_FIELD),
                         value = weight.value,
                         onValueChange = { weight.value = it },
                         label = { Text(weightString) }
@@ -333,7 +339,7 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
             },
             confirmButton = {
                 Button(
-                    modifier = Modifier.testTag("add_item_confirm"),
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_ITEM_BUTTON),
                     onClick = {
                         viewModel.addItemToInventory(
                             name = itemName.value,

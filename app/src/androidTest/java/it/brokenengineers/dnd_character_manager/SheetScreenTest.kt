@@ -74,7 +74,7 @@ class SheetScreenTest {
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithTag(TestTags.EDIT_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_TEMP_HP_FIELD).performTextInput("5")
-        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_TEMP_HP).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.TEMP_HP_TEXT).assertTextEquals("$tempHpString: 5")
     }
 
@@ -85,12 +85,12 @@ class SheetScreenTest {
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithTag(TestTags.EDIT_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_TEMP_HP_FIELD).performTextInput("5")
-        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_TEMP_HP).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.TEMP_HP_TEXT).assertTextEquals("$tempHpString: 5")
 
         composeTestRule.onNodeWithTag(TestTags.EDIT_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_TEMP_HP_FIELD).performTextInput("5")
-        composeTestRule.onNodeWithText(TestTags.DIALOG_LOSE_TEMP_HP).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_LOSE_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.TEMP_HP_TEXT).assertTextEquals("$tempHpString: 0")
     }
 
@@ -100,29 +100,27 @@ class SheetScreenTest {
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
 
-        composeTestRule.onNodeWithText(TestTags.EDIT_HP_BUTTON).performClick()
-        composeTestRule.onNodeWithText(TestTags.DIALOG_HP_FIELD).performTextInput("7")
-        composeTestRule.onNodeWithText(TestTags.DIALOG_LOSE_HP).performClick()
+        composeTestRule.onNodeWithTag(TestTags.EDIT_HP_BUTTON).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_HP_FIELD).performTextInput("7")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_LOSE_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.HP_TEXT).assertTextEquals("$hpString: 0/7")
     }
 
     @Test
     fun testAddHp(){
         val hpString = appContext.getString(R.string.hp)
-        val addHpString = appContext.getString(R.string.add_hp)
-        val editHpString = appContext.getString(R.string.edit_hp_button)
 
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
 
-        composeTestRule.onNodeWithText(TestTags.EDIT_HP_BUTTON).performClick()
-        composeTestRule.onNodeWithText(TestTags.DIALOG_HP_FIELD).performTextInput("7")
-        composeTestRule.onNodeWithText(TestTags.DIALOG_LOSE_HP).performClick()
+        composeTestRule.onNodeWithTag(TestTags.EDIT_HP_BUTTON).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_HP_FIELD).performTextInput("7")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_LOSE_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.HP_TEXT).assertTextEquals("$hpString: 0/7")
 
-        composeTestRule.onNodeWithText(editHpString).performClick()
-        composeTestRule.onNodeWithText(TestTags.DIALOG_HP_FIELD).performTextInput("7")
-        composeTestRule.onNodeWithText(addHpString).performClick()
+        composeTestRule.onNodeWithTag(TestTags.EDIT_HP_BUTTON).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_HP_FIELD).performTextInput("7")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.HP_TEXT).assertTextEquals("$hpString: 7/7")
     }
 
@@ -135,7 +133,7 @@ class SheetScreenTest {
 
         composeTestRule.onNodeWithTag(TestTags.HIT_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_HIT_FIELD).performTextInput("7")
-        composeTestRule.onNodeWithText(TestTags.DIALOG_ADD_HIT).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_HIT_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.HP_TEXT).assertTextEquals("$hpString: 0/7")
     }
 
@@ -220,18 +218,19 @@ class SheetScreenTest {
         composeTestRule.onNodeWithText("Inventory").performClick()
         navController.assertCurrentRouteWithIdEqual("inventory/1")
 
-        composeTestRule.onNodeWithTag("add_item").performClick()
-        composeTestRule.onNodeWithText(addItemToInventoryString).assertIsDisplayed()
-        composeTestRule.onNodeWithTag("add_item_name").performTextInput("Test item")
-        composeTestRule.onNodeWithTag("add_item_quantity").performTextClearance()
-        composeTestRule.onNodeWithTag("add_item_quantity").performTextInput("4")
-        composeTestRule.onNodeWithTag("add_item_weight").performTextInput("3.0")
-        composeTestRule.onNodeWithTag("add_item_confirm").performClick()
+        composeTestRule.onNodeWithTag(TestTags.ADD_ITEM_BUTTON).performClick()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_ITEM_TITLE)
+            .assertTextEquals(addItemToInventoryString)
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ITEM_NAME_FIELD).performTextInput("Test item")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ITEM_QUANTITY_FIELD).performTextClearance()
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ITEM_QUANTITY_FIELD).performTextInput("4")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ITEM_WEIGHT_FIELD).performTextInput("3.0")
+        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_ITEM_BUTTON).performClick()
 
         composeTestRule.onNodeWithText("Test item").assertIsDisplayed()
         composeTestRule.onNodeWithText("3.0").assertIsDisplayed()
         composeTestRule.onNodeWithText("4").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("total_weight")
+        composeTestRule.onNodeWithTag(TestTags.TOTAL_WEIGHT_TEXT)
             .assertTextEquals("$totalWeightString 19.7")
     }
 
@@ -243,10 +242,10 @@ class SheetScreenTest {
         composeTestRule.onNodeWithText("Attack & Spells").performClick()
         navController.assertCurrentRouteWithIdEqual("attack/1")
 
-        composeTestRule.onNodeWithTag("spells_title").assertTextEquals(spellsTitleString)
+        composeTestRule.onNodeWithTag(TestTags.SPELLS_TITLE_TEXT).assertTextEquals(spellsTitleString)
         composeTestRule.onNodeWithText("Magic Missile").assertIsDisplayed()
         composeTestRule.onNodeWithText("Fireball").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 6")
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 6")
     }
 
     @Test
@@ -256,16 +255,16 @@ class SheetScreenTest {
         composeTestRule.onNodeWithText("Attack & Spells").performClick()
         navController.assertCurrentRouteWithIdEqual("attack/1")
 
-        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 6")
-        composeTestRule.onNodeWithTag("use_slot").performClick()
-        composeTestRule.onNodeWithTag("n_slot").assertTextEquals("Slots: 5")
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 6")
+        composeTestRule.onNodeWithTag(TestTags.USE_SLOT_BUTTON).performClick()
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 5")
     }
 
     @Test
     fun testNavigateToLevelUp(){
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
-        composeTestRule.onNodeWithTag("levelup_button").performClick()
+        composeTestRule.onNodeWithTag(TestTags.LEVELUP_BUTTON).performClick()
         navController.assertCurrentRouteWithIdEqual("levelup/1")
     }
 
@@ -273,13 +272,13 @@ class SheetScreenTest {
     fun testNavigateToRest(){
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
-        composeTestRule.onNodeWithTag("rest_button").performClick()
+        composeTestRule.onNodeWithTag(TestTags.REST_BUTTON).performClick()
         navController.assertCurrentRouteWithIdEqual("rest/1")
     }
 
     @Test
     fun testNavigateToBuildCharacter(){
-        composeTestRule.onNodeWithTag("create_character_button").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CREATE_CHARACTER_BUTTON).performClick()
         navController.assertCurrentRouteEqual("build_character")
     }
 

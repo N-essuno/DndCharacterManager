@@ -41,6 +41,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.ScrollColumnHeightMediu
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLVerticalSpacing
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -206,8 +207,8 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
     var useSlotTag = ""
     var nSlotTag = ""
     if (level == 3){
-        useSlotTag = "use_slot"
-        nSlotTag = "n_slot"
+        useSlotTag = TestTags.USE_SLOT_BUTTON
+        nSlotTag = TestTags.N_SLOT_TEXT
     }
 
 
@@ -279,7 +280,7 @@ fun SpellsTitleRow(){
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                modifier = Modifier.padding(SmallPadding).testTag("spells_title"),
+                modifier = Modifier.padding(SmallPadding).testTag(TestTags.SPELLS_TITLE_TEXT),
                 text = spellsTitleString,
                 style = MaterialTheme.typography.titleLarge
             )

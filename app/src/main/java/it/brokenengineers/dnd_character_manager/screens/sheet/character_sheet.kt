@@ -230,7 +230,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         end.linkTo(hpCard.start)
                         top.linkTo(parent.top)
                     }
-                    .testTag("rest_button")
+                    .testTag(TestTags.REST_BUTTON)
             )
             LevelUpButton(
                 dndCharacter = dndCharacter,
@@ -240,7 +240,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         end.linkTo(restButton.start)
                         top.linkTo(parent.top)
                     }
-                    .testTag("levelup_button")
+                    .testTag(TestTags.LEVELUP_BUTTON)
             )
         }
     }
@@ -427,7 +427,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
-                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HIT),
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HIT_BUTTON),
                     onClick = {
                         viewModel.addHit(hitValue.value.toInt())
                         showDialogHit.value = false
@@ -457,7 +457,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
-                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HP),
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_HP_BUTTON),
                     onClick = {
                         viewModel.addHp(hp.value.toInt())
                         showDialogHp.value = false
@@ -469,7 +469,7 @@ fun ImageAndDamageRow(
 
             dismissButton = {
                 Button(
-                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_HP),
+                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_HP_BUTTON),
                     onClick = {
                         viewModel.loseHp(hp.value.toInt())
                         showDialogHp.value = false
@@ -498,7 +498,7 @@ fun ImageAndDamageRow(
             },
             confirmButton = {
                 Button(
-                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_TEMP_HP),
+                    modifier = Modifier.testTag(TestTags.DIALOG_ADD_TEMP_HP_BUTTON),
                     onClick = {
                         viewModel.addTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
@@ -509,7 +509,7 @@ fun ImageAndDamageRow(
             },
             dismissButton = {
                 Button(
-                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_TEMP_HP),
+                    modifier = Modifier.testTag(TestTags.DIALOG_LOSE_TEMP_HP_BUTTON),
                     onClick = {
                         viewModel.loseTempHp(tempHp.value.toInt())
                         showDialogTempHp.value = false
