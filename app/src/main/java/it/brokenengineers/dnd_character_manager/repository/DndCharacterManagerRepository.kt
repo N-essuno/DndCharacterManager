@@ -2,11 +2,13 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
+import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
+import it.brokenengineers.dnd_character_manager.data.database.RaceDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -17,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class DndCharacterManagerRepository(
     private val viewModel: DndCharacterManagerViewModel,
-    private val dndCharacterDao: DndCharacterDao
+    private val dndCharacterDao: DndCharacterDao,
+    private val raceDao: RaceDao,
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -28,15 +31,79 @@ class DndCharacterManagerRepository(
             getAllCharacters()
         }
     }
-
-    fun addCharacter(dndCharacter: DndCharacter) {
+    fun insertCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
-            allCharacters.value.add(dndCharacter)
+            val race = raceDao.getRaceByName(dndCharacter.race!!.name)
+            dndCharacter.raceId = race.id
 
-            // Insert character into database
             dndCharacterDao.insert(dndCharacter)
+            allCharacters.value.add(dndCharacter)
         }
     }
+
+    fun insertAllCharacters(dndCharacters: List<DndCharacter>) {
+        viewModel.viewModelScope.launch {
+            for (character in dndCharacters) {
+                val race = raceDao.getRaceByName(character.race!!.name)
+                character.raceId = race.id
+            }
+
+            dndCharacterDao.insertAll(dndCharacters)
+            allCharacters.value.addAll(dndCharacters)
+        }
+    }
+
+    fun deleteAllCharacters() {
+        viewModel.viewModelScope.launch {
+            dndCharacterDao.deleteAll()
+            allCharacters.value.clear()
+        }
+    }
+
+    fun insertRace(race: Race) {
+        viewModel.viewModelScope.launch {
+            raceDao.insert(race)
+        }
+    }
+
+    fun insertAllRaces(races: List<Race>){
+        viewModel.viewModelScope.launch {
+            raceDao.insertAll(races)
+        }
+    }
+
+
+    // Blocking functions used for DB testing to wait for results (no UI)
+
+    suspend fun fetchAllCharactersBlocking(): List<DndCharacter> {
+        val dbCharacters = dndCharacterDao.getAllCharacters().toMutableList()
+
+        for (character in dbCharacters) {
+            val characterRace = raceDao.getRaceById(character.raceId)
+            character.race = characterRace
+        }
+        return dbCharacters
+    }
+
+    suspend fun fetchAllRacesBlocking(): List<Race> {
+        val dbRaces = raceDao.getAllRaces()
+        return dbRaces
+    }
+
+    suspend fun insertAllCharactersBlocking(dndCharacters: List<DndCharacter>) {
+        for (character in dndCharacters) {
+            val race = raceDao.getRaceByName(character.race!!.name)
+            character.raceId = race.id
+        }
+
+        dndCharacterDao.insertAll(dndCharacters)
+    }
+
+
+
+
+    // No interaction with DB below this line
+
 
     private fun getAllCharacters() {
         viewModel.viewModelScope.launch {
@@ -126,7 +193,8 @@ class DndCharacterManagerRepository(
             ),
             inventoryItems = setOf(item1, item2),
             image = null,
-            weapon = null
+            weapon = null,
+            raceId = 1
         )
 
         val dndCharacter2 = DndCharacter(
@@ -144,7 +212,8 @@ class DndCharacterManagerRepository(
             preparedSpells = null,
             availableSpellSlots = null,
             inventoryItems = setOf(item3, item4),
-            weapon = weapon1
+            weapon = weapon1,
+            raceId = 1
         )
 
         Log.i(tag, "Repository: created mock characters")

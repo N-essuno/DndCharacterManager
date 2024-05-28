@@ -4,9 +4,9 @@ import androidx.room.TypeConverter
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
+import it.brokenengineers.dnd_character_manager.data.classes.AbilityScoreIncrease
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
-import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
@@ -18,16 +18,16 @@ class Converters {
         .registerTypeAdapter(Ability::class.java, AbilityTypeAdapter())
         .create()
 
-    @TypeConverter
-    fun fromRace(race: Race): String {
-        return gson.toJson(race)
-    }
-
-    @TypeConverter
-    fun toRace(raceString: String): Race {
-        val type = object : TypeToken<Race>() {}.type
-        return gson.fromJson(raceString, type)
-    }
+//    @TypeConverter
+//    fun fromRace(race: Race): String {
+//        return gson.toJson(race)
+//    }
+//
+//    @TypeConverter
+//    fun toRace(raceString: String): Race {
+//        val type = object : TypeToken<Race>() {}.type
+//        return gson.fromJson(raceString, type)
+//    }
 
     @TypeConverter
     fun fromDndClass(dndClass: DndClass): String {
@@ -106,5 +106,16 @@ class Converters {
     fun toWeapon(weaponString: String): Weapon? {
         val type = object : TypeToken<Weapon?>() {}.type
         return gson.fromJson(weaponString, type)
+    }
+
+    @TypeConverter
+    fun fromAbilityScoreIncrease(abilityScoreIncrease: List<AbilityScoreIncrease>): String {
+        return gson.toJson(abilityScoreIncrease)
+    }
+
+    @TypeConverter
+    fun toAbilityScoreIncrease(abilityScoreIncreaseString: String): List<AbilityScoreIncrease> {
+        val type = object : TypeToken<List<AbilityScoreIncrease>>() {}.type
+        return gson.fromJson(abilityScoreIncreaseString, type)
     }
 }

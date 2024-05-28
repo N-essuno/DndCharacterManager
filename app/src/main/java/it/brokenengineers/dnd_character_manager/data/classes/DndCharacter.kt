@@ -1,26 +1,32 @@
-package it.brokenengineers.dnd_character_manager.data.database
+package it.brokenengineers.dnd_character_manager.data.classes
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import it.brokenengineers.dnd_character_manager.data.classes.Ability
-import it.brokenengineers.dnd_character_manager.data.classes.DndClass
-import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
-import it.brokenengineers.dnd_character_manager.data.classes.Race
-import it.brokenengineers.dnd_character_manager.data.classes.Skill
-import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.classes.Weapon
+import it.brokenengineers.dnd_character_manager.data.database.Converters
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 
 @TypeConverters(Converters::class)
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = Race::class,
+            parentColumns = ["id"],
+            childColumns = ["raceId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class DndCharacter (
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val race: Race,
+    @Ignore var race: Race?,
+    var raceId: Int,
     val dndClass: DndClass,
     val image: String? = null,
     val level: Int,
@@ -34,6 +40,60 @@ data class DndCharacter (
     val inventoryItems: Set<InventoryItem>?,
     val weapon: Weapon?
 ) {
+    // Secondary constructor without the ignored field
+    constructor(
+        id: Int = 0,
+        name: String,
+        raceId: Int,
+        dndClass: DndClass,
+        image: String? = null,
+        level: Int,
+        abilityValues: Map<Ability, Int>,
+        skillProficiencies: Set<Skill>,
+        remainingHp: Int,
+        tempHp: Int,
+        spellsKnown: Set<Spell>?,
+        preparedSpells: Set<Spell>?,
+        availableSpellSlots: Map<Int, Int>?,
+        inventoryItems: Set<InventoryItem>?,
+        weapon: Weapon?
+    ) : this(
+        id,
+        name,
+        null, // Default value for the ignored field
+        raceId,
+        dndClass,
+        image,
+        level,
+        abilityValues,
+        skillProficiencies,
+        remainingHp,
+        tempHp,
+        spellsKnown,
+        preparedSpells,
+        availableSpellSlots,
+        inventoryItems,
+        weapon
+    )
+
+    override fun toString(): String {
+        return "id: $id\n" +
+                "Name: $name\n" +
+                "Race: $race\n" +
+                "RaceId: $raceId\n" +
+                "DndClass: $dndClass\n" +
+                "Level: $level\n" +
+                "Ability Values: ${abilityValues.entries.joinToString { "${it.key.name}: ${it.value}" }}\n" +
+                "Skill Proficiencies: ${skillProficiencies.joinToString { it.name }}\n" +
+                "Remaining HP: $remainingHp\n" +
+                "Temp HP: $tempHp\n" +
+                "Spells Known: ${spellsKnown?.joinToString { it.name }}\n" +
+                "Prepared Spells: ${preparedSpells?.joinToString { it.name }}\n" +
+                "Available Spell Slots: ${availableSpellSlots?.entries?.joinToString { "${it.key}: ${it.value}" }}\n" +
+                "Inventory Items: ${inventoryItems?.joinToString { it.name }}\n" +
+                "Weapon: $weapon"
+    }
+
     fun getProficiencyBonus(): Int {
         return when (level) {
             in 1..4 -> 2
@@ -60,7 +120,7 @@ data class DndCharacter (
     }
 
     fun getWalkSpeed(): Int {
-        return race.walkSpeed
+        return race!!.walkSpeed
     }
 
     fun getMaxHp(): Int {

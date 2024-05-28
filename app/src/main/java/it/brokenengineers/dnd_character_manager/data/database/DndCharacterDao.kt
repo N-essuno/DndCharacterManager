@@ -4,6 +4,7 @@ package it.brokenengineers.dnd_character_manager.data.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 
 @Dao
 interface DndCharacterDao {
