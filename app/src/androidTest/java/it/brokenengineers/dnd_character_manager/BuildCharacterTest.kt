@@ -6,7 +6,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.MainActivity
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import kotlinx.coroutines.runBlocking

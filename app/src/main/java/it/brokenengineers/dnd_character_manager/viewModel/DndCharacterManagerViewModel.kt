@@ -3,10 +3,10 @@ package it.brokenengineers.dnd_character_manager.viewModel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var characterDao = db.characterDao()
-    private val repository = DndCharacterManagerRepository(this, characterDao)
+    private var raceDao = db.raceDao()
+    private val repository = DndCharacterManagerRepository(this, characterDao, raceDao)
     var characters = repository.allCharacters
         private set
     var selectedCharacter = repository.selectedDndCharacter
@@ -53,6 +54,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
+                raceId = raceObj.id,
                 dndClass = dndClassObj,
                 image = image?.toString(),
                 level = 1,
@@ -66,7 +68,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 inventoryItems = emptySet(),
                 weapon = null
             )
-            newDndCharacter?.let { repository.addCharacter(newDndCharacter!!) }
+            newDndCharacter?.let { repository.insertCharacter(newDndCharacter!!) }
         }
         return newDndCharacter
     }

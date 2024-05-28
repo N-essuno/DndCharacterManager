@@ -1,7 +1,7 @@
 package it.brokenengineers.dnd_character_manager
 
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
@@ -26,6 +26,7 @@ class DndCharacterTest {
         val newDndCharacter = DndCharacter(
             name = name,
             race = race,
+            raceId = race.id,
             dndClass = dndClass,
             level = 1,
             abilityValues = abilityValues,

@@ -55,7 +55,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.CheckBoxMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.LargeVerticalSpacing
@@ -191,17 +191,19 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                     }
                     .testTag(TestTags.CHARACTER_NAME_TEXT)
             )
-            Text(
-                style = MaterialTheme.typography.bodyMedium,
-                text = dndCharacter.race.name,
-                modifier = Modifier
-                    .padding(SmallPadding)
-                    .constrainAs(cRace) {
-                        start.linkTo(parent.start)
-                        top.linkTo(cName.bottom)
-                    }
-                    .testTag(TestTags.CHARACTER_RACE_TEXT)
-            )
+            dndCharacter.race?.let {
+                Text(
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = it.name,
+                    modifier = Modifier
+                        .padding(SmallPadding)
+                        .constrainAs(cRace) {
+                            start.linkTo(parent.start)
+                            top.linkTo(cName.bottom)
+                        }
+                        .testTag(TestTags.CHARACTER_RACE_TEXT)
+                )
+            }
             Text(
                 style = MaterialTheme.typography.bodyMedium,
                 text = dndCharacter.dndClass.name,
