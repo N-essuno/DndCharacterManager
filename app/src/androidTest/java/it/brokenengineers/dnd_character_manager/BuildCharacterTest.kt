@@ -1,3 +1,4 @@
+
 import android.content.Context
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -7,8 +8,9 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.MainActivity
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -28,8 +30,13 @@ class BuildCharacterTest {
         // Get the database
         val db = DndCharacterManagerDB.getDatabase(context)
         if (db != null) {
-            // Initialize your DAO here
-            val characterDao: DndCharacterDao = db.characterDao()
+            val repository = runBlocking {
+                DndCharacterManagerRepository(
+                    DndCharacterManagerViewModel(db),
+                    db.characterDao(),
+                    db.raceDao()
+                )
+            }
 
                 // Navigate to the character creation screen
             composeTestRule.onNodeWithTag("create_character_button").performClick()
@@ -47,7 +54,7 @@ class BuildCharacterTest {
 
             composeTestRule.runOnIdle {
                 // Use Room's testing APIs to query the database and get the character
-                character = runBlocking { characterDao.getCharacterByName("Test Character") }
+                character = runBlocking { repository.fetchCharacterByNameBlocking("Test Character") }
             }
             // Assert that the character was created successfully
             assert(character != null)
@@ -58,7 +65,7 @@ class BuildCharacterTest {
 
             // clean up the database
             composeTestRule.runOnIdle {
-                runBlocking { characterDao.deleteCharacterById(character!!.id) }
+                runBlocking { repository.deleteCharacter(character!!) }
             }
         }
     }

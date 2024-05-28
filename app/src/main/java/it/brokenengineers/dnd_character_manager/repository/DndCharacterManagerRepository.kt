@@ -2,11 +2,11 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
-import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.RaceDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
@@ -60,6 +60,13 @@ class DndCharacterManagerRepository(
         }
     }
 
+    fun deleteCharacter(dndCharacter: DndCharacter) {
+        viewModel.viewModelScope.launch {
+            dndCharacterDao.deleteCharacter(dndCharacter)
+            allCharacters.value.removeIf { it.id == dndCharacter.id }
+        }
+    }
+
     fun insertRace(race: Race) {
         viewModel.viewModelScope.launch {
             raceDao.insert(race)
@@ -83,6 +90,13 @@ class DndCharacterManagerRepository(
             character.race = characterRace
         }
         return dbCharacters
+    }
+
+    suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter {
+        val dbCharacter = dndCharacterDao.getCharacterByName(name)
+        val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+        dbCharacter.race = characterRace
+        return dbCharacter
     }
 
     suspend fun fetchAllRacesBlocking(): List<Race> {

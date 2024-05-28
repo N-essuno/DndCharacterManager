@@ -51,10 +51,12 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             val proficiencies = initProficienciesForClass(dndClassObj)
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
 
+            val dbRace = raceDao.getRaceByName(raceObj.name)
+
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
-                raceId = raceObj.id,
+                raceId = dbRace.id,
                 dndClass = dndClassObj,
                 image = image?.toString(),
                 level = 1,
