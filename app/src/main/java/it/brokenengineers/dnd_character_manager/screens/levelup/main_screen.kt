@@ -18,7 +18,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
+import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
@@ -50,28 +52,22 @@ fun LevelUp(
             }
             item { Text(text = "Level Up!", style = MaterialTheme.typography.titleLarge) }
             // hp upgrade from previous to current level
-            item { HPUpgrade(10, 12) }
-            item {DynamicLevelUp(character = character)}
+            item {
+                StatIncrease(
+                "HP",
+                currentValue = getMaxHpStatic(
+                    dndClass = character.dndClass,
+                    level = character.level,
+                    abilityValues = character.abilityValues
+                ),
+                newValue = getMaxHpStatic(
+                    dndClass = character.dndClass,
+                    level = character.level + 1,
+                    abilityValues = character.abilityValues
+                ),
+            ) }
+            item {DynamicLevelUp(character = character, viewModel = viewModel)}
         }
-    }
-}
-
-@Composable
-fun HPUpgrade(previousHP: Int, newHP: Int) {
-    Row {
-        Text("HP Upgrade", style = MaterialTheme.typography.titleMedium)
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(text = previousHP.toString(), style = MaterialTheme.typography.bodyLarge)
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = "HP upgrade",
-            modifier = Modifier.padding(horizontal = SmallPadding)
-        )
-        Text(text = newHP.toString(), style = MaterialTheme.typography.bodyLarge)
     }
 }
 

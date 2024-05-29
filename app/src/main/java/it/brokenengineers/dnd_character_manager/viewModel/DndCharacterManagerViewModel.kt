@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
+import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter

@@ -6,9 +6,11 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 @Composable
-fun DynamicLevelUp(character: DndCharacter) {
+fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewModel) {
     val barbarian = DndClassEnum.BARBARIAN.dndClass
     val wizard = DndClassEnum.WIZARD.dndClass
 
@@ -26,7 +28,15 @@ fun DynamicLevelUp(character: DndCharacter) {
 
     if (currentLevelUpEvent != null) {
         // Handle the level up event
-        currentLevelUpEvent.newFeatures?.let { NewFeatures(it) }
+        currentLevelUpEvent.newFeatures?.let {
+            NewFeatures(it)
+        }
+        currentLevelUpEvent.increaseProficiencyBonus?.let {
+            val currentValue = character.getProficiencyBonus()
+            val newValue = currentValue + 1
+            StatIncrease(statName = "Proficiency Bonus", currentValue = currentValue, newValue = newValue)
+        }
+
     } else {
         Text("Level up event not found")
     }
