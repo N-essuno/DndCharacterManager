@@ -51,10 +51,7 @@ fun LevelUp(
             item { Text(text = "Level Up!", style = MaterialTheme.typography.titleLarge) }
             // hp upgrade from previous to current level
             item { HPUpgrade(10, 12) }
-//        item { NewMagic() }
-//        item { ArcaneTradition() }
-//        item { AbilityScoreImprovement() }
-//        item { NewFeatures() }
+            item {DynamicLevelUp(character = character)}
         }
     }
 }
