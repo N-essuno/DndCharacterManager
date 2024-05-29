@@ -27,7 +27,8 @@ data class DndCharacter (
     val name: String,
     @Ignore var race: Race?,
     var raceId: Int,
-    val dndClass: DndClass,
+    @Ignore var dndClass: DndClass?,
+    var dndClassId: Int,
     val image: String? = null,
     val level: Int,
     val abilityValues: Map<Ability, Int>,
@@ -45,7 +46,7 @@ data class DndCharacter (
         id: Int = 0,
         name: String,
         raceId: Int,
-        dndClass: DndClass,
+        dndClassId: Int,
         image: String? = null,
         level: Int,
         abilityValues: Map<Ability, Int>,
@@ -62,7 +63,8 @@ data class DndCharacter (
         name,
         null, // Default value for the ignored field
         raceId,
-        dndClass,
+        null,
+        dndClassId,
         image,
         level,
         abilityValues,
@@ -124,7 +126,7 @@ data class DndCharacter (
     }
 
     fun getMaxHp(): Int {
-        return getMaxHpStatic(dndClass, level, abilityValues)
+        return getMaxHpStatic(dndClass!!, level, abilityValues)
     }
 
     fun getAbilityModifier(abilityEnum: AbilityEnum): Int {
@@ -150,7 +152,7 @@ data class DndCharacter (
 
     fun getSavingThrowBonus(abilityEnum: AbilityEnum): Int {
         val abilityModifier = getAbilityModifier(abilityEnum)
-        if (dndClass.savingThrowProficiencies.contains(abilityEnum.ability)) {
+        if (dndClass!!.savingThrowProficiencies.contains(abilityEnum.ability)) {
             return abilityModifier + getProficiencyBonus()
         } else {
             return abilityModifier
@@ -158,7 +160,7 @@ data class DndCharacter (
     }
 
     fun isProficientInAbility(abilityEnum: AbilityEnum): Boolean {
-        return dndClass.savingThrowProficiencies.contains(abilityEnum.ability)
+        return dndClass!!.savingThrowProficiencies.contains(abilityEnum.ability)
     }
 
     fun getMaxCarryWeight(): Double {
@@ -174,11 +176,11 @@ data class DndCharacter (
     }
 
     fun getAttackBonus(): Int {
-        return abilityValues[dndClass.primaryAbility]!! + getProficiencyBonus()
+        return abilityValues[dndClass!!.primaryAbility]!! + getProficiencyBonus()
     }
 
     fun getSpellDcSavingThrow(): Int {
-        return 8 + getProficiencyBonus() + getAbilityModifier(dndClass.primaryAbility)
+        return 8 + getProficiencyBonus() + getAbilityModifier(dndClass!!.primaryAbility!!)
     }
 
     fun isSpellPrepared(spell: Spell): Boolean {

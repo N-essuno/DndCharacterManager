@@ -95,7 +95,7 @@ fun getAbilityModifierStatic(
 }
 
 fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Ability, Int>): Int {
-    val abilityEnum = AbilityEnum.valueOf(dndClass.primaryAbility.name)
+    val abilityEnum = AbilityEnum.valueOf(dndClass.primaryAbility!!.name)
 
     return if (dndClass == DndClassEnum.WIZARD.dndClass) {
         level + getAbilityModifierStatic(abilityEnum, abilityValues)

@@ -28,6 +28,7 @@ class DndCharacterTest {
             race = race,
             raceId = race.id,
             dndClass = dndClass,
+            dndClassId = dndClass.id,
             level = 1,
             abilityValues = abilityValues,
             skillProficiencies = proficiencies,

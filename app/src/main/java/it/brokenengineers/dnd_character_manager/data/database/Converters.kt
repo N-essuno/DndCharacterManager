@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.AbilityScoreIncrease
-import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
@@ -29,16 +28,16 @@ class Converters {
 //        return gson.fromJson(raceString, type)
 //    }
 
-    @TypeConverter
-    fun fromDndClass(dndClass: DndClass): String {
-        return gson.toJson(dndClass)
-    }
-
-    @TypeConverter
-    fun toDndClass(dndClassString: String): DndClass {
-        val type = object : TypeToken<DndClass>() {}.type
-        return gson.fromJson(dndClassString, type)
-    }
+//    @TypeConverter
+//    fun fromDndClass(dndClass: DndClass): String {
+//        return gson.toJson(dndClass)
+//    }
+//
+//    @TypeConverter
+//    fun toDndClass(dndClassString: String): DndClass {
+//        val type = object : TypeToken<DndClass>() {}.type
+//        return gson.fromJson(dndClassString, type)
+//    }
 
     @TypeConverter
     fun fromAbilityMap(abilityMap: Map<Ability, Int>): String {

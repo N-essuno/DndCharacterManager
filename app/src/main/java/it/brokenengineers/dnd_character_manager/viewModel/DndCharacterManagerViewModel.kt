@@ -20,7 +20,15 @@ import kotlinx.coroutines.launch
 class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var characterDao = db.characterDao()
     private var raceDao = db.raceDao()
-    private val repository = DndCharacterManagerRepository(this, characterDao, raceDao)
+    private var dndClassDao = db.dndClassDao()
+    private var abilityDao = db.abilityDao()
+    private val repository = DndCharacterManagerRepository(
+        this,
+        characterDao,
+        raceDao,
+        abilityDao,
+        dndClassDao
+    )
     var characters = repository.allCharacters
         private set
     var selectedCharacter = repository.selectedDndCharacter
@@ -58,6 +66,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 race = raceObj,
                 raceId = dbRace.id,
                 dndClass = dndClassObj,
+                dndClassId = dndClassObj.id,
                 image = image?.toString(),
                 level = 1,
                 abilityValues = abilityValues,
@@ -72,7 +81,9 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             )
             newDndCharacter?.let { repository.insertCharacter(newDndCharacter!!) }
         }
-        return newDndCharacter
+        // TODO check if update selectedCharacter in repository or viewmodel changes
+        selectedCharacter.value = newDndCharacter
+        return newDndCharacter // TODO should not return
     }
 
     fun addHit(hitValue: Int) {

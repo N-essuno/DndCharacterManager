@@ -34,11 +34,13 @@ class BuildCharacterTest {
                 DndCharacterManagerRepository(
                     DndCharacterManagerViewModel(db),
                     db.characterDao(),
-                    db.raceDao()
+                    db.raceDao(),
+                    db.abilityDao(),
+                    db.dndClassDao()
                 )
             }
 
-                // Navigate to the character creation screen
+            // Navigate to the character creation screen
             composeTestRule.onNodeWithTag("create_character_button").performClick()
 
             // Fill in the necessary fields
@@ -61,7 +63,10 @@ class BuildCharacterTest {
             // convert character result to DndCharacter object
             assertEquals("Test Character", character?.name)
             assertEquals("Dwarf", character?.race?.name)
+            assert(character?.dndClass != null)
             assertEquals("Barbarian", character?.dndClass?.name)
+            assert(character?.dndClass!!.savingThrowProficiencies.isNotEmpty())
+            assert(character?.dndClass!!.primaryAbility!!.name == "Strength")
 
             // clean up the database
             composeTestRule.runOnIdle {

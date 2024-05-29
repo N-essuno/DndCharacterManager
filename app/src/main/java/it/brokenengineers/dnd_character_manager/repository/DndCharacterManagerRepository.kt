@@ -2,25 +2,33 @@ package it.brokenengineers.dnd_character_manager.repository
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
+import it.brokenengineers.dnd_character_manager.data.database.AbilityDao
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
+import it.brokenengineers.dnd_character_manager.data.database.DndClassDao
 import it.brokenengineers.dnd_character_manager.data.database.RaceDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DndCharacterManagerRepository(
     private val viewModel: DndCharacterManagerViewModel,
     private val dndCharacterDao: DndCharacterDao,
     private val raceDao: RaceDao,
+    private val abilityDao: AbilityDao,
+    private val dndClassDao: DndClassDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -33,49 +41,65 @@ class DndCharacterManagerRepository(
     }
     fun insertCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
-            val race = raceDao.getRaceByName(dndCharacter.race!!.name)
-            dndCharacter.raceId = race.id
+            withContext(Dispatchers.IO) {
+                val race = raceDao.getRaceByName(dndCharacter.race!!.name)
+                val dndClass = dndClassDao.getDndClassByName(dndCharacter.dndClass!!.name)
+                dndCharacter.raceId = race.id
+                dndCharacter.dndClassId = dndClass.id
 
-            dndCharacterDao.insert(dndCharacter)
-            allCharacters.value.add(dndCharacter)
+                dndCharacterDao.insert(dndCharacter)
+                allCharacters.value.add(dndCharacter)
+            }
         }
     }
 
     fun insertAllCharacters(dndCharacters: List<DndCharacter>) {
         viewModel.viewModelScope.launch {
-            for (character in dndCharacters) {
-                val race = raceDao.getRaceByName(character.race!!.name)
-                character.raceId = race.id
-            }
+            withContext(Dispatchers.IO) {
+                for (character in dndCharacters) {
+                    val race = raceDao.getRaceByName(character.race!!.name)
+                    val dndClass = dndClassDao.getDndClassByName(character.dndClass!!.name)
+                    character.raceId = race.id
+                    character.dndClassId = dndClass.id
+                }
 
-            dndCharacterDao.insertAll(dndCharacters)
-            allCharacters.value.addAll(dndCharacters)
+                dndCharacterDao.insertAll(dndCharacters)
+                allCharacters.value.addAll(dndCharacters)
+            }
         }
     }
 
     fun deleteAllCharacters() {
         viewModel.viewModelScope.launch {
-            dndCharacterDao.deleteAll()
-            allCharacters.value.clear()
+            withContext(Dispatchers.IO) {
+                dndCharacterDao.deleteAll()
+                allCharacters.value.clear()
+            }
         }
     }
 
     fun deleteCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
-            dndCharacterDao.deleteCharacter(dndCharacter)
-            allCharacters.value.removeIf { it.id == dndCharacter.id }
+            withContext(Dispatchers.IO) {
+                dndCharacterDao.deleteCharacter(dndCharacter)
+                allCharacters.value.removeIf { it.id == dndCharacter.id }
+            }
         }
     }
 
     fun insertRace(race: Race) {
         viewModel.viewModelScope.launch {
-            raceDao.insert(race)
+            withContext(Dispatchers.IO) {
+                raceDao.insert(race)
+            }
         }
     }
 
     fun insertAllRaces(races: List<Race>){
         viewModel.viewModelScope.launch {
-            raceDao.insertAll(races)
+            withContext(Dispatchers.IO) {
+                raceDao.insertAll(races)
+            }
         }
     }
 
@@ -87,16 +111,30 @@ class DndCharacterManagerRepository(
 
         for (character in dbCharacters) {
             val characterRace = raceDao.getRaceById(character.raceId)
+            val characterDndClass = fetchDndClassBlocking(character.dndClassId)
             character.race = characterRace
+            character.dndClass = characterDndClass
         }
         return dbCharacters
     }
 
-    suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter {
+    fun fetchDndClassBlocking(id: Int): DndClass {
+        val dbDndClass = dndClassDao.getDndClassById(id)
+        val primaryAbility = abilityDao.getAbility(dbDndClass.primaryAbilityId)
+        val savingThrowProficiencies =
+            dndClassDao.getSavingThrowsProficienciesForDndClass(dbDndClass.id)
+        dbDndClass.primaryAbility = primaryAbility
+        dbDndClass.savingThrowProficiencies = savingThrowProficiencies
+        return dbDndClass
+    }
+
+    suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter = withContext(Dispatchers.IO){
         val dbCharacter = dndCharacterDao.getCharacterByName(name)
         val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+
         dbCharacter.race = characterRace
-        return dbCharacter
+        dbCharacter.dndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+        return@withContext dbCharacter
     }
 
     suspend fun fetchAllRacesBlocking(): List<Race> {
@@ -107,10 +145,28 @@ class DndCharacterManagerRepository(
     suspend fun insertAllCharactersBlocking(dndCharacters: List<DndCharacter>) {
         for (character in dndCharacters) {
             val race = raceDao.getRaceByName(character.race!!.name)
+            val dndClass = dndClassDao.getDndClassByName(character.dndClass!!.name)
             character.raceId = race.id
+            character.dndClassId = dndClass.id
         }
 
         dndCharacterDao.insertAll(dndCharacters)
+    }
+
+    fun fetchAllAbilitiesBlocking(): List<Ability> {
+        val dbAbilities = abilityDao.getAllAbilities()
+        return dbAbilities
+    }
+
+    fun fetchAllDndClassesBlocking(): List<DndClass> {
+        val dbDndClasses = dndClassDao.getAllDndClasses()
+        dbDndClasses.forEach { dndClass ->
+            val primaryAbility = abilityDao.getAbility(dndClass.primaryAbilityId)
+            val savingThrowProficiencies = dndClassDao.getSavingThrowsProficienciesForDndClass(dndClass.id)
+            dndClass.primaryAbility = primaryAbility
+            dndClass.savingThrowProficiencies = savingThrowProficiencies
+        }
+        return dbDndClasses
     }
 
 
@@ -190,7 +246,9 @@ class DndCharacterManagerRepository(
             id = 1,
             name = "Silvano",
             race = eladrin,
+            raceId = eladrin.id,
             dndClass = wizard,
+            dndClassId = wizard.id,
             level = 1,
             abilityValues = abilityValues1,
             skillProficiencies = setOf(arcana, history),
@@ -207,15 +265,16 @@ class DndCharacterManagerRepository(
             ),
             inventoryItems = setOf(item1, item2),
             image = null,
-            weapon = null,
-            raceId = 1
+            weapon = null
         )
 
         val dndCharacter2 = DndCharacter(
             id = 2,
             name = "Broken",
             race = dwarf,
+            raceId = dwarf.id,
             dndClass = barbarian,
+            dndClassId = barbarian.id,
             level = 1,
             image = null,
             abilityValues = abilityValues2,
@@ -227,7 +286,6 @@ class DndCharacterManagerRepository(
             availableSpellSlots = null,
             inventoryItems = setOf(item3, item4),
             weapon = weapon1,
-            raceId = 1
         )
 
         Log.i(tag, "Repository: created mock characters")

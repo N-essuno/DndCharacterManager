@@ -3,6 +3,7 @@ package it.brokenengineers.dnd_character_manager.data.enums
 import it.brokenengineers.dnd_character_manager.data.classes.Skill
 
 enum class SkillEnum(val skill: Skill) {
+    // TODO remember later to add the Ability Id
     ACROBATICS(Skill(0, "Acrobatics", AbilityEnum.STRENGTH.ability)),
     ANIMAL_HANDLING(Skill(1, "Animal Handling", AbilityEnum.WISDOM.ability)),
     ARCANA(Skill(2, "Arcana", AbilityEnum.INTELLIGENCE.ability)),

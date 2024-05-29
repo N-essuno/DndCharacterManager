@@ -11,11 +11,13 @@ class AbilityTypeAdapter : TypeAdapter<Ability>() {
 
     override fun write(out: JsonWriter, ability: Ability) {
         out.beginObject()
+        out.name("id").value(ability.id) // id: 1
         out.name("name").value(ability.name) // name: "Gaheris"
         out.endObject()
     }
 
     override fun read(input: JsonReader): Ability {
+        var id = 0
         var name = ""
         val token = input.peek() // check next token type
         if (token == JsonToken.STRING) {
@@ -25,12 +27,13 @@ class AbilityTypeAdapter : TypeAdapter<Ability>() {
         } else if (token == JsonToken.BEGIN_OBJECT) {
             input.beginObject()
             while (input.hasNext()) {
-                if (input.nextName() == "name") {
-                    name = input.nextString()
+                when (input.nextName()) {
+                    "id" -> id = input.nextInt()
+                    "name" -> name = input.nextString()
                 }
             }
             input.endObject()
         }
-        return Ability(name)
+        return Ability(id, name)
     }
 }

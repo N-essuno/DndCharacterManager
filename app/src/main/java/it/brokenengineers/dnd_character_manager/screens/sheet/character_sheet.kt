@@ -206,7 +206,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
             }
             Text(
                 style = MaterialTheme.typography.bodyMedium,
-                text = dndCharacter.dndClass.name,
+                text = dndCharacter.dndClass!!.name,
                 modifier = Modifier
                     .padding(SmallPadding)
                     .constrainAs(cClass) {

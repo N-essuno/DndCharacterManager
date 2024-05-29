@@ -71,7 +71,7 @@ fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
-                text = dndCharacter.dndClass.name,
+                text = dndCharacter.dndClass!!.name,
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
