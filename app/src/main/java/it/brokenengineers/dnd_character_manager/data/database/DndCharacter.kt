@@ -14,6 +14,8 @@ import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
+import it.brokenengineers.dnd_character_manager.data.getMaxSpellSlots
+import kotlin.math.ceil
 
 @TypeConverters(Converters::class)
 @Entity
@@ -30,7 +32,7 @@ data class DndCharacter (
     var tempHp: Int,
     val spellsKnown: Set<Spell>?,
     val preparedSpells: Set<Spell>?,
-    val availableSpellSlots: Map<Int, Int>?,
+    val availableSpellSlots: Map<Int, Int>?, // TODO refactor name to remainingSpellSlots
     val inventoryItems: Set<InventoryItem>?,
     val weapon: Weapon?
 ) {
@@ -123,5 +125,46 @@ data class DndCharacter (
 
     fun isSpellPrepared(spell: Spell): Boolean {
         return preparedSpells?.map { it.name }?.contains(spell.name) ?: false
+    }
+
+    fun canRecoverSpells(): Boolean {
+        return getRecoverableSpellSlots().values.sum() > 0
+//                && dndClass.isMagicUser TODO after adding isMagicUser to DndClass remove comment
+    }
+
+    fun getNumRecoverableSlotsForShortRest(): Int {
+        // level divided by two, rounded up
+        return ceil(level.toDouble() / 2).toInt()
+    }
+
+    fun getMaxSpellSlotsForSpellLevel(spellLevel: Int): Int {
+        return getMaxSpellSlots(spellLevel, dndClass, level)
+    }
+
+    fun getRecoverableSpellSlots(): Map<Int, Int> {
+        val recoverableSlots = mutableMapOf<Int, Int>()
+        for (i in 1..5) {
+            val maxSlots = getMaxSpellSlotsForSpellLevel(i)
+            val remainingSlots = availableSpellSlots?.get(i) ?: maxSlots
+            val recoverableSlotsForLevel = maxSlots - remainingSlots
+            recoverableSlots[i] = recoverableSlotsForLevel
+        }
+        return recoverableSlots
+    }
+
+    fun getNumPrepareableSpells(): Int {
+        return getAbilityModifier(getPrimaryAbility())
+    }
+
+    fun getPrimaryAbility(): Ability {
+        return dndClass.primaryAbility
+    }
+
+    fun getSpellLevelsOfPreparedSpells(): Set<Int> {
+        return preparedSpells?.map { it.level }?.toSet() ?: setOf()
+    }
+
+    fun getMaxSpellLevelInPreparedSpells(): Int {
+        return getSpellLevelsOfPreparedSpells().maxOrNull() ?: 0
     }
 }

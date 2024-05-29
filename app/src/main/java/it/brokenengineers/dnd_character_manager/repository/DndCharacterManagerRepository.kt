@@ -118,11 +118,7 @@ class DndCharacterManagerRepository(
             spellsKnown = setOf(fireball, magicMissile),
             preparedSpells = setOf(fireball),
             availableSpellSlots = mapOf(
-                1 to 2,
-                2 to 1,
-                3 to 6,
-                4 to 2,
-                5 to 1
+                1 to 0,
             ),
             inventoryItems = setOf(item1, item2),
             image = null,

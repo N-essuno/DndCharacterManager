@@ -40,6 +40,16 @@ fun initAbilityValuesForRace(race: Race): Map<Ability, Int> {
     }
 }
 
+fun initEmptySpellSlots(): Map<Int, Int> {
+    return mapOf(
+        1 to 0,
+        2 to 0,
+        3 to 0,
+        4 to 0,
+        5 to 0
+    )
+}
+
 fun initSpellSlotsForClass(dndClass: DndClass): Map<Int, Int> {
     return when (dndClass) {
         DndClassEnum.BARBARIAN.dndClass -> mapOf()

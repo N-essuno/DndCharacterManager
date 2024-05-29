@@ -1,5 +1,6 @@
 package it.brokenengineers.dnd_character_manager.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,12 +35,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
-import it.brokenengineers.dnd_character_manager.view_model.RestViewModel
 
 @Composable
 fun Rest(
@@ -47,9 +51,6 @@ fun Rest(
     val context = LocalContext.current
     val shortRestClicked = remember { mutableStateOf(false) }
     val longRestClicked = remember { mutableStateOf(false) }
-
-    // init view model
-    val restViewModel = RestViewModel() // TODO review this, maybe remove it
 
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
@@ -83,9 +84,9 @@ fun Rest(
                         )
                     }
                     Column {
-                        SpellSlotsLeft()
+                        SpellSlotsLeft(character = character)
                         Spacer(modifier = Modifier.height(MediumPadding))
-                        HpRecovery()
+                        HpRecovery(character = character)
                     }
                 }
 
@@ -116,10 +117,10 @@ fun Rest(
                 }
 
                 if (shortRestClicked.value) {
-                    ShortRest(restViewModel, character = character, navController = navController)
+                    ShortRest(viewModel, navController = navController)
                 }
                 if (longRestClicked.value) {
-                    LongRest(restViewModel, character = character, navController = navController)
+                    LongRest(viewModel, character = character, navController = navController)
                 }
             }
         }
@@ -127,84 +128,43 @@ fun Rest(
 }
 
 @Composable
-fun HpRecovery() {
+fun HpRecovery(character: DndCharacter) {
     // should be retrieved from data model based on character selected
-    val hp = 20
-    val maxHp = 50
-    val currentHp = 30
+//    Column {
+//        Text("HP Recovery",
+//            style = MaterialTheme.typography.titleMedium)
+//        Text("Current HP: $currentHp / $maxHp",
+//            style = MaterialTheme.typography.bodyLarge)
+//    }
+    val remainingHp = character.remainingHp
+    val maxHp = character.getMaxHp()
+
     Column {
-        Text("HP Recovery",
-            style = MaterialTheme.typography.titleMedium)
-        Text("Current HP: $currentHp / $maxHp",
+        // heart image
+        Icon(
+            imageVector = Icons.Default.Favorite,
+            contentDescription = "Heart",
+            modifier = Modifier.height(50.dp)
+        )
+        Text("Current HP: $remainingHp / $maxHp",
             style = MaterialTheme.typography.bodyLarge)
     }
 }
 
 @Composable
-fun LongRest(viewModel: RestViewModel, navController: NavHostController, character: DndCharacter) {
-    val spellsKnown by remember { derivedStateOf { viewModel.spellsKnown } }
+fun ShortRest(
+    viewModel: DndCharacterManagerViewModel,
+    navController: NavHostController
+) {
+    val character by viewModel.selectedCharacter.collectAsState(initial = null)
+    val spellsToRecover: Map<Int, Int> = emptyMap()
 
-    Column {
-        Text("Choose spells to prepare",
-            style = MaterialTheme.typography.titleMedium)
-        LazyColumn(modifier = Modifier.height(300.dp).padding(SmallPadding)) {
-            items(spellsKnown.size) { index ->
-                val spell = spellsKnown[index]
-                PrepareSpellRow(
-                    spell = spell,
-                    onAdd = {
-                        viewModel.prepareSpell(spell)
-                    },
-                    onRemove = {
-                        viewModel.undoPrepareSpell(spell)
-                    }
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(SmallPadding))
-        Button(
-            onClick = {
-                // TODO save changes to character via viewModel
-                navController.navigate("sheet/${character.id}") {
-                    popUpTo(navController.graph.findStartDestination().id)
-
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("Confirm")
-        }
-    }
-}
-
-@Composable
-fun ShortRest(viewModel: RestViewModel, navController: NavHostController, character: DndCharacter) {
-    val slotsAvailable by remember { derivedStateOf { viewModel.slotsAvailable } }
-    Text("Choose magics to recover",
-        style = MaterialTheme.typography.titleMedium)
-    Text(text = "You have $slotsAvailable slots available",
-        style = MaterialTheme.typography.bodyLarge)
-
-    LazyColumn(modifier = Modifier.height(300.dp)) {
-        items(9) { index ->
-            val level = index + 1
-            val timesSelected by remember { derivedStateOf { viewModel.spellsToRecover[index].intValue } }
-            RecoverSpellRow(
-                level = level,
-                timesSelected = timesSelected,
-                slotsAvailable = slotsAvailable,
-                onAdd = {
-                    if(slotsAvailable > 0) {
-                        viewModel.recoverSpellSlot(level)
-                    }
-                },
-                onRemove = {
-                    if(timesSelected > 0) {
-                        viewModel.undoRecoverSpellSlot(level)
-                    }
-                }
+    character?.let { char ->
+        if(char.canRecoverSpells()){
+            SpellRecovery(
+                character = char,
+                viewModel = viewModel,
+                spellsToRecover = spellsToRecover
             )
         }
     }
@@ -212,7 +172,7 @@ fun ShortRest(viewModel: RestViewModel, navController: NavHostController, charac
     Spacer(modifier = Modifier.height(SmallPadding))
     Button(onClick = {
         // TODO save changes to character via viewModel
-        navController.navigate("sheet/${character.id}") {
+        navController.navigate("sheet/${character?.id}") {
             popUpTo(navController.graph.findStartDestination().id)
 
             launchSingleTop = true
@@ -224,20 +184,109 @@ fun ShortRest(viewModel: RestViewModel, navController: NavHostController, charac
 }
 
 @Composable
-fun RecoverSpellRow(
+fun SpellRecovery(
+    character: DndCharacter,
+    viewModel: DndCharacterManagerViewModel,
+    spellsToRecover: Map<Int, Int>
+) {
+    // maps spell level to number of recoverable slots
+    val slotsRecoverable: Map<Int, Int> = character.getRecoverableSpellSlots()
+    // number of slots recoverable for short rest for character
+    val maxSlotsRecoverable = character.getNumRecoverableSlotsForShortRest()
+    // list of currently selected slots for each spell level
+    val selectedSlots by remember {
+        mutableStateOf(List(character.getMaxSpellLevelInPreparedSpells()) {
+            mutableIntStateOf(0)
+        })
+    }
+//    val selectedSlots = List(character.getMaxSpellLevelInPreparedSpells()) {
+//        mutableIntStateOf(0)
+//    }
+    // sum of selected slots, derived from selectedSlots
+    val selectedSlotsSum by remember {
+        derivedStateOf { selectedSlots.sumOf { it.intValue } }
+    }
+    // number of slots left to select
+    val slotsLeft by remember {
+        derivedStateOf { maxSlotsRecoverable - selectedSlotsSum }
+    }
+
+    Text("Choose spells to recover",
+        style = MaterialTheme.typography.titleMedium)
+    Text(text = "You have additional $slotsLeft slots to select",
+        style = MaterialTheme.typography.bodyLarge)
+
+    LazyColumn(modifier = Modifier
+        .height(300.dp)
+        .padding(SmallPadding)) {
+        items(slotsRecoverable.size) { level ->
+            val levelIndex = level-1
+            var timesSelected by remember { mutableIntStateOf(0) }
+            if (slotsRecoverable.containsKey(level)
+                && slotsRecoverable[level] != 0
+                ) { // only show slot levels that you can recover
+                val slotsRecoverablePerLevel = slotsRecoverable[level]?:0
+                SpellRecoveryRow(
+                    level = level,
+                    timesSelected = timesSelected,
+                    slotsRecoverablePerLevel = slotsRecoverablePerLevel,
+                    slotsLeft = slotsLeft,
+                    onAdd = {
+                        if (selectedSlotsSum < maxSlotsRecoverable) {
+                            Log.d("selectedSlotsSum",
+                                "slots left: $slotsLeft, selectedSlotsSum: $selectedSlotsSum, maxSlotsRecoverable: $maxSlotsRecoverable"
+                            )
+                            selectedSlots[levelIndex].intValue += 1
+                            timesSelected += 1
+                        }
+                    },
+                    onRemove = {
+                        if (timesSelected > 0) {
+                            Log.d("selectedSlotsSum",
+                                "slots left: $slotsLeft, selectedSlotsSum: $selectedSlotsSum, maxSlotsRecoverable: $maxSlotsRecoverable"
+                            )
+                            selectedSlots[levelIndex].intValue -= 1
+                            timesSelected -= 1
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    Text("This will consume $selectedSlotsSum out of $maxSlotsRecoverable slots",
+        style = MaterialTheme.typography.bodyLarge)
+}
+
+
+@Composable
+fun SpellRecoveryRow(
     level: Int,
     timesSelected: Int,
-    slotsAvailable: Int,
+    slotsRecoverablePerLevel: Int,
+    slotsLeft: Int,
     onAdd: () -> Unit,
     onRemove: () -> Unit
 ) {
 
-    Row {
-        Text(text = "Level: $level Spells)")
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "Level: $level Spells"
+        )
         Spacer(modifier = Modifier.weight(1f))
+
+        // ADD BUTTON
         IconButton(
-            onClick = onAdd,
-            enabled = slotsAvailable > 0
+            modifier = Modifier.weight(0.2f),
+            onClick = {
+                onAdd()
+                Log.d("SpellRecoveryRow", "Add button clicked\n" +
+                        "slotsRecoverablePerLevel: $slotsRecoverablePerLevel\n" +
+                        "slotsLeft: $slotsLeft\n")
+
+            },
+            enabled = slotsRecoverablePerLevel > 0 && slotsLeft > 0
         ){
             Icon(
                 painter = painterResource(id = android.R.drawable.ic_input_add),
@@ -247,8 +296,9 @@ fun RecoverSpellRow(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-
+        // REMOVE BUTTON
         IconButton(
+            modifier = Modifier.weight(0.2f),
             onClick = onRemove,
             enabled = timesSelected > 0
         ) {
@@ -257,7 +307,79 @@ fun RecoverSpellRow(
                 contentDescription = "Remove"
             )
         }
-        Text(text = timesSelected.toString())
+
+        // TIMES SELECTED
+        Text(
+            modifier = Modifier
+                .weight(0.4f)
+                .padding(SmallPadding),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = MaterialTheme.colorScheme.secondary
+            ),
+            text = timesSelected.toString()
+        )
+    }
+}
+
+
+
+@Composable
+fun LongRest(
+    viewModel: DndCharacterManagerViewModel,
+    navController: NavHostController,
+    character: DndCharacter
+) {
+    // TODO check if magic user, if it is show spells to prepare, otherwise do not
+    val spellsKnown = character.spellsKnown?.toList()
+    val numPrepareableSpells = character.getNumPrepareableSpells()
+    val spellsToPrepare = mutableListOf<Spell>()
+    val numSpellsToPrepare = remember { mutableIntStateOf(0) }
+
+    if(spellsKnown != null){
+        Column {
+            Text("Choose spells to prepare",
+                style = MaterialTheme.typography.titleMedium)
+            LazyColumn(modifier = Modifier
+                .height(300.dp)
+                .padding(SmallPadding)) {
+                items(spellsKnown.size) { index ->
+                    val spell = spellsKnown[index]
+                    PrepareSpellRow(
+                        spell = spell,
+                        onAdd = {
+                            spellsToPrepare.add(spell)
+                            numSpellsToPrepare.intValue += 1
+                        },
+                        onRemove = {
+                            spellsToPrepare.remove(spell)
+                            numSpellsToPrepare.intValue -= 1
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(SmallPadding))
+        }
+
+        Column{
+            Text("You selected ${numSpellsToPrepare.intValue} out of $numPrepareableSpells spells",
+                style = MaterialTheme.typography.bodyLarge)
+            Button(
+                onClick = {
+                    // TODO save changes to character via viewModel
+                    navController.navigate("sheet/${character.id}") {
+                        popUpTo(navController.graph.findStartDestination().id)
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Confirm")
+            }
+        }
+
     }
 }
 
@@ -303,7 +425,7 @@ fun PrepareSpellRow(
 
 
 @Composable
-fun SpellSlotsLeft() {
+fun SpellSlotsLeft(character: DndCharacter) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -312,20 +434,18 @@ fun SpellSlotsLeft() {
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(SmallPadding))
-        Text(
-            text = "1st Level: 3",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            text = "2nd Level: 2",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            text = "3rd Level: 1",
-            style = MaterialTheme.typography.bodyLarge
-        )
+
+        val spellSlotsLeft = character.availableSpellSlots
+
+        spellSlotsLeft?.let {
+            for(spellSlot in spellSlotsLeft){
+                val spellLevel = spellSlot.key
+                val slotsLeft = spellSlot.value
+                Text(
+                    text = "Level $spellLevel: $slotsLeft",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
     }
 }
-
-
-data class Spell(val name: String, val level: Int)

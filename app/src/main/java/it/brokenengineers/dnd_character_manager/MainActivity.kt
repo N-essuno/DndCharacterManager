@@ -88,7 +88,11 @@ class MainActivity : ComponentActivity() {
 fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharacterManagerViewModel) {
     NavHost(navController = navController, startDestination = "home_route") {
         navigation(startDestination = "home", route = "home_route") {
-            composable("home") { HomePage(navController, viewModel) }
+            composable("home") {
+                // TODO go back to home page when finished testing
+//                HomePage(navController, viewModel)
+                Rest(1, navController, viewModel)
+            }
         }
         navigation(startDestination = "create_character", route = "character_creation") {
             composable("create_character") {
