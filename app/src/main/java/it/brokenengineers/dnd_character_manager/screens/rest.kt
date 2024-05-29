@@ -20,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -157,27 +159,37 @@ fun ShortRest(
     navController: NavHostController
 ) {
     val character by viewModel.selectedCharacter.collectAsState(initial = null)
-    val spellsToRecover: Map<Int, Int> = emptyMap()
+    var selectedSlots: MutableState<List<MutableIntState>>? = null
 
     character?.let { char ->
         if(char.canRecoverSpells()){
+            // list of currently selected slots for each spell level
+            selectedSlots = remember {  // list itself is a state so that slots left is updated
+                mutableStateOf(List(char.getMaxSpellLevelInPreparedSpells()) {
+                    mutableIntStateOf(0)
+                })
+            }
+
             SpellRecovery(
                 character = char,
-                viewModel = viewModel,
-                spellsToRecover = spellsToRecover
+                selectedSlots = selectedSlots!!.value
             )
         }
     }
 
     Spacer(modifier = Modifier.height(SmallPadding))
     Button(onClick = {
-        // TODO save changes to character via viewModel
-        navController.navigate("sheet/${character?.id}") {
-            popUpTo(navController.graph.findStartDestination().id)
+        // convert selectedSlots to list of ints
+        val selectedSlotsInts = selectedSlots?.value?.map { it.intValue } ?: listOf()
 
-            launchSingleTop = true
-            restoreState = true
-        }
+        viewModel.shortRest(selectedSlotsInts)
+
+//        navController.navigate("sheet/${character?.id}") {
+//            popUpTo(navController.graph.findStartDestination().id)
+//
+//            launchSingleTop = true
+//            restoreState = true
+//        }
     }) {
         Text("Confirm")
     }
@@ -186,22 +198,12 @@ fun ShortRest(
 @Composable
 fun SpellRecovery(
     character: DndCharacter,
-    viewModel: DndCharacterManagerViewModel,
-    spellsToRecover: Map<Int, Int>
+    selectedSlots: List<MutableIntState>
 ) {
     // maps spell level to number of recoverable slots
     val slotsRecoverable: Map<Int, Int> = character.getRecoverableSpellSlots()
     // number of slots recoverable for short rest for character
     val maxSlotsRecoverable = character.getNumRecoverableSlotsForShortRest()
-    // list of currently selected slots for each spell level
-    val selectedSlots by remember {
-        mutableStateOf(List(character.getMaxSpellLevelInPreparedSpells()) {
-            mutableIntStateOf(0)
-        })
-    }
-//    val selectedSlots = List(character.getMaxSpellLevelInPreparedSpells()) {
-//        mutableIntStateOf(0)
-//    }
     // sum of selected slots, derived from selectedSlots
     val selectedSlotsSum by remember {
         derivedStateOf { selectedSlots.sumOf { it.intValue } }

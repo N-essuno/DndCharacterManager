@@ -242,4 +242,30 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             repository.allCharacters.value = newChars
         }
     }
+
+    /**
+     * Recover HP and spell slots after a short rest
+     * @param slotsToRecover a list of the number of slots to recover for each spell level. If null,
+     * there are either no slots to recover or the character is not a spellcaster
+     * @return the updated character after the short rest
+     */
+    fun shortRest(slotsToRecover: List<Int>?) {
+        viewModelScope.launch {
+            val character = selectedCharacter.value
+            if (character != null) {
+                if (slotsToRecover != null) {
+                    val oldSlots = character.availableSpellSlots
+                    // convert slotsToRecover to map
+                    val mapSlotsToRecover = slotsToRecover.mapIndexed { index, i -> index + 1 to i }.toMap()
+                    // sum oldSlots and mapSlotsToRecover into newSlots
+                    val newSlots = oldSlots?.mapValues {
+                        it.value + mapSlotsToRecover.getOrDefault(it.key, 0)
+                    }
+
+                    // TODO spellSlots should be an object, otherwise dao update is not possible
+//                    newSlots?.let {characterDao.updateAvailableSpellSlots(character.id, newSlots)}
+                }
+            }
+        }
+    }
 }
