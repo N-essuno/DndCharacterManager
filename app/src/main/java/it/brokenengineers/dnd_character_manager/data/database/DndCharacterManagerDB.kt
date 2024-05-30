@@ -12,6 +12,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.DndClassAbilityCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Skill
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -30,7 +31,8 @@ import java.util.concurrent.CountDownLatch
         DndClassAbilityCrossRef::class,
         DndClass::class,
         Skill::class,
-        DndCharacterSkillCrossRef::class
+        DndCharacterSkillCrossRef::class,
+        Weapon::class
     ],
     version = 1,
     exportSchema = false
@@ -41,6 +43,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
     abstract fun abilityDao(): AbilityDao
     abstract fun dndClassDao(): DndClassDao
     abstract fun skillDao(): SkillDao
+    abstract fun weaponDao(): WeaponDao
 
     companion object {
         // marking the instance as volatile to ensure atomic access to the variable
@@ -51,7 +54,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
 
         fun getDatabase(context: Context): DndCharacterManagerDB? {
             // TODO remove later. Used to test the database population
-//            val dbDeleted = context.deleteDatabase("dnd_character_manager_database")
+            context.deleteDatabase("dnd_character_manager_database")
 
             if (INSTANCE == null) {
                 // ensure only one instance of the database is created even if multiple threads try to create an instance
@@ -94,11 +97,14 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         val abilityDao = INSTANCE!!.abilityDao()
                         val dndClassDao = INSTANCE!!.dndClassDao()
                         val skillDao = INSTANCE!!.skillDao()
+                        val weaponDao = INSTANCE!!.weaponDao()
 
                         val races = RaceEnum.entries.map { it.race }
                         val abilities = AbilityEnum.entries.map { it.ability }
                         val dndClasses = DndClassEnum.entries.map { it.dndClass }
                         val skills = SkillEnum.entries.map { it.skill }
+                        val weapon = Weapon(1, "Hammer", "1d12")
+                        val nullWeapon = Weapon(99, "None", "0")
 
                         Log.i("DndCharacterManagerDB", "Start populating database")
 
@@ -106,6 +112,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         abilityDao.insertAll(abilities)
                         dndClassDao.insertAllDndClassesWithAbilities(dndClasses)
                         skillDao.insertAll(skills)
+                        weaponDao.insertAll(listOf(weapon, nullWeapon))
 
                         Log.i("DndCharacterManagerDB", "DB Populated, calling countDown()")
                         latch.countDown()

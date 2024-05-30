@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.MainActivity
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.runBlocking
@@ -37,7 +38,8 @@ class BuildCharacterTest {
                     db.raceDao(),
                     db.abilityDao(),
                     db.dndClassDao(),
-                    db.skillDao()
+                    db.skillDao(),
+                    db.weaponDao()
                 )
             }
 
@@ -70,6 +72,15 @@ class BuildCharacterTest {
             assert(character?.dndClass!!.primaryAbility!!.name == "Strength")
             assert(character?.skillProficiencies != null)
             assert(character?.skillProficiencies!!.isNotEmpty())
+
+            if (character!!.dndClass!!.name == DndClassEnum.BARBARIAN.name) {
+                assert(character!!.weapon != null)
+                assert(character!!.weapon!!.name == "Hammer")
+                assert(character!!.weapon!!.damage == "1d12")
+            }
+            if (character!!.dndClass!!.name == DndClassEnum.WIZARD.name) {
+                assert(character!!.weapon == null)
+            }
 
             // clean up the database
             composeTestRule.runOnIdle {

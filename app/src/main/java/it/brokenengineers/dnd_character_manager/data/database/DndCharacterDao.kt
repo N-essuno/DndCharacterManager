@@ -13,8 +13,10 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCr
 interface DndCharacterDao {
     @Query("SELECT * FROM DndCharacter")
     fun getAllCharacters(): List<DndCharacter>
+
     @Query("SELECT * FROM DndCharacter WHERE id = :id LIMIT 1")
     fun getCharacterById(id: Int): DndCharacter
+
     @Query("SELECT * FROM DndCharacter WHERE name = :name LIMIT 1")
     fun getCharacterByName(name: String): DndCharacter
 
@@ -22,6 +24,9 @@ interface DndCharacterDao {
 
     @Insert
     fun insertDndCharacter(dndCharacter: DndCharacter): Long
+
+    @Insert
+    fun insertAllDndCharacters(dndCharacter: List<DndCharacter>)
 
     @Insert
     fun insertDndCharacterSkillCrossRefs(crossRefs: List<DndCharacterSkillCrossRef>)

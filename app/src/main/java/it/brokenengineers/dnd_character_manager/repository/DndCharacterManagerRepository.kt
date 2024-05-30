@@ -15,6 +15,7 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.DndClassDao
 import it.brokenengineers.dnd_character_manager.data.database.RaceDao
 import it.brokenengineers.dnd_character_manager.data.database.SkillDao
+import it.brokenengineers.dnd_character_manager.data.database.WeaponDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -31,7 +32,8 @@ class DndCharacterManagerRepository(
     private val raceDao: RaceDao,
     private val abilityDao: AbilityDao,
     private val dndClassDao: DndClassDao,
-    private val skillDao: SkillDao
+    private val skillDao: SkillDao,
+    private val weaponDao: WeaponDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -150,9 +152,15 @@ class DndCharacterManagerRepository(
             val characterRace = raceDao.getRaceById(character.raceId)
             val characterDndClass = fetchDndClassBlocking(character.dndClassId)
             val characterSkills = fetchCharacterSkillsBlocking(character.id)
+            var characterWeapon: Weapon? = null
+            // 99 is the id of the "None" weapon
+            if (character.weaponId != 99)
+                characterWeapon = weaponDao.getWeapon(character.weaponId)
+
             character.race = characterRace
             character.dndClass = characterDndClass
             character.skillProficiencies = characterSkills.toSet()
+            character.weapon = characterWeapon
         }
         return dbCharacters
     }
@@ -179,10 +187,17 @@ class DndCharacterManagerRepository(
     suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter = withContext(Dispatchers.IO){
         val dbCharacter = dndCharacterDao.getCharacterByName(name)
         val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+        val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+        val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
+        var characterWeapon: Weapon? = null
+        // 99 is the id of the "None" weapon
+        if (dbCharacter.weaponId != 99)
+            characterWeapon = weaponDao.getWeapon(dbCharacter.weaponId)
 
         dbCharacter.race = characterRace
-        dbCharacter.dndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
-        dbCharacter.skillProficiencies = fetchCharacterSkillsBlocking(dbCharacter.id).toSet()
+        dbCharacter.dndClass = characterDndClass
+        dbCharacter.skillProficiencies = characterSkills.toSet()
+        dbCharacter.weapon = characterWeapon
         return@withContext dbCharacter
     }
 
@@ -195,6 +210,13 @@ class DndCharacterManagerRepository(
         for (character in dndCharacters) {
             val race = raceDao.getRaceByName(character.race!!.name)
             val dndClass = dndClassDao.getDndClassByName(character.dndClass!!.name)
+            if (character.weapon != null) {
+                val weapon = weaponDao.getWeaponByName(character.weapon!!.name)
+                character.weaponId = weapon.id
+            } else {
+                character.weaponId = 99
+            }
+
             character.raceId = race.id
             character.dndClassId = dndClass.id
         }
@@ -227,7 +249,10 @@ class DndCharacterManagerRepository(
         return dbSkills
     }
 
-
+    fun fetchAllWeaponsBlocking(): List<Weapon> {
+        val dbWeapons = weaponDao.getAllWeapons()
+        return dbWeapons
+    }
 
 
     // No interaction with DB below this line
@@ -298,7 +323,7 @@ class DndCharacterManagerRepository(
         val item3 = InventoryItem(3, "Brick", 1, 2.5)
         val item4 = InventoryItem(4, "Book", 1, 2.0)
 
-        val weapon1 = Weapon(1, "Sword", "1d6")
+        val weapon1 = Weapon(1, "Hammer", "1d12")
 
         val dndCharacter1 = DndCharacter(
             id = 1,
@@ -323,7 +348,8 @@ class DndCharacterManagerRepository(
             ),
             inventoryItems = setOf(item1, item2),
             image = null,
-            weapon = null
+            weapon = null,
+            weaponId = 99
         )
 
         val dndCharacter2 = DndCharacter(
@@ -344,6 +370,7 @@ class DndCharacterManagerRepository(
             availableSpellSlots = null,
             inventoryItems = setOf(item3, item4),
             weapon = weapon1,
+            weaponId = weapon1.id
         )
 
         Log.i(tag, "Repository: created mock characters")

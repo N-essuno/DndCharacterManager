@@ -22,10 +22,16 @@ import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-        entity = DndClass::class,
-        parentColumns = ["id"],
-        childColumns = ["dndClassId"],
-        onDelete = ForeignKey.CASCADE
+            entity = DndClass::class,
+            parentColumns = ["id"],
+            childColumns = ["dndClassId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Weapon::class,
+            parentColumns = ["id"],
+            childColumns = ["weaponId"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -46,7 +52,8 @@ data class DndCharacter(
     val preparedSpells: Set<Spell>?,
     val availableSpellSlots: Map<Int, Int>?,
     val inventoryItems: Set<InventoryItem>?,
-    val weapon: Weapon?
+    @Ignore var weapon: Weapon?,
+    var weaponId: Int
 ) {
     // Secondary constructor without the ignored field
     constructor(
@@ -63,7 +70,7 @@ data class DndCharacter(
         preparedSpells: Set<Spell>?,
         availableSpellSlots: Map<Int, Int>?,
         inventoryItems: Set<InventoryItem>?,
-        weapon: Weapon?
+        weaponId: Int
     ) : this(
         id,
         name,
@@ -81,7 +88,8 @@ data class DndCharacter(
         preparedSpells,
         availableSpellSlots,
         inventoryItems,
-        weapon
+        null,
+        weaponId
     )
 
     // TODO check in all class that abilityValues are correctly retrieved, now there are also ids

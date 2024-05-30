@@ -6,9 +6,7 @@ import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.AbilityScoreIncrease
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
-import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 
 class Converters {
     val tag: String = Converters::class.java.simpleName
@@ -52,16 +50,16 @@ class Converters {
         return gson.fromJson(abilityMapString, type)
     }
 
-    @TypeConverter
-    fun fromSkillSet(skillSet: Set<Skill>): String {
-        return gson.toJson(skillSet)
-    }
-
-    @TypeConverter
-    fun toSkillSet(skillSetString: String): Set<Skill> {
-        val type = object : TypeToken<Set<Skill>>() {}.type
-        return gson.fromJson(skillSetString, type)
-    }
+//    @TypeConverter
+//    fun fromSkillSet(skillSet: Set<Skill>): String {
+//        return gson.toJson(skillSet)
+//    }
+//
+//    @TypeConverter
+//    fun toSkillSet(skillSetString: String): Set<Skill> {
+//        val type = object : TypeToken<Set<Skill>>() {}.type
+//        return gson.fromJson(skillSetString, type)
+//    }
 
     @TypeConverter
     fun fromSpellSet(spellSet: Set<Spell>?): String {
@@ -96,16 +94,16 @@ class Converters {
         return gson.fromJson(inventorySetString, type)
     }
 
-    @TypeConverter
-    fun fromWeapon(weapon: Weapon?): String {
-        return gson.toJson(weapon)
-    }
-
-    @TypeConverter
-    fun toWeapon(weaponString: String): Weapon? {
-        val type = object : TypeToken<Weapon?>() {}.type
-        return gson.fromJson(weaponString, type)
-    }
+//    @TypeConverter
+//    fun fromWeapon(weapon: Weapon?): String {
+//        return gson.toJson(weapon)
+//    }
+//
+//    @TypeConverter
+//    fun toWeapon(weaponString: String): Weapon? {
+//        val type = object : TypeToken<Weapon?>() {}.type
+//        return gson.fromJson(weaponString, type)
+//    }
 
     @TypeConverter
     fun fromAbilityScoreIncrease(abilityScoreIncrease: List<AbilityScoreIncrease>): String {

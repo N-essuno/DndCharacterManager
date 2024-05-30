@@ -2,6 +2,7 @@ package it.brokenengineers.dnd_character_manager
 
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
@@ -38,7 +39,8 @@ class DndCharacterTest {
             preparedSpells = emptySet(),
             availableSpellSlots = spellSlots,
             inventoryItems = emptySet(),
-            weapon = null
+            weapon = Weapon(1, "Hammer", "1d12"),
+            weaponId = 1
         )
 
         println(newDndCharacter)

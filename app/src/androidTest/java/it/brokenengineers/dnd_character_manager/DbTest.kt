@@ -34,7 +34,8 @@ class DbTest {
                 db.raceDao(),
                 db.abilityDao(),
                 db.dndClassDao(),
-                db.skillDao()
+                db.skillDao(),
+                db.weaponDao()
             )
         }
     }
@@ -43,6 +44,15 @@ class DbTest {
     @Throws(IOException::class)
     fun testCloseDb() {
         db.close()
+    }
+
+    @Test
+    fun testGetAllWeapons() {
+        val weapons = runBlocking {
+            repository.fetchAllWeaponsBlocking()
+        }
+
+        assert(weapons.isNotEmpty())
     }
 
     @Test
@@ -163,6 +173,16 @@ class DbTest {
                 assert(characterSkillsList[j].name == testCharacterSkillsList[j].name)
                 assert(characterSkillsList[j].ability != null)
                 assert(characterSkillsList[j].ability!!.name == testCharacterSkillsList[j].ability!!.name)
+            }
+
+            // Weapon assertions
+            if (character.dndClass!!.name == DndClassEnum.BARBARIAN.name) {
+                assert(character.weapon != null)
+                assert(character.weapon!!.name == testCharacter.weapon!!.name)
+                assert(character.weapon!!.damage == testCharacter.weapon!!.damage)
+            }
+            if (character.dndClass!!.name == DndClassEnum.WIZARD.name) {
+                assert(character.weapon == null)
             }
         }
 

@@ -7,6 +7,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -23,13 +24,15 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var dndClassDao = db.dndClassDao()
     private var abilityDao = db.abilityDao()
     private var skillDao = db.skillDao()
+    private var weaponDao = db.weaponDao()
     private val repository = DndCharacterManagerRepository(
         this,
         characterDao,
         raceDao,
         abilityDao,
         dndClassDao,
-        skillDao
+        skillDao,
+        weaponDao
     )
     var characters = repository.allCharacters
         private set
@@ -59,12 +62,17 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
 //                // IllegalArgument exception is thrown if the string is not a valid enum value
 //                return null
 //            }
-            var newDndCharacter: DndCharacter? = null
+            val newDndCharacter: DndCharacter?
 
             val abilityValues = initAbilityValuesForRace(raceObj)
             val spellSlots = initSpellSlotsForClass(dndClassObj)
             val proficiencies = initProficienciesForClass(dndClassObj)
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
+
+            var weapon: Weapon? = null
+            if (dndClassObj.name == DndClassEnum.BARBARIAN.name) {
+                weapon = Weapon(1, "Hammer", "1d12")
+            }
 
             newDndCharacter = DndCharacter(
                 name = name,
@@ -82,14 +90,14 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 preparedSpells = emptySet(),
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
-                weapon = null
+                weapon = weapon,
+                weaponId = weapon?.id ?: 99
             )
 
-            newDndCharacter?.let { repository.insertCharacter(newDndCharacter!!) }
+            newDndCharacter.let { repository.insertCharacter(newDndCharacter) }
 
-            // TODO check if update selectedCharacter in repository or viewmodel changes
+            // TODO move the selection in repository, State variables should be managed by the repository
             repository.selectedDndCharacter.value = newDndCharacter
-            repository.allCharacters.value.add(newDndCharacter!!)
 //        return newDndCharacter // TODO should not return
         }
     }
