@@ -1,11 +1,13 @@
 package it.brokenengineers.dnd_character_manager.viewModel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
@@ -311,6 +313,30 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             repository.selectedDndCharacter.value = newCharacter
             updateCharactersList(character, newCharacter)
             // TODO update character in database by repository
+        }
+    }
+
+    fun longRest(spellsToPrepare: List<Spell>?) {
+        viewModelScope.launch {
+            val character = selectedCharacter.value
+            var newCharacter: DndCharacter
+            if (character != null) {
+                // recover HP to max
+                val newRemainingHp = getMaxHpStatic(
+                    dndClass = character.dndClass,
+                    level = character.level,
+                    abilityValues = character.abilityValues
+                )
+                newCharacter = character.copy(remainingHp = newRemainingHp)
+                // recover spell slots
+                spellsToPrepare?.let {
+                    newCharacter = character.copy(preparedSpells = spellsToPrepare.toSet())
+                    Log.d("ViewModel", "New Prepared spells: ${newCharacter.preparedSpells}")
+                }
+                repository.selectedDndCharacter.value = newCharacter
+                updateCharactersList(character, newCharacter)
+                // TODO update character in database by repository
+            }
         }
     }
 }

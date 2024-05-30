@@ -93,6 +93,8 @@ fun Rest(
                         )
                         Spacer(modifier = Modifier.height(MediumPadding))
                         SpellSlotsLeft(character = character)
+                        Spacer(modifier = Modifier.height(MediumPadding))
+                        SpellsPrepared(character = character)
                     }
                 }
 
@@ -301,10 +303,13 @@ fun LongRest(
     // TODO check if magic user, if it is show spells to prepare, otherwise do not
     val spellsKnown = character.spellsKnown?.toList()
     val numPrepareableSpells = character.getNumPrepareableSpells()
-    val spellsToPrepare = mutableListOf<Spell>()
+    val spellsToPrepare = remember {mutableListOf<Spell>()}
     val numSpellsToPrepare = remember { mutableIntStateOf(0) }
 
     if(spellsKnown != null){
+        // Create a list of states for each spell
+        val selectedStates = remember { spellsKnown.map { mutableStateOf(false) } }
+
         Column(modifier = Modifier.padding(SmallPadding)) {
             Text("Choose spells to prepare",
                 style = MaterialTheme.typography.titleMedium)
@@ -315,10 +320,12 @@ fun LongRest(
                     val spell = spellsKnown[index]
                     PrepareSpellRow(
                         spell = spell,
+                        selected = selectedStates[index],
                         onAdd = {
                             if (numSpellsToPrepare.intValue < numPrepareableSpells) {
                                 spellsToPrepare.add(spell)
                                 numSpellsToPrepare.intValue += 1
+                                Log.d("PrepareSpell", "Added spell ${spell.name}. Total: ${numSpellsToPrepare.intValue}")
                             } else {
                                 Log.e("LongRest", "Cannot prepare more spells")
                             }
@@ -342,12 +349,13 @@ fun LongRest(
             Button(
                 onClick = {
                     // TODO save changes to character via viewModel
-                    navController.navigate("sheet/${character.id}") {
-                        popUpTo(navController.graph.findStartDestination().id)
-
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    viewModel.longRest(spellsToPrepare)
+//                    navController.navigate("sheet/${character.id}") {
+//                        popUpTo(navController.graph.findStartDestination().id)
+//
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
@@ -361,26 +369,30 @@ fun LongRest(
 @Composable
 fun PrepareSpellRow(
     spell: Spell,
+    selected: MutableState<Boolean>,
     onAdd: () -> Unit,
     enabledAddCondition: () -> Boolean,
     onRemove: () -> Unit
 ) {
-    var selected by remember { mutableStateOf(false) }
     Row {
         Text(
             text = spell.name,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
-            color = if(selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically),
+            color = if(selected.value) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
         )
         Spacer(modifier = Modifier.weight(0.1f))
-        if(selected) {
+        if(selected.value) {
             // REMOVE BUTTON
             IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically).weight(0.1f),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(0.1f),
                 onClick = {
                     onRemove()
-                    selected = false
+                    selected.value = false
                 }
             ) {
                 Icon(
@@ -391,10 +403,12 @@ fun PrepareSpellRow(
         } else {
             // ADD BUTTON
             IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically).weight(0.1f),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .weight(0.1f),
                 onClick = {
                     onAdd()
-                    selected = true
+                    selected.value = true
                 },
                 enabled = enabledAddCondition()
             ) {
@@ -429,6 +443,30 @@ fun SpellSlotsLeft(character: DndCharacter) {
                 val slotsLeft = spellSlot.value
                 Text(
                     text = "Level $spellLevel: $slotsLeft",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SpellsPrepared(character: DndCharacter) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Spells Prepared",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(modifier = Modifier.height(SmallPadding))
+
+        val spellsPrepared = character.preparedSpells
+
+        spellsPrepared?.let {
+            for(spell in spellsPrepared){
+                Text(
+                    text = "- ${spell.name}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
