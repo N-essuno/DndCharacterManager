@@ -20,13 +20,13 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
         // BARBARIAN
         LevelUpEvent(dndClass = barbarian, newLevel = 2, newFeatures = listOf(Feature.RECKLESS_ATTACK, Feature.DANGER_SENSE)),
         LevelUpEvent(dndClass = barbarian, newLevel = 3, choosePrimalPath = true, increaseNumRages = true),
-        LevelUpEvent(dndClass = barbarian, newLevel = 4, increaseAbilityScore = 2),
+        LevelUpEvent(dndClass = barbarian, newLevel = 4, increaseAbilityScore = true),
         LevelUpEvent(dndClass = barbarian, newLevel = 5, increaseProficiencyBonus = true, newFeatures = listOf(Feature.EXTRA_ATTACK, Feature.FAST_MOVEMENT)),
 
         // WIZARD
         LevelUpEvent(dndClass = wizard, newLevel = 2, chooseArcaneTradition = true, chooseNewSpells = true),
         LevelUpEvent(dndClass = wizard, newLevel = 3, newFeatures = listOf(Feature.CANTRIP_FORMULAS), chooseNewSpells = true),
-        LevelUpEvent(dndClass = wizard, newLevel = 4, increaseAbilityScore = 2, chooseNewSpells = true),
+        LevelUpEvent(dndClass = wizard, newLevel = 4, increaseAbilityScore = true, chooseNewSpells = true),
         LevelUpEvent(dndClass = wizard, newLevel = 5, increaseProficiencyBonus = true, chooseNewSpells = true),
     )
 
@@ -44,6 +44,12 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
             val newValue = currentValue + 1
             StatIncrease(statName = "Proficiency Bonus", currentValue = currentValue, newValue = newValue)
         }
+        currentLevelUpEvent.increaseAbilityScore?.let {
+            AbilityScoreImprovement(
+                character = character,
+                viewModel = viewModel
+            )
+        }
 
     } else {
         Text("Level up event not found")
@@ -55,7 +61,7 @@ data class LevelUpEvent(
     val newLevel: Int,
     val newFeatures: List<Feature>? = null,
     val increaseProficiencyBonus: Boolean? = false,
-    val increaseAbilityScore: Int? = null,
+    val increaseAbilityScore: Boolean? = null,
     val increaseNumRages: Boolean? = null,
     val chooseNewSpells: Boolean? = false,
     val newArcaneTraditionFeature: Boolean? = false,

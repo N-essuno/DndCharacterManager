@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -40,6 +39,7 @@ import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
+import it.brokenengineers.dnd_character_manager.ui.composables.StatelessIncrDecrRow
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
@@ -270,59 +270,67 @@ fun SpellRecoveryRow(
     onAdd: () -> Unit,
     onRemove: () -> Unit
 ) {
-
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = "Level: $level Spells"
-        )
-        Spacer(modifier = Modifier.weight(1f))
-
-        // ADD BUTTON
-        IconButton(
-            modifier = Modifier.weight(0.2f),
-            onClick = {
-                onAdd()
-                Log.d("SpellRecoveryRow", "Add button clicked\n" +
-                        "slotsRecoverablePerLevel: $slotsRecoverablePerLevel\n" +
-                        "slotsLeft: $slotsLeft\n")
-
-            },
-            enabled = slotsRecoverablePerLevel > 0 && slotsLeft > 0
-        ){
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_input_add),
-                contentDescription = "Add"
-            )
-        }
-
-        Spacer(modifier = Modifier.width(8.dp))
-
-        // REMOVE BUTTON
-        IconButton(
-            modifier = Modifier.weight(0.2f),
-            onClick = onRemove,
-            enabled = timesSelected > 0
-        ) {
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_input_delete),
-                contentDescription = "Remove"
-            )
-        }
-
-        // TIMES SELECTED
-        Text(
-            modifier = Modifier
-                .weight(0.4f)
-                .padding(SmallPadding),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.secondary
-            ),
-            text = timesSelected.toString()
-        )
-    }
+    StatelessIncrDecrRow(
+        label = "Level: $level Spells",
+        timesSelected = timesSelected,
+        onAdd = onAdd,
+        enabledAddCondition = { slotsRecoverablePerLevel > 0 && slotsLeft > 0 },
+        onRemove = onRemove,
+        enabledRemoveCondition = { timesSelected > 0 }
+    )
 }
+
+//    Row(verticalAlignment = Alignment.CenterVertically) {
+//        Text(
+//            modifier = Modifier.weight(1f),
+//            text = "Level: $level Spells"
+//        )
+//        Spacer(modifier = Modifier.weight(1f))
+//
+//        // ADD BUTTON
+//        IconButton(
+//            modifier = Modifier.weight(0.2f),
+//            onClick = {
+//                onAdd()
+//                Log.d("SpellRecoveryRow", "Add button clicked\n" +
+//                        "slotsRecoverablePerLevel: $slotsRecoverablePerLevel\n" +
+//                        "slotsLeft: $slotsLeft\n")
+//
+//            },
+//            enabled = slotsRecoverablePerLevel > 0 && slotsLeft > 0
+//        ){
+//            Icon(
+//                painter = painterResource(id = android.R.drawable.ic_input_add),
+//                contentDescription = "Add"
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.width(8.dp))
+//
+//        // REMOVE BUTTON
+//        IconButton(
+//            modifier = Modifier.weight(0.2f),
+//            onClick = onRemove,
+//            enabled = timesSelected > 0
+//        ) {
+//            Icon(
+//                painter = painterResource(id = android.R.drawable.ic_input_delete),
+//                contentDescription = "Remove"
+//            )
+//        }
+//
+//        // TIMES SELECTED
+//        Text(
+//            modifier = Modifier
+//                .weight(0.4f)
+//                .padding(SmallPadding),
+//            textAlign = TextAlign.End,
+//            style = MaterialTheme.typography.bodyLarge.copy(
+//                color = MaterialTheme.colorScheme.secondary
+//            ),
+//            text = timesSelected.toString()
+//        )
+//    }
 
 
 

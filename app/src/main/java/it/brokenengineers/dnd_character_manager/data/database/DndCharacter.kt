@@ -47,6 +47,10 @@ data class DndCharacter (
         }
     }
 
+    fun getAbilityValue(abilityEnum: AbilityEnum): Int {
+        return abilityValues[abilityEnum.ability] ?: 0
+    }
+
     fun getArmorClass(): Int {
         val dexterityModifier = getAbilityModifier(AbilityEnum.DEXTERITY)
         if (dndClass == DndClassEnum.BARBARIAN.dndClass) {

@@ -92,6 +92,8 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 // TODO go back to home page when finished testing
 //                HomePage(navController, viewModel)
                 Rest(1, navController, viewModel)
+//                LevelUp(1, navController, viewModel)
+
             }
         }
         navigation(startDestination = "create_character", route = "character_creation") {

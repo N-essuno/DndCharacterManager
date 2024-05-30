@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
@@ -66,8 +67,16 @@ fun LevelUp(
                     abilityValues = character.abilityValues
                 ),
             ) }
-            item {DynamicLevelUp(character = character, viewModel = viewModel)}
+            item {DynamicLevelUp2(character = character, viewModel = viewModel)}
         }
     }
+}
+
+@Composable
+fun DynamicLevelUp2(
+    character: DndCharacter,
+    viewModel: DndCharacterManagerViewModel
+) {
+    AbilityScoreImprovement(character = character, viewModel = viewModel)
 }
 
