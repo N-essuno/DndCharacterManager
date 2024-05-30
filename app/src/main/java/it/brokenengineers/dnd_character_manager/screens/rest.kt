@@ -86,9 +86,13 @@ fun Rest(
                         )
                     }
                     Column {
-                        SpellSlotsLeft(character = character)
+                        HpRecovery(
+                            character = character,
+                            shortRestClicked = shortRestClicked.value,
+                            longRestClicked = longRestClicked.value
+                        )
                         Spacer(modifier = Modifier.height(MediumPadding))
-                        HpRecovery(character = character)
+                        SpellSlotsLeft(character = character)
                     }
                 }
 
@@ -130,14 +134,11 @@ fun Rest(
 }
 
 @Composable
-fun HpRecovery(character: DndCharacter) {
-    // should be retrieved from data model based on character selected
-//    Column {
-//        Text("HP Recovery",
-//            style = MaterialTheme.typography.titleMedium)
-//        Text("Current HP: $currentHp / $maxHp",
-//            style = MaterialTheme.typography.bodyLarge)
-//    }
+fun HpRecovery(
+    character: DndCharacter,
+    shortRestClicked: Boolean,
+    longRestClicked: Boolean
+) {
     val remainingHp = character.remainingHp
     val maxHp = character.getMaxHp()
 
@@ -148,8 +149,17 @@ fun HpRecovery(character: DndCharacter) {
             contentDescription = "Heart",
             modifier = Modifier.height(50.dp)
         )
-        Text("Current HP: $remainingHp / $maxHp",
+        Text("HP before rest: $remainingHp / $maxHp",
             style = MaterialTheme.typography.bodyLarge)
+        if (shortRestClicked){
+            Text(text = "HP after short rest: ${character.getHpAfterShortRest()} / $maxHp",
+                style = MaterialTheme.typography.bodyLarge)
+        } else if (longRestClicked) {
+            Text(
+                text = "HP after long rest: $maxHp / $maxHp",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
     }
 }
 
@@ -162,6 +172,7 @@ fun ShortRest(
     var selectedSlots: MutableState<List<MutableIntState>>? = null
 
     character?.let { char ->
+        // show hp recovery
         if(char.canRecoverSpells()){
             // list of currently selected slots for each spell level
             selectedSlots = remember {  // list itself is a state so that slots left is updated
@@ -280,59 +291,6 @@ fun SpellRecoveryRow(
     )
 }
 
-//    Row(verticalAlignment = Alignment.CenterVertically) {
-//        Text(
-//            modifier = Modifier.weight(1f),
-//            text = "Level: $level Spells"
-//        )
-//        Spacer(modifier = Modifier.weight(1f))
-//
-//        // ADD BUTTON
-//        IconButton(
-//            modifier = Modifier.weight(0.2f),
-//            onClick = {
-//                onAdd()
-//                Log.d("SpellRecoveryRow", "Add button clicked\n" +
-//                        "slotsRecoverablePerLevel: $slotsRecoverablePerLevel\n" +
-//                        "slotsLeft: $slotsLeft\n")
-//
-//            },
-//            enabled = slotsRecoverablePerLevel > 0 && slotsLeft > 0
-//        ){
-//            Icon(
-//                painter = painterResource(id = android.R.drawable.ic_input_add),
-//                contentDescription = "Add"
-//            )
-//        }
-//
-//        Spacer(modifier = Modifier.width(8.dp))
-//
-//        // REMOVE BUTTON
-//        IconButton(
-//            modifier = Modifier.weight(0.2f),
-//            onClick = onRemove,
-//            enabled = timesSelected > 0
-//        ) {
-//            Icon(
-//                painter = painterResource(id = android.R.drawable.ic_input_delete),
-//                contentDescription = "Remove"
-//            )
-//        }
-//
-//        // TIMES SELECTED
-//        Text(
-//            modifier = Modifier
-//                .weight(0.4f)
-//                .padding(SmallPadding),
-//            textAlign = TextAlign.End,
-//            style = MaterialTheme.typography.bodyLarge.copy(
-//                color = MaterialTheme.colorScheme.secondary
-//            ),
-//            text = timesSelected.toString()
-//        )
-//    }
-
-
 
 @Composable
 fun LongRest(
@@ -347,7 +305,7 @@ fun LongRest(
     val numSpellsToPrepare = remember { mutableIntStateOf(0) }
 
     if(spellsKnown != null){
-        Column {
+        Column(modifier = Modifier.padding(SmallPadding)) {
             Text("Choose spells to prepare",
                 style = MaterialTheme.typography.titleMedium)
             LazyColumn(modifier = Modifier
@@ -358,8 +316,15 @@ fun LongRest(
                     PrepareSpellRow(
                         spell = spell,
                         onAdd = {
-                            spellsToPrepare.add(spell)
-                            numSpellsToPrepare.intValue += 1
+                            if (numSpellsToPrepare.intValue < numPrepareableSpells) {
+                                spellsToPrepare.add(spell)
+                                numSpellsToPrepare.intValue += 1
+                            } else {
+                                Log.e("LongRest", "Cannot prepare more spells")
+                            }
+                        },
+                        enabledAddCondition = {
+                            numSpellsToPrepare.intValue < numPrepareableSpells
                         },
                         onRemove = {
                             spellsToPrepare.remove(spell)
@@ -397,14 +362,22 @@ fun LongRest(
 fun PrepareSpellRow(
     spell: Spell,
     onAdd: () -> Unit,
+    enabledAddCondition: () -> Boolean,
     onRemove: () -> Unit
 ) {
     var selected by remember { mutableStateOf(false) }
     Row {
-        Text(text = spell.name, style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = spell.name,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
+            color = if(selected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.tertiary
+        )
+        Spacer(modifier = Modifier.weight(0.1f))
         if(selected) {
+            // REMOVE BUTTON
             IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically).weight(0.1f),
                 onClick = {
                     onRemove()
                     selected = false
@@ -416,11 +389,14 @@ fun PrepareSpellRow(
                 )
             }
         } else {
+            // ADD BUTTON
             IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically).weight(0.1f),
                 onClick = {
                     onAdd()
                     selected = true
-                }
+                },
+                enabled = enabledAddCondition()
             ) {
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_input_add),

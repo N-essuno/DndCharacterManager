@@ -16,6 +16,7 @@ import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.data.getMaxSpellSlots
 import kotlin.math.ceil
+import kotlin.math.min
 
 @TypeConverters(Converters::class)
 @Entity
@@ -170,5 +171,9 @@ data class DndCharacter (
 
     fun getMaxSpellLevelInPreparedSpells(): Int {
         return getSpellLevelsOfPreparedSpells().maxOrNull() ?: 0
+    }
+
+    fun getHpAfterShortRest(): Int {
+        return min(remainingHp + getMaxHp() / 2, getMaxHp())
     }
 }
