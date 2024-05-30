@@ -2,6 +2,8 @@ package it.brokenengineers.dnd_character_manager.screens.levelup
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
@@ -11,7 +13,7 @@ import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 @Composable
-fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewModel) {
+fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewModel, navController: NavHostController) {
     val barbarian = DndClassEnum.BARBARIAN.dndClass
     val wizard = DndClassEnum.WIZARD.dndClass
 
@@ -54,6 +56,24 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
         currentLevelUpEvent.increaseNumRages?.let {
             StatIncrease(statName = "Rages per day", currentValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
         }
+        currentLevelUpEvent.chooseNewSpells?.let {
+//            ChooseNewSpells(
+//                character = character,
+//                viewModel = viewModel
+//            )
+        }
+        currentLevelUpEvent.choosePrimalPath?.let {
+//            ChoosePrimalPath(
+//                character = character,
+//                viewModel = viewModel
+        }
+        currentLevelUpEvent.chooseArcaneTradition?.let {
+            ArcaneTradition(
+                character = character,
+                viewModel = viewModel,
+                navController = navController
+            )
+        }
 
     } else {
         Text("Level up event not found")
@@ -68,7 +88,6 @@ data class LevelUpEvent(
     val increaseAbilityScore: Boolean? = null,
     val increaseNumRages: Boolean? = null,
     val chooseNewSpells: Boolean? = false,
-    val newArcaneTraditionFeature: Boolean? = false,
 //    val newPrimalPathFeature: Boolean? = false,
     val choosePrimalPath: Boolean? = false,
     val chooseArcaneTradition: Boolean? = false,

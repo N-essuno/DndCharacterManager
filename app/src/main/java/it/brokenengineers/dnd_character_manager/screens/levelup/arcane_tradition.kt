@@ -3,6 +3,8 @@ package it.brokenengineers.dnd_character_manager.screens.levelup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,12 +12,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
+/**
+ * Composable for choosing an Arcane Tradition for a Wizard character
+ * @param character the character to choose the arcane tradition for
+ * @param viewModel the view model to handle the character
+ */
 @Composable
-fun ArcaneTradition() {
+fun ArcaneTradition(character: DndCharacter, viewModel: DndCharacterManagerViewModel, navController: NavHostController) {
     Column(
         modifier = Modifier
             .padding(SmallPadding)
@@ -49,6 +61,24 @@ fun ArcaneTradition() {
                 onSelected = { selectedTradition = tradition }
             )
             Spacer(modifier = Modifier.padding(SmallPadding))
+        }
+
+        // Save the selected tradition
+        if (selectedTradition != null) {
+            Button(
+                onClick = {
+                    viewModel.chooseArcaneTradition(character, selectedTradition!!.name)
+                    navController.navigate("sheet/${character.id}") {
+                        popUpTo(navController.graph.findStartDestination().id)
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Confirm",)
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,33 +14,39 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 @Composable
-fun NewMagic() {
+fun NewSpells(
+    viewModel: DndCharacterManagerViewModel,
+    navController: NavHostController
+) {
     val context = LocalContext.current
     val magicList = listOf(
-        MagicItem(
+        Spell(
             "Magic Missile",
             "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 force damage."
         ),
-        MagicItem(
+        Spell(
             "Fireball",
             "A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame."
         ),
-        MagicItem(
+        Spell(
             "Lightning Bolt",
             "A stroke of lightning forming a line 100 feet long and 5 feet wide blasts out from you in a direction you choose."
         ),
-        MagicItem(
+        Spell(
             "Cure Wounds",
             "A creature you touch regains a number of hit points equal to 1d8 + your spellcasting ability modifier."
         ),
     )
-    var selectedMagics by remember { mutableStateOf<List<MagicItem>>(emptyList()) }
+    var selectedMagics by remember { mutableStateOf<List<Spell>>(emptyList()) }
 
-    Text("Choose 2 new magics", style = MaterialTheme.typography.titleMedium)
+    Text("Choose 2 new spells", style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.padding(SmallPadding))
     magicList.forEach { magic ->
         ExpandableCard(
@@ -59,11 +66,23 @@ fun NewMagic() {
                         .show()
                     selectedMagics
                 }
-                Log.d("NewMagic", selectedMagics.toString())
+                Log.d("New Spells", selectedMagics.toString())
             }
         )
         Spacer(modifier = Modifier.padding(SmallPadding))
+
+        // CONFIRM BUTTON
+        Button(
+            onClick = {
+                // save to view model
+//                viewModel.saveNewSpells(selectedMagics)
+                // redirect to character sheet
+                navController.navigate("characterSheet")
+            }
+        ) {
+            Text("Confirm")
+        }
     }
 }
 
-data class MagicItem(val name: String, val description: String)
+data class Spell(val name: String, val description: String)

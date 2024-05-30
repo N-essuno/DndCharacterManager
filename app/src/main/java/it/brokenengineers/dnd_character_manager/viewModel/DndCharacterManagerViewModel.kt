@@ -339,4 +339,14 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             }
         }
     }
+
+    fun chooseArcaneTradition(character: DndCharacter, name: String) {
+        viewModelScope.launch {
+            // TODO character should have an arcane tradition field
+//            val newCharacter = character.copy(arcaneTradition = name)
+//            repository.selectedDndCharacter.value = newCharacter
+//            updateCharactersList(character, newCharacter)
+            // TODO update character in database by repository
+        }
+    }
 }

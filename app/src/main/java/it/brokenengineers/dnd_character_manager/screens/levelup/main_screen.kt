@@ -63,7 +63,7 @@ fun LevelUp(
                     abilityValues = character.abilityValues
                 ),
             ) }
-            item {DynamicLevelUp2(character = character, viewModel = viewModel)}
+            item {DynamicLevelUp2(character = character, viewModel = viewModel, navController = navController)}
         }
     }
 }
@@ -71,8 +71,9 @@ fun LevelUp(
 @Composable
 fun DynamicLevelUp2(
     character: DndCharacter,
-    viewModel: DndCharacterManagerViewModel
+    viewModel: DndCharacterManagerViewModel,
+    navController: NavHostController
 ) {
-    AbilityScoreImprovement(character = character, viewModel = viewModel)
+    NewSpells()
 }
 

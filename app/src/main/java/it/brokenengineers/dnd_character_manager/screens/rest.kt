@@ -197,12 +197,12 @@ fun ShortRest(
 
         viewModel.shortRest(selectedSlotsInts)
 
-//        navController.navigate("sheet/${character?.id}") {
-//            popUpTo(navController.graph.findStartDestination().id)
-//
-//            launchSingleTop = true
-//            restoreState = true
-//        }
+        navController.navigate("sheet/${character?.id}") {
+            popUpTo(navController.graph.findStartDestination().id)
+
+            launchSingleTop = true
+            restoreState = true
+        }
     }) {
         Text("Confirm")
     }
@@ -350,12 +350,12 @@ fun LongRest(
                 onClick = {
                     // TODO save changes to character via viewModel
                     viewModel.longRest(spellsToPrepare)
-//                    navController.navigate("sheet/${character.id}") {
-//                        popUpTo(navController.graph.findStartDestination().id)
-//
-//                        launchSingleTop = true
-//                        restoreState = true
-//                    }
+                    navController.navigate("sheet/${character.id}") {
+                        popUpTo(navController.graph.findStartDestination().id)
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {

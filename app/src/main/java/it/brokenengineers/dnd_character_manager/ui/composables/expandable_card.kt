@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.painterResource
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
@@ -52,26 +54,31 @@ fun ExpandableCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // TITLE
             Text(text = title,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(SmallPadding))
+                modifier = Modifier.padding(SmallPadding).weight(1f)
+            )
+            // EXPAND/COLLAPSE ICON
             Icon(
                 imageVector = Icons.Filled.ArrowDropDown,
                 contentDescription = "Expand or collapse",
-                modifier = Modifier.rotate(if (expanded) 180f else 0f).
-//                        weight(0.1f).
-                padding(end = SmallPadding)
+                modifier = Modifier.
+                    rotate(if (expanded) 180f else 0f).
+                    weight(0.1f).
+                    padding(end = SmallPadding)
             )
-
-            Button(
+            // SELECT/DESELECT BUTTON
+            IconButton(
                 onClick = onSelected,
-//                    modifier = Modifier.size(40.dp)
+                modifier = Modifier.weight(0.1f).padding(end = SmallPadding)
             ) {
                 // show a plus icon
                 Icon(
-                    imageVector =
-                        if (selected) Icons.Filled.Delete
-                        else Icons.Filled.Add,
+                    painter = painterResource(id =
+                        if (selected) android.R.drawable.ic_input_delete
+                        else android.R.drawable.ic_input_add
+                    ),
                     contentDescription = "Select",
                     tint =
                         if (selected) MaterialTheme.colorScheme.onPrimary
