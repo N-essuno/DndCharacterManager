@@ -50,9 +50,6 @@ class DndCharacterManagerRepository(
                 dndCharacter.raceId = race.id
                 dndCharacter.dndClassId = dndClass.id
 
-//                val newId = dndCharacterDao.insertDndCharacter(dndCharacter)
-
-//                dndCharacter.id = newId.toInt()
                 val id = dndCharacterDao.insertDndCharacterSkillProficiencies(dndCharacter)
                 dndCharacter.id = id
                 allCharacters.value.add(dndCharacter)

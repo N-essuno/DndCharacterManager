@@ -9,6 +9,7 @@ import it.brokenengineers.dnd_character_manager.data.database.Converters
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
+import it.brokenengineers.dnd_character_manager.data.getAbilityValue
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 
 @TypeConverters(Converters::class)
@@ -83,23 +84,7 @@ data class DndCharacter(
         weapon
     )
 
-//    override fun toString(): String {
-//        return "id: $id\n" +
-//                "Name: $name\n" +
-//                "Race: $race\n" +
-//                "RaceId: $raceId\n" +
-//                "DndClass: $dndClass\n" +
-//                "Level: $level\n" +
-//                "Ability Values: ${abilityValues.entries.joinToString { "${it.key.name}: ${it.value}" }}\n" +
-//                "Skill Proficiencies: ${skillProficiencies?.joinToString { it.name }}\n" +
-//                "Remaining HP: $remainingHp\n" +
-//                "Temp HP: $tempHp\n" +
-//                "Spells Known: ${spellsKnown?.joinToString { it.name }}\n" +
-//                "Prepared Spells: ${preparedSpells?.joinToString { it.name }}\n" +
-//                "Available Spell Slots: ${availableSpellSlots?.entries?.joinToString { "${it.key}: ${it.value}" }}\n" +
-//                "Inventory Items: ${inventoryItems?.joinToString { it.name }}\n" +
-//                "Weapon: $weapon"
-//    }
+    // TODO check in all class that abilityValues are correctly retrieved, now there are also ids
 
     fun getProficiencyBonus(): Int {
         return when (level) {
@@ -135,7 +120,7 @@ data class DndCharacter(
     }
 
     fun getAbilityModifier(abilityEnum: AbilityEnum): Int {
-        return (abilityValues[abilityEnum.ability]!! - 10) / 2
+        return (getAbilityValue(abilityEnum, abilityValues)!! - 10) / 2
     }
 
     private fun getAbilityModifier(ability: Ability): Int {

@@ -13,9 +13,4 @@ data class Race (
     val walkSpeed: Int,
     val size: String,
     val abilityScoreIncrease: List<AbilityScoreIncrease>,
-) {
-    override fun toString(): String {
-        return "name: $name, walkSpeed: $walkSpeed, size: $size, " +
-                "abilityScoreIncrease: ${abilityScoreIncrease.joinToString{it.ability.name + ": " + it.increase}}"
-    }
-}
+)
