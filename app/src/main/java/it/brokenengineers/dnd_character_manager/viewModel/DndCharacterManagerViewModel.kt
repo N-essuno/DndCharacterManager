@@ -4,11 +4,11 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
-import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
@@ -267,6 +267,26 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
 //                    newSlots?.let {characterDao.updateAvailableSpellSlots(character.id, newSlots)}
                 }
             }
+        }
+    }
+
+    /**
+     * Increase an ability score by a certain amount
+     * @param character the character to level up
+     * @param abilityEnum the ability score to increase
+     * @param amount the amount to increase the ability score by
+     */
+    fun increaseAbilityScore(character: DndCharacter, abilityEnum: AbilityEnum, amount: Int) {
+        viewModelScope.launch {
+            val ability = abilityEnum.ability
+            val newAbilityValues = character.abilityValues.toMutableMap()
+            newAbilityValues[ability] = character.abilityValues[ability]!! + amount
+            // TODO update character in database using repository
+            // temporary update of character in repository
+            val newCharacter = character.copy(abilityValues = newAbilityValues)
+            repository.selectedDndCharacter.value = newCharacter
+            updateCharactersList(character, newCharacter)
+            // temporary update of character in repository
         }
     }
 }
