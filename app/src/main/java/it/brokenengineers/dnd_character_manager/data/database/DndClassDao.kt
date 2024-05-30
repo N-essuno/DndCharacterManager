@@ -37,12 +37,16 @@ interface DndClassDao {
     fun insertDndClass(dndClass: DndClass): Long
 
     @Insert
+    fun insertAllDndClasses(dndClasses: List<DndClass>)
+
+    @Insert
     fun insertDndClassAbilityCrossRefs(crossRefs: List<DndClassAbilityCrossRef>)
 
     @Transaction
-    fun insertDndClassWithAbilities(dndClass: DndClass, abilities: List<Int>) {
+    fun insertDndClassWithAbilities(dndClass: DndClass) {
         // Insert the DndClass and get its generated ID
         val dndClassId = insertDndClass(dndClass)
+        val abilities = dndClass.savingThrowProficiencies.map { it.id }
 
         // Create and insert the cross reference entities
         val crossRefs = abilities.map { abilityId ->
@@ -52,9 +56,9 @@ interface DndClassDao {
     }
 
     @Transaction
-    fun insertAll(dndClasses: List<DndClass>){
+    fun insertAllDndClassesWithAbilities(dndClasses: List<DndClass>){
         dndClasses.forEach { dndClass ->
-            insertDndClassWithAbilities(dndClass, dndClass.savingThrowProficiencies.map { it.id })
+            insertDndClassWithAbilities(dndClass)
         }
     }
 

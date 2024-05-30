@@ -1,5 +1,6 @@
 package it.brokenengineers.dnd_character_manager.data
 
+import android.util.Log
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Race
@@ -91,7 +92,13 @@ fun getAbilityModifierStatic(
     abilityEnum: AbilityEnum,
     abilityValues: Map<Ability, Int>
 ): Int {
-    return (abilityValues[abilityEnum.ability]!! - 10) / 2
+    Log.d("CharacterUtils", "abilityEnum: $abilityEnum")
+    Log.d("CharacterUtils", "abilityValues: $abilityValues")
+    Log.d("CharacterUtils", "abilityValues: $abilityValues")
+    Log.d("CharacterUtils", "abilityValues: ${abilityValues[abilityEnum.ability]}")
+    // get ability value from abilityValues filtering by name
+    val abilityValue = abilityValues.entries.find { it.key.name == abilityEnum.ability.name }?.value
+    return (abilityValue!! - 10) / 2
 }
 
 fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Ability, Int>): Int {

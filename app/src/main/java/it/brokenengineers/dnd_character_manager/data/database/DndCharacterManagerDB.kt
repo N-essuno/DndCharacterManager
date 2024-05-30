@@ -7,12 +7,15 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.DndClassAbilityCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
+import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +28,9 @@ import java.util.concurrent.CountDownLatch
         Race::class,
         Ability::class,
         DndClassAbilityCrossRef::class,
-        DndClass::class
+        DndClass::class,
+        Skill::class,
+        DndCharacterSkillCrossRef::class
     ],
     version = 1,
     exportSchema = false
@@ -35,6 +40,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
     abstract fun raceDao(): RaceDao
     abstract fun abilityDao(): AbilityDao
     abstract fun dndClassDao(): DndClassDao
+    abstract fun skillDao(): SkillDao
 
     companion object {
         // marking the instance as volatile to ensure atomic access to the variable
@@ -45,7 +51,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
 
         fun getDatabase(context: Context): DndCharacterManagerDB? {
             // TODO remove later. Used to test the database population
-//            context.deleteDatabase("dnd_character_manager_database")
+//            val dbDeleted = context.deleteDatabase("dnd_character_manager_database")
 
             if (INSTANCE == null) {
                 // ensure only one instance of the database is created even if multiple threads try to create an instance
@@ -87,15 +93,19 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         val raceDao = INSTANCE!!.raceDao()
                         val abilityDao = INSTANCE!!.abilityDao()
                         val dndClassDao = INSTANCE!!.dndClassDao()
+                        val skillDao = INSTANCE!!.skillDao()
+
                         val races = RaceEnum.entries.map { it.race }
                         val abilities = AbilityEnum.entries.map { it.ability }
                         val dndClasses = DndClassEnum.entries.map { it.dndClass }
+                        val skills = SkillEnum.entries.map { it.skill }
 
                         Log.i("DndCharacterManagerDB", "Start populating database")
 
                         raceDao.insertAll(races)
                         abilityDao.insertAll(abilities)
-                        dndClassDao.insertAll(dndClasses)
+                        dndClassDao.insertAllDndClassesWithAbilities(dndClasses)
+                        skillDao.insertAll(skills)
 
                         Log.i("DndCharacterManagerDB", "DB Populated, calling countDown()")
                         latch.countDown()

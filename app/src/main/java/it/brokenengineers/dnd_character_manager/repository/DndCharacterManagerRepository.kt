@@ -7,12 +7,14 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.AbilityDao
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.DndClassDao
 import it.brokenengineers.dnd_character_manager.data.database.RaceDao
+import it.brokenengineers.dnd_character_manager.data.database.SkillDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
@@ -28,7 +30,8 @@ class DndCharacterManagerRepository(
     private val dndCharacterDao: DndCharacterDao,
     private val raceDao: RaceDao,
     private val abilityDao: AbilityDao,
-    private val dndClassDao: DndClassDao
+    private val dndClassDao: DndClassDao,
+    private val skillDao: SkillDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -47,7 +50,11 @@ class DndCharacterManagerRepository(
                 dndCharacter.raceId = race.id
                 dndCharacter.dndClassId = dndClass.id
 
-                dndCharacterDao.insert(dndCharacter)
+//                val newId = dndCharacterDao.insertDndCharacter(dndCharacter)
+
+//                dndCharacter.id = newId.toInt()
+                val id = dndCharacterDao.insertDndCharacterSkillProficiencies(dndCharacter)
+                dndCharacter.id = id
                 allCharacters.value.add(dndCharacter)
             }
         }
@@ -65,6 +72,39 @@ class DndCharacterManagerRepository(
 
                 dndCharacterDao.insertAll(dndCharacters)
                 allCharacters.value.addAll(dndCharacters)
+            }
+        }
+    }
+
+    fun fetchAllCharacters() {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dbCharacters = dndCharacterDao.getAllCharacters().toMutableList()
+
+                for (character in dbCharacters) {
+                    val characterRace = raceDao.getRaceById(character.raceId)
+                    val characterDndClass = fetchDndClassBlocking(character.dndClassId)
+                    val characterSkills = fetchCharacterSkillsBlocking(character.id)
+                    character.race = characterRace
+                    character.dndClass = characterDndClass
+                    character.skillProficiencies = characterSkills.toSet()
+                }
+                allCharacters.value = dbCharacters
+            }
+        }
+    }
+
+    fun fetchCharacterByName(name: String) {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dbCharacter = dndCharacterDao.getCharacterByName(name)
+                val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+
+                dbCharacter.race = characterRace
+                dbCharacter.dndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+                dbCharacter.skillProficiencies =
+                    fetchCharacterSkillsBlocking(dbCharacter.id).toSet()
+                selectedDndCharacter.value = dbCharacter
             }
         }
     }
@@ -112,10 +152,21 @@ class DndCharacterManagerRepository(
         for (character in dbCharacters) {
             val characterRace = raceDao.getRaceById(character.raceId)
             val characterDndClass = fetchDndClassBlocking(character.dndClassId)
+            val characterSkills = fetchCharacterSkillsBlocking(character.id)
             character.race = characterRace
             character.dndClass = characterDndClass
+            character.skillProficiencies = characterSkills.toSet()
         }
         return dbCharacters
+    }
+
+    fun fetchCharacterSkillsBlocking(characterId: Int): List<Skill> {
+        val dbSkills = skillDao.getSkillsForCharacter(characterId)
+        dbSkills.forEach { skill ->
+            val ability = abilityDao.getAbility(skill.abilityId)
+            skill.ability = ability
+        }
+        return dbSkills
     }
 
     fun fetchDndClassBlocking(id: Int): DndClass {
@@ -134,6 +185,7 @@ class DndCharacterManagerRepository(
 
         dbCharacter.race = characterRace
         dbCharacter.dndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+        dbCharacter.skillProficiencies = fetchCharacterSkillsBlocking(dbCharacter.id).toSet()
         return@withContext dbCharacter
     }
 
@@ -169,13 +221,22 @@ class DndCharacterManagerRepository(
         return dbDndClasses
     }
 
+    fun fetchAllSkillsBlocking(): List<Skill> {
+        val dbSkills = skillDao.getAllASkills()
+        dbSkills.forEach { skill ->
+            val ability = abilityDao.getAbility(skill.abilityId)
+            skill.ability = ability
+        }
+        return dbSkills
+    }
+
 
 
 
     // No interaction with DB below this line
 
 
-    private fun getAllCharacters() {
+    fun getAllCharacters() {
         viewModel.viewModelScope.launch {
             val characters = createMockCharacters()
             allCharacters.value = characters

@@ -36,7 +36,8 @@ class BuildCharacterTest {
                     db.characterDao(),
                     db.raceDao(),
                     db.abilityDao(),
-                    db.dndClassDao()
+                    db.dndClassDao(),
+                    db.skillDao()
                 )
             }
 
@@ -67,6 +68,8 @@ class BuildCharacterTest {
             assertEquals("Barbarian", character?.dndClass?.name)
             assert(character?.dndClass!!.savingThrowProficiencies.isNotEmpty())
             assert(character?.dndClass!!.primaryAbility!!.name == "Strength")
+            assert(character?.skillProficiencies != null)
+            assert(character?.skillProficiencies!!.isNotEmpty())
 
             // clean up the database
             composeTestRule.runOnIdle {

@@ -130,19 +130,19 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     dndClass = characterClass,
                     image = characterImage
                 )
-                if (ch != null) {
+//                if (ch != null) {
                     // TODO to navigate to the character sheet we need to have the id generated from DB
                     //  we should wait for the coroutine to finish and then navigate
                     //  or we can go to home, refresh the list waiting for the new character to appear
                     //  and then navigate to the character sheet using the ids from DB
-                    navController.navigate("sheet/${ch.id}"){
+                    navController.navigate("home"){
                         popUpTo(navController.graph.findStartDestination().id)
                         launchSingleTop = true
                         restoreState = true
                     }
-                } else {
-                    Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
-                }
+//                } else {
+//                    Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
+//                }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

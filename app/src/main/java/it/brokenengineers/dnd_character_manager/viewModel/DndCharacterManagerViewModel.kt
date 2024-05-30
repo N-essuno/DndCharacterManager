@@ -22,12 +22,14 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var raceDao = db.raceDao()
     private var dndClassDao = db.dndClassDao()
     private var abilityDao = db.abilityDao()
+    private var skillDao = db.skillDao()
     private val repository = DndCharacterManagerRepository(
         this,
         characterDao,
         raceDao,
         abilityDao,
-        dndClassDao
+        dndClassDao,
+        skillDao
     )
     var characters = repository.allCharacters
         private set
@@ -41,30 +43,33 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         repository.getCharacterById(id)
     }
 
-    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): DndCharacter?{
-        // convert to Race and DndClass
-        val raceObj: Race
-        val dndClassObj: DndClass
-        try{
-            raceObj = RaceEnum.valueOf(race.uppercase()).race
-            dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
-        } catch (e: IllegalArgumentException){
-            // IllegalArgument exception is thrown if the string is not a valid enum value
-            return null
-        }
-        var newDndCharacter: DndCharacter? = null
+    fun fetchAllCharacters() {
+        repository.fetchAllCharacters()
+    }
+
+    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?) {
         viewModelScope.launch {
+            // convert to Race and DndClass
+            val raceObj: Race
+            val dndClassObj: DndClass
+//            try{
+                raceObj = RaceEnum.valueOf(race.uppercase()).race
+                dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
+//            } catch (e: IllegalArgumentException){
+//                // IllegalArgument exception is thrown if the string is not a valid enum value
+//                return null
+//            }
+            var newDndCharacter: DndCharacter? = null
+
             val abilityValues = initAbilityValuesForRace(raceObj)
             val spellSlots = initSpellSlotsForClass(dndClassObj)
             val proficiencies = initProficienciesForClass(dndClassObj)
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
 
-            val dbRace = raceDao.getRaceByName(raceObj.name)
-
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
-                raceId = dbRace.id,
+                raceId = raceObj.id,
                 dndClass = dndClassObj,
                 dndClassId = dndClassObj.id,
                 image = image?.toString(),
@@ -79,11 +84,14 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 inventoryItems = emptySet(),
                 weapon = null
             )
+
             newDndCharacter?.let { repository.insertCharacter(newDndCharacter!!) }
+
+            // TODO check if update selectedCharacter in repository or viewmodel changes
+            repository.selectedDndCharacter.value = newDndCharacter
+            repository.allCharacters.value.add(newDndCharacter!!)
+//        return newDndCharacter // TODO should not return
         }
-        // TODO check if update selectedCharacter in repository or viewmodel changes
-        selectedCharacter.value = newDndCharacter
-        return newDndCharacter // TODO should not return
     }
 
     fun addHit(hitValue: Int) {

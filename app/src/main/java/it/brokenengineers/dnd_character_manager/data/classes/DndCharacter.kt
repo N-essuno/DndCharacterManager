@@ -19,11 +19,17 @@ import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
             parentColumns = ["id"],
             childColumns = ["raceId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+        entity = DndClass::class,
+        parentColumns = ["id"],
+        childColumns = ["dndClassId"],
+        onDelete = ForeignKey.CASCADE
         )
     ]
 )
-data class DndCharacter (
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+data class DndCharacter(
+    @PrimaryKey(autoGenerate = true) var id: Int = 0,
     val name: String,
     @Ignore var race: Race?,
     var raceId: Int,
@@ -32,7 +38,7 @@ data class DndCharacter (
     val image: String? = null,
     val level: Int,
     val abilityValues: Map<Ability, Int>,
-    val skillProficiencies: Set<Skill>,
+    @Ignore var skillProficiencies: Set<Skill>?,
     var remainingHp: Int,
     var tempHp: Int,
     val spellsKnown: Set<Spell>?,
@@ -50,7 +56,6 @@ data class DndCharacter (
         image: String? = null,
         level: Int,
         abilityValues: Map<Ability, Int>,
-        skillProficiencies: Set<Skill>,
         remainingHp: Int,
         tempHp: Int,
         spellsKnown: Set<Spell>?,
@@ -68,7 +73,7 @@ data class DndCharacter (
         image,
         level,
         abilityValues,
-        skillProficiencies,
+        null,
         remainingHp,
         tempHp,
         spellsKnown,
@@ -78,23 +83,23 @@ data class DndCharacter (
         weapon
     )
 
-    override fun toString(): String {
-        return "id: $id\n" +
-                "Name: $name\n" +
-                "Race: $race\n" +
-                "RaceId: $raceId\n" +
-                "DndClass: $dndClass\n" +
-                "Level: $level\n" +
-                "Ability Values: ${abilityValues.entries.joinToString { "${it.key.name}: ${it.value}" }}\n" +
-                "Skill Proficiencies: ${skillProficiencies.joinToString { it.name }}\n" +
-                "Remaining HP: $remainingHp\n" +
-                "Temp HP: $tempHp\n" +
-                "Spells Known: ${spellsKnown?.joinToString { it.name }}\n" +
-                "Prepared Spells: ${preparedSpells?.joinToString { it.name }}\n" +
-                "Available Spell Slots: ${availableSpellSlots?.entries?.joinToString { "${it.key}: ${it.value}" }}\n" +
-                "Inventory Items: ${inventoryItems?.joinToString { it.name }}\n" +
-                "Weapon: $weapon"
-    }
+//    override fun toString(): String {
+//        return "id: $id\n" +
+//                "Name: $name\n" +
+//                "Race: $race\n" +
+//                "RaceId: $raceId\n" +
+//                "DndClass: $dndClass\n" +
+//                "Level: $level\n" +
+//                "Ability Values: ${abilityValues.entries.joinToString { "${it.key.name}: ${it.value}" }}\n" +
+//                "Skill Proficiencies: ${skillProficiencies?.joinToString { it.name }}\n" +
+//                "Remaining HP: $remainingHp\n" +
+//                "Temp HP: $tempHp\n" +
+//                "Spells Known: ${spellsKnown?.joinToString { it.name }}\n" +
+//                "Prepared Spells: ${preparedSpells?.joinToString { it.name }}\n" +
+//                "Available Spell Slots: ${availableSpellSlots?.entries?.joinToString { "${it.key}: ${it.value}" }}\n" +
+//                "Inventory Items: ${inventoryItems?.joinToString { it.name }}\n" +
+//                "Weapon: $weapon"
+//    }
 
     fun getProficiencyBonus(): Int {
         return when (level) {
@@ -140,8 +145,8 @@ data class DndCharacter (
     fun getSkills(): List<Pair<Skill, Int>> {
         val skills = mutableListOf<Pair<Skill, Int>>()
         for (enumEntry in SkillEnum.entries) {
-            var skillValue = getAbilityModifier(enumEntry.skill.ability)
-            if (skillProficiencies.contains(enumEntry.skill)) {
+            var skillValue = getAbilityModifier(enumEntry.skill.ability!!)
+            if (skillProficiencies!!.contains(enumEntry.skill)) {
                 skillValue += getProficiencyBonus()
             }
             val pair = Pair(enumEntry.skill, skillValue)

@@ -7,6 +7,7 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManage
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
+import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.runBlocking
@@ -32,7 +33,8 @@ class DbTest {
                 db.characterDao(),
                 db.raceDao(),
                 db.abilityDao(),
-                db.dndClassDao()
+                db.dndClassDao(),
+                db.skillDao()
             )
         }
     }
@@ -41,6 +43,25 @@ class DbTest {
     @Throws(IOException::class)
     fun testCloseDb() {
         db.close()
+    }
+
+    @Test
+    fun testGetAllSkills() {
+        val testSkills = SkillEnum.entries.map { it.skill }
+
+        val skills = runBlocking {
+            repository.fetchAllSkillsBlocking()
+        }
+
+        assert(skills.isNotEmpty())
+        assert(skills.size == testSkills.size)
+        for (i in testSkills.indices) {
+            val skill = skills[i]
+            val testSkill = testSkills[i]
+            assert(skill.name == testSkill.name)
+            assert(skill.ability != null)
+            assert(skill.ability!!.name == testSkill.ability!!.name)
+        }
     }
 
     @Test
@@ -110,11 +131,15 @@ class DbTest {
         for (i in testCharacters.indices) {
             val character = characters[i]
             val testCharacter = testCharacters[i]
+
+            // DndCharacter simple fields assertions
             assert(character.name == testCharacter.name)
             assert(character.level == testCharacter.level)
             assert(character.race != null)
             assert(character.raceId == character.race!!.id)
             assert(character.race!!.name == testCharacter.race!!.name)
+
+            // DndClass assertions
             assert(character.dndClass != null)
             assert(character.dndClassId == character.dndClass!!.id)
             assert(character.dndClass!!.name == testCharacter.dndClass!!.name)
@@ -124,6 +149,20 @@ class DbTest {
             val testCharacterSavingThrows = testCharacter.dndClass!!.savingThrowProficiencies
             for (j in testCharacterSavingThrows.indices) {
                 assert(characterSavingThrows[j].name == testCharacterSavingThrows[j].name)
+            }
+
+            // Skills proficiencies assertions
+            val characterSkills = character.skillProficiencies
+            val testCharacterSkills = testCharacter.skillProficiencies
+            assert(characterSkills != null)
+            assert(characterSkills!!.isNotEmpty())
+            assert(characterSkills.size == testCharacterSkills!!.size)
+            val characterSkillsList = characterSkills.sortedBy { it.name }
+            val testCharacterSkillsList = testCharacterSkills.sortedBy { it.name }
+            for (j in characterSkillsList.indices) {
+                assert(characterSkillsList[j].name == testCharacterSkillsList[j].name)
+                assert(characterSkillsList[j].ability != null)
+                assert(characterSkillsList[j].ability!!.name == testCharacterSkillsList[j].ability!!.name)
             }
         }
 
