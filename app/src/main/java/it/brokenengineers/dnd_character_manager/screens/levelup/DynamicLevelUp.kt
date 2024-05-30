@@ -6,6 +6,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
@@ -49,6 +50,9 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
                 character = character,
                 viewModel = viewModel
             )
+        }
+        currentLevelUpEvent.increaseNumRages?.let {
+            StatIncrease(statName = "Rages per day", currentValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
         }
 
     } else {

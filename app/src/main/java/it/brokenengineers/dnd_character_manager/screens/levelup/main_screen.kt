@@ -47,7 +47,7 @@ fun LevelUp(
             }
             item { Text(text = "Level Up!", style = MaterialTheme.typography.titleLarge) }
             // hp upgrade from previous to current level
-            viewModel.increaseLevel(character)
+            viewModel.increaseLevel(character)  // TODO fix, recomposition of character card does not work when level is increased
             viewModel.increaseHpLevelUp(character)
             item {
                 StatIncrease(

@@ -114,6 +114,20 @@ fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Abil
     }
 }
 
+fun getRagesPerDay(level: Int): Int {
+    return when (level) {
+        1, 2 -> {
+            2
+        }
+        3,4,5 -> {
+            3
+        }
+        else -> {
+            0
+        }
+    }
+}
+
 fun getMaxSpellSlots(spellLevel: Int, dndClass: DndClass, level: Int): Int {
     if (dndClass == DndClassEnum.WIZARD.dndClass) {
         when (level) {
