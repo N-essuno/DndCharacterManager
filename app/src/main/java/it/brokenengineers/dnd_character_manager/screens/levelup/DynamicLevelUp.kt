@@ -16,10 +16,18 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
 
     val levelUpEvents: List<LevelUpEvent> = listOf(
         // we handle level up until level 5
+
+        // BARBARIAN
         LevelUpEvent(dndClass = barbarian, newLevel = 2, newFeatures = listOf(Feature.RECKLESS_ATTACK, Feature.DANGER_SENSE)),
         LevelUpEvent(dndClass = barbarian, newLevel = 3, choosePrimalPath = true, increaseNumRages = true),
-        LevelUpEvent(dndClass = barbarian, newLevel = 4, increaseAbilityScore = 1),
+        LevelUpEvent(dndClass = barbarian, newLevel = 4, increaseAbilityScore = 2),
         LevelUpEvent(dndClass = barbarian, newLevel = 5, increaseProficiencyBonus = true, newFeatures = listOf(Feature.EXTRA_ATTACK, Feature.FAST_MOVEMENT)),
+
+        // WIZARD
+        LevelUpEvent(dndClass = wizard, newLevel = 2, chooseArcaneTradition = true, chooseNewSpells = true),
+        LevelUpEvent(dndClass = wizard, newLevel = 3, newFeatures = listOf(Feature.CANTRIP_FORMULAS), chooseNewSpells = true),
+        LevelUpEvent(dndClass = wizard, newLevel = 4, increaseAbilityScore = 2, chooseNewSpells = true),
+        LevelUpEvent(dndClass = wizard, newLevel = 5, increaseProficiencyBonus = true, chooseNewSpells = true),
     )
 
     val characterClass = character.dndClass
