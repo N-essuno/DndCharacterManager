@@ -289,4 +289,28 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             // temporary update of character in repository
         }
     }
+
+    fun increaseHpLevelUp(character: DndCharacter) {
+        viewModelScope.launch {
+            val newRemainingHp = getMaxHpStatic(
+                dndClass = character.dndClass,
+                level = character.level + 1,
+                abilityValues = character.abilityValues
+            )
+            val newCharacter = character.copy(remainingHp = newRemainingHp)
+            repository.selectedDndCharacter.value = newCharacter
+            updateCharactersList(character, newCharacter)
+            // TODO update character in database by repository
+        }
+
+    }
+
+    fun increaseLevel(character: DndCharacter) {
+        viewModelScope.launch {
+            val newCharacter = character.copy(level = character.level + 1)
+            repository.selectedDndCharacter.value = newCharacter
+            updateCharactersList(character, newCharacter)
+            // TODO update character in database by repository
+        }
+    }
 }
