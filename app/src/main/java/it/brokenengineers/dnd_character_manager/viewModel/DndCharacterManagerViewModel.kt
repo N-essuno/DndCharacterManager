@@ -349,4 +349,19 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             // TODO update character in database by repository
         }
     }
+
+    fun saveNewSpells(newSpells: List<Spell>) {
+        viewModelScope.launch {
+            val character = selectedCharacter.value
+            if (character != null) {
+                val totalSpellsKnown = character.spellsKnown?.toMutableSet()
+                totalSpellsKnown?.addAll(newSpells)
+                val newCharacter = character.copy(spellsKnown = totalSpellsKnown)
+                repository.selectedDndCharacter.value = newCharacter
+                updateCharactersList(character, newCharacter)
+                // TODO update character in database by repository
+            }
+        }
+
+    }
 }

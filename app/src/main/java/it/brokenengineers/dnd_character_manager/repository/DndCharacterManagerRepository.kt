@@ -11,6 +11,7 @@ import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
+import it.brokenengineers.dnd_character_manager.screens.levelup.MockSpells
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -76,8 +77,8 @@ class DndCharacterManagerRepository(
         val dwarf = RaceEnum.DWARF.race
 
         // Mock Spells
-        val fireball = Spell("Fireball", 3, "Evocation")
-        val magicMissile = Spell("Magic Missile", 1, "Evocation")
+        val fireball = MockSpells().getSpellByName("Fireball")!!
+        val magicMissile = MockSpells().getSpellByName("Magic Missile")!!
 
         // Mock Ability Values
         val abilityValues1 = mapOf(

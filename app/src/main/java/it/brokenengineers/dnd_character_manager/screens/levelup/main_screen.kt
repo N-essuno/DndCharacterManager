@@ -74,6 +74,10 @@ fun DynamicLevelUp2(
     viewModel: DndCharacterManagerViewModel,
     navController: NavHostController
 ) {
-    NewSpells()
+    NewSpells(
+        character = character,
+        viewModel = viewModel,
+        navController = navController
+    )
 }
 
