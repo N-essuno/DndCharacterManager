@@ -39,7 +39,8 @@ class BuildCharacterTest {
                     db.abilityDao(),
                     db.dndClassDao(),
                     db.skillDao(),
-                    db.weaponDao()
+                    db.weaponDao(),
+                    db.spellDao()
                 )
             }
 
@@ -80,6 +81,11 @@ class BuildCharacterTest {
             }
             if (character!!.dndClass!!.name == DndClassEnum.WIZARD.name) {
                 assert(character!!.weapon == null)
+            }
+
+            if (character!!.dndClass!!.name == DndClassEnum.WIZARD.name) {
+                assert(character!!.spellsKnown != null)
+                assert(character!!.spellsKnown!!.isNotEmpty())
             }
 
             // clean up the database

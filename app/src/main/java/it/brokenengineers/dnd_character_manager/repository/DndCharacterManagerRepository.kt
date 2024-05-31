@@ -15,6 +15,7 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacterDao
 import it.brokenengineers.dnd_character_manager.data.database.DndClassDao
 import it.brokenengineers.dnd_character_manager.data.database.RaceDao
 import it.brokenengineers.dnd_character_manager.data.database.SkillDao
+import it.brokenengineers.dnd_character_manager.data.database.SpellDao
 import it.brokenengineers.dnd_character_manager.data.database.WeaponDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
@@ -33,7 +34,8 @@ class DndCharacterManagerRepository(
     private val abilityDao: AbilityDao,
     private val dndClassDao: DndClassDao,
     private val skillDao: SkillDao,
-    private val weaponDao: WeaponDao
+    private val weaponDao: WeaponDao,
+    private val spellDao: SpellDao
 ) {
     private val tag: String = DndCharacterManagerRepository::class.java.simpleName
     var allCharacters: MutableStateFlow<MutableList<DndCharacter>> = MutableStateFlow(mutableListOf())
@@ -52,7 +54,7 @@ class DndCharacterManagerRepository(
                 dndCharacter.raceId = race.id
                 dndCharacter.dndClassId = dndClass.id
 
-                val id = dndCharacterDao.insertDndCharacterSkillProficiencies(dndCharacter)
+                val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
                 allCharacters.value.add(dndCharacter)
             }
@@ -84,9 +86,13 @@ class DndCharacterManagerRepository(
                     val characterRace = raceDao.getRaceById(character.raceId)
                     val characterDndClass = fetchDndClassBlocking(character.dndClassId)
                     val characterSkills = fetchCharacterSkillsBlocking(character.id)
+                    val characterWeapon: Weapon? = weaponDao.getWeapon(character.weaponId)
+                    val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(character.id)
                     character.race = characterRace
                     character.dndClass = characterDndClass
                     character.skillProficiencies = characterSkills.toSet()
+                    character.weapon = characterWeapon
+                    character.spellsKnown = characterKnownSpells.toSet()
                 }
                 allCharacters.value = dbCharacters
             }
@@ -148,21 +154,44 @@ class DndCharacterManagerRepository(
     suspend fun fetchAllCharactersBlocking(): List<DndCharacter> {
         val dbCharacters = dndCharacterDao.getAllCharacters().toMutableList()
 
-        for (character in dbCharacters) {
-            val characterRace = raceDao.getRaceById(character.raceId)
-            val characterDndClass = fetchDndClassBlocking(character.dndClassId)
-            val characterSkills = fetchCharacterSkillsBlocking(character.id)
+        for (dbCharacter in dbCharacters) {
+            val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+            val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+            val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
             var characterWeapon: Weapon? = null
-            // 99 is the id of the "None" weapon
-            if (character.weaponId != 99)
-                characterWeapon = weaponDao.getWeapon(character.weaponId)
+            val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(dbCharacter.id)
 
-            character.race = characterRace
-            character.dndClass = characterDndClass
-            character.skillProficiencies = characterSkills.toSet()
-            character.weapon = characterWeapon
+            // 99 is the id of the "None" weapon
+            if (dbCharacter.weaponId != 99)
+                characterWeapon = weaponDao.getWeapon(dbCharacter.weaponId)
+
+            dbCharacter.race = characterRace
+            dbCharacter.dndClass = characterDndClass
+            dbCharacter.skillProficiencies = characterSkills.toSet()
+            dbCharacter.weapon = characterWeapon
+            dbCharacter.spellsKnown = characterKnownSpells.toSet()
         }
         return dbCharacters
+    }
+
+    suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter = withContext(Dispatchers.IO){
+        val dbCharacter = dndCharacterDao.getCharacterByName(name)
+        val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+        val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+        val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
+        var characterWeapon: Weapon? = null
+        val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(dbCharacter.id)
+
+        // 99 is the id of the "None" weapon
+        if (dbCharacter.weaponId != 99)
+            characterWeapon = weaponDao.getWeapon(dbCharacter.weaponId)
+
+        dbCharacter.race = characterRace
+        dbCharacter.dndClass = characterDndClass
+        dbCharacter.skillProficiencies = characterSkills.toSet()
+        dbCharacter.weapon = characterWeapon
+        dbCharacter.spellsKnown = characterKnownSpells.toSet()
+        return@withContext dbCharacter
     }
 
     fun fetchCharacterSkillsBlocking(characterId: Int): List<Skill> {
@@ -172,6 +201,12 @@ class DndCharacterManagerRepository(
             skill.ability = ability
         }
         return dbSkills
+    }
+
+    fun fetchCharacterKnownSpellsBlocking(characterId: Int): List<Spell> {
+        val dbSpells = spellDao.getSpellsForCharacter(characterId)
+
+        return dbSpells
     }
 
     fun fetchDndClassBlocking(id: Int): DndClass {
@@ -184,26 +219,12 @@ class DndCharacterManagerRepository(
         return dbDndClass
     }
 
-    suspend fun fetchCharacterByNameBlocking(name: String): DndCharacter = withContext(Dispatchers.IO){
-        val dbCharacter = dndCharacterDao.getCharacterByName(name)
-        val characterRace = raceDao.getRaceById(dbCharacter.raceId)
-        val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
-        val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
-        var characterWeapon: Weapon? = null
-        // 99 is the id of the "None" weapon
-        if (dbCharacter.weaponId != 99)
-            characterWeapon = weaponDao.getWeapon(dbCharacter.weaponId)
-
-        dbCharacter.race = characterRace
-        dbCharacter.dndClass = characterDndClass
-        dbCharacter.skillProficiencies = characterSkills.toSet()
-        dbCharacter.weapon = characterWeapon
-        return@withContext dbCharacter
+    suspend fun fetchAllRacesBlocking(): List<Race> {
+        return raceDao.getAllRaces()
     }
 
-    suspend fun fetchAllRacesBlocking(): List<Race> {
-        val dbRaces = raceDao.getAllRaces()
-        return dbRaces
+    fun fetchAllSpellsBlocking(): List<Spell> {
+        return spellDao.getAllSpells()
     }
 
     suspend fun insertAllCharactersBlocking(dndCharacters: List<DndCharacter>) {
@@ -296,8 +317,8 @@ class DndCharacterManagerRepository(
         val dwarf = RaceEnum.DWARF.race
 
         // Mock Spells
-        val fireball = Spell("Fireball", 3, "Evocation")
-        val magicMissile = Spell("Magic Missile", 1, "Evocation")
+        val fireball = Spell(1, "Fireball", 3, "Evocation")
+        val magicMissile = Spell(2, "Magic Missile", 1, "Evocation")
 
         // Mock Ability Values
         val abilityValues1 = mapOf(

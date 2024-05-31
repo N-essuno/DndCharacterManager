@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterKnownSpellCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCrossRef
 
 @Dao
@@ -19,6 +20,27 @@ interface DndCharacterDao {
 
     @Query("SELECT * FROM DndCharacter WHERE name = :name LIMIT 1")
     fun getCharacterByName(name: String): DndCharacter
+
+    /** --------------------- INSERT QUERIES --------------------- **/
+
+    @Transaction
+    fun insert(dndCharacter: DndCharacter): Int {
+        val dndCharacterId = insertDndCharacter(dndCharacter)
+        dndCharacter.id = dndCharacterId.toInt()
+        insertDndCharacterSkillProficiencies(dndCharacter)
+        insertDndCharacterKnownSpells(dndCharacter)
+        return dndCharacterId.toInt()
+    }
+
+    @Transaction
+    fun insertAll(dndCharacters: List<DndCharacter>) {
+        dndCharacters.forEach { dndCharacter ->
+            val dndCharacterId = insertDndCharacter(dndCharacter)
+            dndCharacter.id = dndCharacterId.toInt()
+            insertDndCharacterSkillProficiencies(dndCharacter)
+            insertDndCharacterKnownSpells(dndCharacter)
+        }
+    }
 
     // insert queries needed to make relationships between DndClass and Ability list
 
@@ -33,7 +55,7 @@ interface DndCharacterDao {
 
     @Transaction
     fun insertDndCharacterSkillProficiencies(dndCharacter: DndCharacter): Int {
-        val dndCharacterId = insertDndCharacter(dndCharacter)
+        val dndCharacterId = dndCharacter.id
         val skillIds = dndCharacter.skillProficiencies!!.map { it.id }
 
         // Create and insert the cross reference entities
@@ -45,13 +67,29 @@ interface DndCharacterDao {
         return dndCharacterId.toInt()
     }
 
+    // insert queries needed to make relationships between DndClass and Spell list
+
+    @Insert
+    fun insertDndCharacterKnownSpellCrossRefs(crossRefs: List<DndCharacterKnownSpellCrossRef>)
+
     @Transaction
-    fun insertAll(dndCharacters: List<DndCharacter>) {
-        dndCharacters.forEach { dndCharacter ->
-            insertDndCharacterSkillProficiencies(dndCharacter)
+    fun insertDndCharacterKnownSpells(dndCharacter: DndCharacter): Int {
+        val dndCharacterId = dndCharacter.id
+        if (dndCharacter.spellsKnown == null) {
+            return dndCharacterId.toInt()
         }
+        val spellIds = dndCharacter.spellsKnown!!.map { it.id }
+
+        // Create and insert the cross reference entities
+        val crossRefs = spellIds.map { spellId ->
+            DndCharacterKnownSpellCrossRef(dndCharacterId = dndCharacterId.toInt(), spellId = spellId)
+        }
+
+        insertDndCharacterKnownSpellCrossRefs(crossRefs)
+        return dndCharacterId.toInt()
     }
 
+    /** --------------------- END INSERT QUERIES --------------------- **/
 
     // TODO check if delete annotation is more appropriate
     @Delete

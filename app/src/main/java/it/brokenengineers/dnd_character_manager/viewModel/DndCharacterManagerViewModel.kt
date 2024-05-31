@@ -7,6 +7,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
@@ -25,6 +26,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var abilityDao = db.abilityDao()
     private var skillDao = db.skillDao()
     private var weaponDao = db.weaponDao()
+    private var spellDao = db.spellDao()
     private val repository = DndCharacterManagerRepository(
         this,
         characterDao,
@@ -32,7 +34,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         abilityDao,
         dndClassDao,
         skillDao,
-        weaponDao
+        weaponDao,
+        spellDao
     )
     var characters = repository.allCharacters
         private set
@@ -74,6 +77,12 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weapon = Weapon(1, "Hammer", "1d12")
             }
 
+            val spells: MutableList<Spell> = mutableListOf()
+            if (dndClassObj.name == DndClassEnum.WIZARD.name) {
+                spells.add(Spell(1, "Fireball", 3, "Evocation"))
+                spells.add(Spell(2, "Magic Missile", 1, "Evocation"))
+            }
+
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
@@ -86,7 +95,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 skillProficiencies = proficiencies,
                 remainingHp = maxHp,
                 tempHp = 0,
-                spellsKnown = emptySet(),
+                spellsKnown = spells.toSet(),
                 preparedSpells = emptySet(),
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
@@ -94,7 +103,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weaponId = weapon?.id ?: 99
             )
 
-            newDndCharacter.let { repository.insertCharacter(newDndCharacter) }
+            repository.insertCharacter(newDndCharacter)
 
             // TODO move the selection in repository, State variables should be managed by the repository
             repository.selectedDndCharacter.value = newDndCharacter
