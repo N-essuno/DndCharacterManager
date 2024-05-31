@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterKnownSpellCrossRef
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterPreparedSpellCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.DndClassAbilityCrossRef
@@ -36,7 +37,8 @@ import java.util.concurrent.CountDownLatch
         DndCharacterSkillCrossRef::class,
         Weapon::class,
         Spell::class,
-        DndCharacterKnownSpellCrossRef::class
+        DndCharacterKnownSpellCrossRef::class,
+        DndCharacterPreparedSpellCrossRef::class
     ],
     version = 1,
     exportSchema = false

@@ -197,6 +197,7 @@ class DbTest {
 
             // Spells assertions
             if (character.dndClass!!.name == DndClassEnum.WIZARD.name) {
+                // Known spells assertions
                 assert(character.spellsKnown != null)
                 assert(character.spellsKnown!!.isNotEmpty())
                 assert(character.spellsKnown!!.size == testCharacter.spellsKnown!!.size)
@@ -206,6 +207,18 @@ class DbTest {
                     assert(characterSpellsList[j].name == testCharacterSpellsList[j].name)
                     assert(characterSpellsList[j].level == testCharacterSpellsList[j].level)
                     assert(characterSpellsList[j].school == testCharacterSpellsList[j].school)
+                }
+
+                // Prepared spells assertions
+                assert(character.preparedSpells != null)
+                assert(character.preparedSpells!!.isNotEmpty())
+                assert(character.preparedSpells!!.size == testCharacter.preparedSpells!!.size)
+                val characterPreparedSpellsList = character.preparedSpells!!.sortedBy { it.name }
+                val testCharacterPreparedSpellsList = testCharacter.preparedSpells!!.sortedBy { it.name }
+                for (j in characterPreparedSpellsList.indices) {
+                    assert(characterPreparedSpellsList[j].name == testCharacterPreparedSpellsList[j].name)
+                    assert(characterPreparedSpellsList[j].level == testCharacterPreparedSpellsList[j].level)
+                    assert(characterPreparedSpellsList[j].school == testCharacterPreparedSpellsList[j].school)
                 }
             }
         }

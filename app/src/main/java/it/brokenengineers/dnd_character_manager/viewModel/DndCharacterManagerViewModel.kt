@@ -73,14 +73,20 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
 
             var weapon: Weapon? = null
-            if (dndClassObj.name == DndClassEnum.BARBARIAN.name) {
+            if (dndClassObj.name == DndClassEnum.BARBARIAN.dndClass.name) {
                 weapon = Weapon(1, "Hammer", "1d12")
             }
 
-            val spells: MutableList<Spell> = mutableListOf()
-            if (dndClassObj.name == DndClassEnum.WIZARD.name) {
-                spells.add(Spell(1, "Fireball", 3, "Evocation"))
-                spells.add(Spell(2, "Magic Missile", 1, "Evocation"))
+            val spell1 = Spell(1, "Fireball", 3, "Evocation")
+            val spell2 = Spell(2, "Magic Missile", 1, "Evocation")
+
+            val knownSpells: MutableSet<Spell> = mutableSetOf()
+            val preparedSpells: MutableSet<Spell> = mutableSetOf()
+
+            if (dndClassObj.name == DndClassEnum.WIZARD.dndClass.name) {
+                knownSpells.add(spell1)
+                knownSpells.add(spell2)
+                preparedSpells.add(spell1)
             }
 
             newDndCharacter = DndCharacter(
@@ -95,8 +101,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 skillProficiencies = proficiencies,
                 remainingHp = maxHp,
                 tempHp = 0,
-                spellsKnown = spells.toSet(),
-                preparedSpells = emptySet(),
+                spellsKnown = knownSpells,
+                preparedSpells = preparedSpells,
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
                 weapon = weapon,

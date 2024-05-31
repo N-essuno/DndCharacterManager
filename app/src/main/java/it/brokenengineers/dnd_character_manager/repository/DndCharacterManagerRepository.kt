@@ -46,6 +46,7 @@ class DndCharacterManagerRepository(
             getAllCharacters()
         }
     }
+
     fun insertCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -88,11 +89,14 @@ class DndCharacterManagerRepository(
                     val characterSkills = fetchCharacterSkillsBlocking(character.id)
                     val characterWeapon: Weapon? = weaponDao.getWeapon(character.weaponId)
                     val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(character.id)
+                    val characterPreparedSpells: List<Spell> = fetchCharacterPreparedSpellsBlocking(character.id)
+
                     character.race = characterRace
                     character.dndClass = characterDndClass
                     character.skillProficiencies = characterSkills.toSet()
                     character.weapon = characterWeapon
                     character.spellsKnown = characterKnownSpells.toSet()
+                    character.preparedSpells = characterPreparedSpells.toSet()
                 }
                 allCharacters.value = dbCharacters
             }
@@ -160,6 +164,7 @@ class DndCharacterManagerRepository(
             val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
             var characterWeapon: Weapon? = null
             val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(dbCharacter.id)
+            val characterPreparedSpells: List<Spell> = fetchCharacterPreparedSpellsBlocking(dbCharacter.id)
 
             // 99 is the id of the "None" weapon
             if (dbCharacter.weaponId != 99)
@@ -170,6 +175,7 @@ class DndCharacterManagerRepository(
             dbCharacter.skillProficiencies = characterSkills.toSet()
             dbCharacter.weapon = characterWeapon
             dbCharacter.spellsKnown = characterKnownSpells.toSet()
+            dbCharacter.preparedSpells = characterPreparedSpells.toSet()
         }
         return dbCharacters
     }
@@ -181,6 +187,7 @@ class DndCharacterManagerRepository(
         val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
         var characterWeapon: Weapon? = null
         val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(dbCharacter.id)
+        val characterPreparedSpells: List<Spell> = fetchCharacterPreparedSpellsBlocking(dbCharacter.id)
 
         // 99 is the id of the "None" weapon
         if (dbCharacter.weaponId != 99)
@@ -191,6 +198,7 @@ class DndCharacterManagerRepository(
         dbCharacter.skillProficiencies = characterSkills.toSet()
         dbCharacter.weapon = characterWeapon
         dbCharacter.spellsKnown = characterKnownSpells.toSet()
+        dbCharacter.preparedSpells = characterPreparedSpells.toSet()
         return@withContext dbCharacter
     }
 
@@ -204,7 +212,13 @@ class DndCharacterManagerRepository(
     }
 
     fun fetchCharacterKnownSpellsBlocking(characterId: Int): List<Spell> {
-        val dbSpells = spellDao.getSpellsForCharacter(characterId)
+        val dbSpells = spellDao.getKnownSpellsForCharacter(characterId)
+
+        return dbSpells
+    }
+
+    private fun fetchCharacterPreparedSpellsBlocking(characterId: Int): List<Spell> {
+        val dbSpells = spellDao.getPreparedSpellsForCharacter(characterId)
 
         return dbSpells
     }

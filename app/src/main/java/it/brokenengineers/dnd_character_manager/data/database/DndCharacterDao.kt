@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterKnownSpellCrossRef
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterPreparedSpellCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCrossRef
 
 @Dao
@@ -29,6 +30,7 @@ interface DndCharacterDao {
         dndCharacter.id = dndCharacterId.toInt()
         insertDndCharacterSkillProficiencies(dndCharacter)
         insertDndCharacterKnownSpells(dndCharacter)
+        insertDndCharacterPreparedSpells(dndCharacter)
         return dndCharacterId.toInt()
     }
 
@@ -39,6 +41,7 @@ interface DndCharacterDao {
             dndCharacter.id = dndCharacterId.toInt()
             insertDndCharacterSkillProficiencies(dndCharacter)
             insertDndCharacterKnownSpells(dndCharacter)
+            insertDndCharacterPreparedSpells(dndCharacter)
         }
     }
 
@@ -67,7 +70,7 @@ interface DndCharacterDao {
         return dndCharacterId.toInt()
     }
 
-    // insert queries needed to make relationships between DndClass and Spell list
+    // insert queries needed to make relationships between DndClass and Spell lists
 
     @Insert
     fun insertDndCharacterKnownSpellCrossRefs(crossRefs: List<DndCharacterKnownSpellCrossRef>)
@@ -88,6 +91,27 @@ interface DndCharacterDao {
         insertDndCharacterKnownSpellCrossRefs(crossRefs)
         return dndCharacterId.toInt()
     }
+
+    @Insert
+    fun insertDndCharacterPreparedSpellCrossRefs(crossRefs: List<DndCharacterPreparedSpellCrossRef>)
+
+    @Transaction
+    fun insertDndCharacterPreparedSpells(dndCharacter: DndCharacter): Int{
+        val dndCharacterId = dndCharacter.id
+        if (dndCharacter.preparedSpells == null) {
+            return dndCharacterId
+        }
+        val spellIds = dndCharacter.preparedSpells!!.map { it.id }
+
+        // Create and insert the cross reference entities
+        val crossRefs = spellIds.map { spellId ->
+            DndCharacterPreparedSpellCrossRef(dndCharacterId = dndCharacterId.toInt(), spellId = spellId)
+        }
+
+        insertDndCharacterPreparedSpellCrossRefs(crossRefs)
+        return dndCharacterId.toInt()
+    }
+
 
     /** --------------------- END INSERT QUERIES --------------------- **/
 

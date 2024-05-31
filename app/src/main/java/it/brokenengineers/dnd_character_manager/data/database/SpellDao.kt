@@ -23,7 +23,12 @@ interface SpellDao {
     @Query("SELECT * FROM Spell " +
             "INNER JOIN DndCharacterKnownSpellCrossRef ON Spell.id = DndCharacterKnownSpellCrossRef.spellId " +
             "WHERE DndCharacterKnownSpellCrossRef.dndCharacterId = :characterId")
-    fun getSpellsForCharacter(characterId: Int): List<Spell>
+    fun getKnownSpellsForCharacter(characterId: Int): List<Spell>
+
+    @Query("SELECT * FROM Spell " +
+            "INNER JOIN DndCharacterPreparedSpellCrossRef ON Spell.id = DndCharacterPreparedSpellCrossRef.spellId " +
+            "WHERE DndCharacterPreparedSpellCrossRef.dndCharacterId = :characterId")
+    fun getPreparedSpellsForCharacter(characterId: Int): List<Spell>
 
 
 }
