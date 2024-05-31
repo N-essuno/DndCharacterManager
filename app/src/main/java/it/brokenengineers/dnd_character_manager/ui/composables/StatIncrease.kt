@@ -11,12 +11,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
 @Composable
 fun StatIncrease(statName: String, currentValue: Int, newValue: Int) {
     Row {
-        Text("$statName Upgrade", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.stat_upgrade, statName), style = MaterialTheme.typography.titleMedium)
     }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -25,7 +27,7 @@ fun StatIncrease(statName: String, currentValue: Int, newValue: Int) {
         Text(text = currentValue.toString(), style = MaterialTheme.typography.bodyLarge)
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = "$statName upgrade",
+            contentDescription = stringResource(R.string.stat_upgrade, statName),
             modifier = Modifier.padding(horizontal = SmallPadding)
         )
         Text(text = newValue.toString(), style = MaterialTheme.typography.bodyLarge)

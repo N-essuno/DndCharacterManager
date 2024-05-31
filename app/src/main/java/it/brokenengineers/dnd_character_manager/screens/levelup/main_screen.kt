@@ -12,7 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
@@ -45,7 +47,7 @@ fun LevelUp(
                     onHomePage = false
                 )
             }
-            item { Text(text = "Level Up!", style = MaterialTheme.typography.titleLarge) }
+            item { Text(text = stringResource(R.string.level_up), style = MaterialTheme.typography.titleLarge) }
             // hp upgrade from previous to current level
             viewModel.increaseLevel(character)  // TODO fix, recomposition of character card does not work when level is increased
             viewModel.increaseHpLevelUp(character)
