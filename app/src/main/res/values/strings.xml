@@ -76,5 +76,15 @@
     <string name="proficiency">Prof.</string>
     <string name="weapon">Weapon</string>
     <string name="damage">Damage</string>
+    <string name="character_image_added">Character image added</string>
+    <string name="character_builder">Character Builder</string>
+    <string name="name">Name</string>
+    <string name="character_name">Character Name</string>
+    <string name="race">Race</string>
+    <string name="dndClass">Class</string>
+    <string name="add_character_image">Add character image</string>
+    <string name="error_creating_character">Error creating character</string>
+    <string name="character_image">Character Image</string>
+    <string name="delete_button">Delete Button</string>
 
 </resources>

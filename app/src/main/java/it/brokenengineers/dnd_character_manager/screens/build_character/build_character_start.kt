@@ -30,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.AsyncImage
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.ui.composables.OptionGroup
@@ -52,6 +54,8 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
     var characterClass by remember { mutableStateOf("") }
     var characterImage by remember { mutableStateOf<Uri?>(null) }
 
+    val characterImageText = stringResource(id = R.string.character_image_added)
+
     // Registers a photo picker activity launcher in single-select mode.
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         // Callback is invoked after the user selects a media item or closes the
@@ -59,7 +63,11 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         if (uri != null) {
             characterImage = uri
             Log.d(tag, "Selected URI: $uri")
-            Toast.makeText(context, "Character image added", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, characterImageText, Toast.LENGTH_SHORT).show()
+        } else {
+            Log.d(tag, "No media selected")
+//            Toast.makeText(context,
+//                context.getString(R.string.character_image_added), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -71,15 +79,15 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
     ) {
         Column {
 
-            Text(text = "Character Builder", style = MaterialTheme.typography.titleLarge)
+            Text(text = stringResource(R.string.character_builder), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(SmallPadding))
-            Text(text = "Name", style = MaterialTheme.typography.bodyLarge)
+            Text(text = stringResource(R.string.name), style = MaterialTheme.typography.bodyLarge)
             // text field for character name
             OutlinedTextField(
                 modifier = Modifier.testTag("character_name_field"),
                 value = characterName,
                 onValueChange = { characterName = it },
-                label = { Text("Character Name") },
+                label = { Text(stringResource(R.string.character_name)) },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground
                 ),
@@ -96,7 +104,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
             Spacer(modifier = Modifier.padding(SmallPadding))
             // option group for race
             OptionGroup(
-                label = "Race",
+                label = stringResource(R.string.race),
                 // get races from race enum
                 options = RaceEnum.entries.map { it.name },
                 selectedOption = characterRace,
@@ -105,7 +113,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
             Spacer(modifier = Modifier.padding(MediumPadding))
             // option group for class
             OptionGroup(
-                label = "Class",
+                label = stringResource(R.string.dndClass),
                 options = DndClassEnum.entries.map { it.name },
                 selectedOption = characterClass,
                 onSelected = { characterClass = it }
@@ -115,7 +123,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
             Button(onClick = {
                 pickMedia.launch(PickVisualMediaRequest())
             }) {
-                Text(text = "Add character image")
+                Text(text = stringResource(R.string.add_character_image))
             }
             CharacterImageCard(characterImage)
         }
@@ -146,14 +154,15 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                         }
                     }
                 } else {
-                    Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.error_creating_character), Toast.LENGTH_SHORT).show()
                 }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&
                         characterClass.isNotEmpty()
         ) {
-            Text(text = "Confirm")
+            Text(text = stringResource(R.string.confirm))
         }
     }
 }
@@ -166,14 +175,14 @@ private fun CharacterImageCard(characterImage: Uri?) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
                     model = characterImage1,
-                    contentDescription = "Character Image",
+                    contentDescription = stringResource(id = R.string.character_image),
                     modifier = Modifier.fillMaxSize()
                 )
                 IconButton(
                     onClick = { characterImage1 = null },
                     modifier = Modifier.align(Alignment.TopEnd)
                 ) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete Button")
+                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete_button))
                 }
             }
         }
