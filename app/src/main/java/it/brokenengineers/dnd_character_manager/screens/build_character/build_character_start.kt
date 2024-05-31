@@ -132,11 +132,17 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         Button(
             modifier = Modifier.testTag("create_character_button"),
             onClick = {
+                var characterImageStorage: Uri? = null
+                if (characterImage != null){
+                    Log.d(tag, "Trying to save image")
+                    // save image to storage
+                    characterImageStorage = viewModel.saveImage(characterImage!!, context)
+                }
                 val ch = viewModel.createCharacter(
                     name = characterName,
                     race = characterRace,
                     dndClass = characterClass,
-                    image = characterImage
+                    image = characterImageStorage
                 )
                 if (ch != null) {
                     // if character is wizard go to new spells screen

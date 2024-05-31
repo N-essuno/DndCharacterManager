@@ -1,5 +1,8 @@
 package it.brokenengineers.dnd_character_manager.viewModel
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -18,7 +21,10 @@ import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
 import it.brokenengineers.dnd_character_manager.data.initProficienciesForClass
 import it.brokenengineers.dnd_character_manager.data.initSpellSlotsForClass
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var characterDao = db.characterDao()
@@ -363,5 +369,42 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             }
         }
 
+    }
+
+    /**
+     * Save the image in local storage
+     * @param characterImage the Uri of the image to save, it is a temporary file
+     * @param context the context of the activity
+     * @return the Uri of the saved image
+     */
+    fun saveImage(characterImage: Uri, context: Context): Uri? {
+        val fileName = "character_image${System.currentTimeMillis()}"
+        var success = false
+        viewModelScope.launch {
+            val bitmap = getBitmapFromUri(characterImage, context)
+            saveBitmapToLocalFile(fileName, bitmap, context)
+            success = true
+        }
+        return if (success) Uri.parse("file://${context.filesDir}/$fileName.png") else null
+    }
+
+    private suspend fun getBitmapFromUri(uri: Uri, context: Context): Bitmap? = withContext(Dispatchers.IO) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            Log.e("ViewModel", "Error reading bitmap from uri", e)
+            null
+        }
+    }
+
+    private suspend fun saveBitmapToLocalFile(filename: String, bitmap: Bitmap?, context: Context) = withContext(Dispatchers.IO) {
+        try {
+            context.openFileOutput("$filename.png", Context.MODE_PRIVATE).use { fos ->
+                bitmap?.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            }
+        } catch (e: IOException) {
+            Log.e("ViewModel", "Error saving bitmap to file", e)
+        }
     }
 }
