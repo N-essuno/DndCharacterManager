@@ -24,7 +24,7 @@ import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerVie
 
 @Composable
 fun NewSpells(
-    character: DndCharacter,
+    characterId: Int,
     viewModel: DndCharacterManagerViewModel,
     navController: NavHostController
 ) {
@@ -63,7 +63,7 @@ fun NewSpells(
             // save to view model
             viewModel.saveNewSpells(selectedSpells)
             // redirect to character sheet
-            navController.navigate("sheet/${character.id}") {
+            navController.navigate("sheet/${characterId}") {
                 popUpTo(navController.graph.findStartDestination().id)
 
                 launchSingleTop = true

@@ -63,21 +63,8 @@ fun LevelUp(
                     abilityValues = character.abilityValues
                 ),
             ) }
-            item {DynamicLevelUp2(character = character, viewModel = viewModel, navController = navController)}
+            item {DynamicLevelUp(character = character, viewModel = viewModel, navController = navController)}
         }
     }
-}
-
-@Composable
-fun DynamicLevelUp2(
-    character: DndCharacter,
-    viewModel: DndCharacterManagerViewModel,
-    navController: NavHostController
-) {
-    NewSpells(
-        character = character,
-        viewModel = viewModel,
-        navController = navController
-    )
 }
 

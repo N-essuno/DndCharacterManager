@@ -39,7 +39,9 @@ import androidx.navigation.navArgument
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.screens.Rest
 import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
+import it.brokenengineers.dnd_character_manager.screens.build_character.ChooseSpellsScreen
 import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
+import it.brokenengineers.dnd_character_manager.screens.levelup.NewSpells
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -90,15 +92,24 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
         navigation(startDestination = "home", route = "home_route") {
             composable("home") {
                 // TODO go back to home page when finished testing
-//                HomePage(navController, viewModel)
+                HomePage(navController, viewModel)
 //                Rest(1, navController, viewModel)
-                LevelUp(1, navController, viewModel)
+//                LevelUp(1, navController, viewModel)
+//                ChooseSpellsScreen(characterId = 1, viewModel = viewModel, navController = navController)
 
             }
         }
         navigation(startDestination = "create_character", route = "character_creation") {
             composable("create_character") {
                 BuildCharacterStart(navController, viewModel)
+            }
+            composable("choose_spells/{characterId}", arguments = listOf(navArgument("characterId"){
+                type = NavType.IntType
+            })) { backStackEntry ->
+                val characterId = backStackEntry.arguments?.getInt("characterId")
+                characterId?.let {
+                    ChooseSpellsScreen(characterId = it, viewModel = viewModel, navController = navController)
+                }
             }
         }
         navigation(startDestination = "sheet", route = "character_sheet") {
@@ -198,7 +209,9 @@ fun HomePage(
                 text = welcomeMessage,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(top = XLPadding, bottom = MediumPadding).testTag(TestTags.WELCOME_MESSAGE)
+                modifier = Modifier
+                    .padding(top = XLPadding, bottom = MediumPadding)
+                    .testTag(TestTags.WELCOME_MESSAGE)
             )
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally

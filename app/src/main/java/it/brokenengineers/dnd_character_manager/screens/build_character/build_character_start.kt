@@ -131,10 +131,19 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     image = characterImage
                 )
                 if (ch != null) {
-                    navController.navigate("sheet/${ch.id}"){
-                        popUpTo(navController.graph.findStartDestination().id)
-                        launchSingleTop = true
-                        restoreState = true
+                    // if character is wizard go to new spells screen
+                    if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
+                        navController.navigate("choose_spells/${ch.id}"){
+                            popUpTo(navController.graph.findStartDestination().id)
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    } else {
+                        navController.navigate("sheet/${ch.id}") {
+                            popUpTo(navController.graph.findStartDestination().id)
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 } else {
                     Toast.makeText(context, "Error creating character", Toast.LENGTH_SHORT).show()
