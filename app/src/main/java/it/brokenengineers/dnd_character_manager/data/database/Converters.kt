@@ -6,7 +6,6 @@ import com.google.gson.reflect.TypeToken
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.AbilityScoreIncrease
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
-import it.brokenengineers.dnd_character_manager.data.classes.Spell
 
 class Converters {
     val tag: String = Converters::class.java.simpleName
@@ -61,16 +60,16 @@ class Converters {
 //        return gson.fromJson(skillSetString, type)
 //    }
 
-    @TypeConverter
-    fun fromSpellSet(spellSet: Set<Spell>?): String {
-        return gson.toJson(spellSet)
-    }
-
-    @TypeConverter
-    fun toSpellSet(spellSetString: String): Set<Spell>? {
-        val type = object : TypeToken<Set<Spell>?>() {}.type
-        return gson.fromJson(spellSetString, type)
-    }
+//    @TypeConverter
+//    fun fromSpellSet(spellSet: Set<Spell>?): String {
+//        return gson.toJson(spellSet)
+//    }
+//
+//    @TypeConverter
+//    fun toSpellSet(spellSetString: String): Set<Spell>? {
+//        val type = object : TypeToken<Set<Spell>?>() {}.type
+//        return gson.fromJson(spellSetString, type)
+//    }
 
     @TypeConverter
     fun fromSpellSlotsMap(spellSlotsMap: Map<Int, Int>?): String {
