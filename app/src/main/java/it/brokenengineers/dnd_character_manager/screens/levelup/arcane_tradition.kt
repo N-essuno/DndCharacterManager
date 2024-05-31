@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
@@ -32,7 +34,7 @@ fun ArcaneTradition(character: DndCharacter, viewModel: DndCharacterManagerViewM
         modifier = Modifier
             .padding(SmallPadding)
     ) {
-        Text("Choose an Arcane Tradition", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.choose_arcane_tradition), style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.padding(SmallPadding))
 
         // List of arcane traditions
@@ -77,7 +79,7 @@ fun ArcaneTradition(character: DndCharacter, viewModel: DndCharacterManagerViewM
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Confirm",)
+                Text(stringResource(R.string.confirm))
             }
         }
     }

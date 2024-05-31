@@ -59,10 +59,11 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
             StatIncrease(statName = "Rages per day", currentValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
         }
         currentLevelUpEvent.chooseNewSpells?.let {
-//            ChooseNewSpells(
-//                character = character,
-//                viewModel = viewModel
-//            )
+            NewSpells(
+                characterId = character.id,
+                viewModel = viewModel,
+                navController = navController
+            )
         }
         currentLevelUpEvent.choosePrimalPath?.let {
 //            ChoosePrimalPath(

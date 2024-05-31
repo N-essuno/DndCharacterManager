@@ -94,5 +94,23 @@
     <string name="features_unlocked">You have unlocked the following features:</string>
     <string name="ability_improvement_hint">Choose an ability score to improve by two, or two ability scores to improve by one.</string>
     <string name="ability_scores_increased">Ability scores increased!</string>
+    <string name="choose_arcane_tradition">Choose an Arcane Tradition</string>
+    <string name="rest_hint">Even the mightiest warriors need to rest sometimes.</string>
+    <string name="short_rest">Short Rest</string>
+    <string name="long_rest">Long Rest</string>
+    <string name="heart">Heart</string>
+    <string name="hp_before_rest">HP before rest: %1$s / %2$s</string>
+    <string name="hp_after_short_rest">HP after short rest: %1$s / %2$s</string>
+    <string name="hp_after_long_rest">HP after long rest: %1$s / %2$s</string>
+    <string name="recover_spell_slots_hint">Choose spell slots to recover</string>
+    <string name="slots_to_select_left">You have additional %1$s slots to select</string>
+    <string name="slots_consumed_hint">This will consume %1$s out of %2$s slots</string>
+    <string name="level_n_spells">Level: %1$s Spells</string>
+    <string name="spells_to_prepare">Choose spells to prepare</string>
+    <string name="you_selected_n_out_of_m_spells">You selected %1$s out of %2$s spells</string>
+    <string name="remove">Remove</string>
+    <string name="add">Add</string>
+    <string name="spell_slots_left">Spell Slots Left</string>
+    <string name="spells_prepared">Spells Prepared</string>
 
 </resources>

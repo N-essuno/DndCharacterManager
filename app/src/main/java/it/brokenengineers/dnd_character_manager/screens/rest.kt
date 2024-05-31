@@ -32,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
@@ -69,7 +71,7 @@ fun Rest(
                     .padding(innerPadding)
             ) {
                 Text(
-                    text = "Even the mightiest warriors need to rest sometimes.",
+                    text = stringResource(R.string.rest_hint),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
@@ -109,7 +111,7 @@ fun Rest(
                         },
                         modifier = Modifier.padding(SmallPadding)
                     ) {
-                        Text("Short Rest")
+                        Text(stringResource(R.string.short_rest))
                     }
                     // Long Rest Button
                     Button(
@@ -120,7 +122,7 @@ fun Rest(
                         },
                         modifier = Modifier.padding(SmallPadding)
                     ) {
-                        Text("Long Rest")
+                        Text(stringResource(R.string.long_rest))
                     }
                 }
 
@@ -148,17 +150,22 @@ fun HpRecovery(
         // heart image
         Icon(
             imageVector = Icons.Default.Favorite,
-            contentDescription = "Heart",
+            contentDescription = stringResource(R.string.heart),
             modifier = Modifier.height(50.dp)
         )
-        Text("HP before rest: $remainingHp / $maxHp",
+        Text(
+            stringResource(R.string.hp_before_rest, remainingHp, maxHp),
             style = MaterialTheme.typography.bodyLarge)
         if (shortRestClicked){
-            Text(text = "HP after short rest: ${character.getHpAfterShortRest()} / $maxHp",
+            Text(text = stringResource(
+                R.string.hp_after_short_rest,
+                character.getHpAfterShortRest(),
+                maxHp
+            ),
                 style = MaterialTheme.typography.bodyLarge)
         } else if (longRestClicked) {
             Text(
-                text = "HP after long rest: $maxHp / $maxHp",
+                text = stringResource(R.string.hp_after_long_rest, maxHp, maxHp),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -204,7 +211,7 @@ fun ShortRest(
             restoreState = true
         }
     }) {
-        Text("Confirm")
+        Text(stringResource(R.string.confirm))
     }
 }
 
@@ -226,9 +233,10 @@ fun SpellRecovery(
         derivedStateOf { maxSlotsRecoverable - selectedSlotsSum }
     }
 
-    Text("Choose spells to recover",
+    Text(
+        stringResource(R.string.recover_spell_slots_hint),
         style = MaterialTheme.typography.titleMedium)
-    Text(text = "You have additional $slotsLeft slots to select",
+    Text(text = stringResource(R.string.slots_to_select_left, slotsLeft),
         style = MaterialTheme.typography.bodyLarge)
 
     LazyColumn(modifier = Modifier
@@ -269,7 +277,8 @@ fun SpellRecovery(
         }
     }
 
-    Text("This will consume $selectedSlotsSum out of $maxSlotsRecoverable slots",
+    Text(
+        stringResource(R.string.slots_consumed_hint, selectedSlotsSum, maxSlotsRecoverable),
         style = MaterialTheme.typography.bodyLarge)
 }
 
@@ -284,7 +293,7 @@ fun SpellRecoveryRow(
     onRemove: () -> Unit
 ) {
     StatelessIncrDecrRow(
-        label = "Level: $level Spells",
+        label = stringResource(R.string.level_n_spells, level),
         timesSelected = timesSelected,
         onAdd = onAdd,
         enabledAddCondition = { slotsRecoverablePerLevel > 0 && slotsLeft > 0 },
@@ -311,7 +320,8 @@ fun LongRest(
         val selectedStates = remember { spellsKnown.map { mutableStateOf(false) } }
 
         Column(modifier = Modifier.padding(SmallPadding)) {
-            Text("Choose spells to prepare",
+            Text(
+                stringResource(R.string.spells_to_prepare),
                 style = MaterialTheme.typography.titleMedium)
             LazyColumn(modifier = Modifier
                 .height(300.dp)
@@ -344,7 +354,12 @@ fun LongRest(
         }
 
         Column{
-            Text("You selected ${numSpellsToPrepare.intValue} out of $numPrepareableSpells spells",
+            Text(
+                stringResource(
+                    R.string.you_selected_n_out_of_m_spells,
+                    numSpellsToPrepare.intValue,
+                    numPrepareableSpells
+                ),
                 style = MaterialTheme.typography.bodyLarge)
             Button(
                 onClick = {
@@ -359,7 +374,7 @@ fun LongRest(
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Confirm")
+                Text(stringResource(R.string.confirm))
             }
         }
 
@@ -397,7 +412,7 @@ fun PrepareSpellRow(
             ) {
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_input_delete),
-                    contentDescription = "Remove"
+                    contentDescription = stringResource(R.string.remove)
                 )
             }
         } else {
@@ -414,7 +429,7 @@ fun PrepareSpellRow(
             ) {
                 Icon(
                     painter = painterResource(id = android.R.drawable.ic_input_add),
-                    contentDescription = "Add",
+                    contentDescription = stringResource(R.string.add),
                 )
             }
         }
@@ -430,7 +445,7 @@ fun SpellSlotsLeft(character: DndCharacter) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Spell Slots Left",
+            text = stringResource(R.string.spell_slots_left),
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(SmallPadding))
@@ -456,7 +471,7 @@ fun SpellsPrepared(character: DndCharacter) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Spells Prepared",
+            text = stringResource(R.string.spells_prepared),
             style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.height(SmallPadding))
