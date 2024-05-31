@@ -43,7 +43,10 @@ class DndCharacterManagerRepository(
 
     fun init() {
         viewModel.viewModelScope.launch {
-            getAllCharacters()
+            // TODO use the following for loading only DB characters instead of Mock characters
+            fetchAllCharacters()
+//            getAllCharacters()
+
         }
     }
 
@@ -54,6 +57,12 @@ class DndCharacterManagerRepository(
                 val dndClass = dndClassDao.getDndClassByName(dndCharacter.dndClass!!.name)
                 dndCharacter.raceId = race.id
                 dndCharacter.dndClassId = dndClass.id
+                if (dndCharacter.weapon != null) {
+                    val weapon = weaponDao.getWeaponByName(dndCharacter.weapon!!.name)
+                    dndCharacter.weaponId = weapon.id
+                } else {
+                    dndCharacter.weaponId = 99
+                }
 
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
@@ -68,12 +77,42 @@ class DndCharacterManagerRepository(
                 for (character in dndCharacters) {
                     val race = raceDao.getRaceByName(character.race!!.name)
                     val dndClass = dndClassDao.getDndClassByName(character.dndClass!!.name)
+                    if (character.weapon != null) {
+                        val weapon = weaponDao.getWeaponByName(character.weapon!!.name)
+                        character.weaponId = weapon.id
+                    } else {
+                        character.weaponId = 99
+                    }
                     character.raceId = race.id
                     character.dndClassId = dndClass.id
                 }
 
                 dndCharacterDao.insertAll(dndCharacters)
                 allCharacters.value.addAll(dndCharacters)
+            }
+        }
+    }
+
+    fun fetchCharacterByName(name: String) {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dbCharacter = dndCharacterDao.getCharacterByName(name)
+                val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+                val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+                val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
+                val characterWeapon: Weapon = weaponDao.getWeapon(dbCharacter.weaponId)
+                val characterKnownSpells: List<Spell> =
+                    fetchCharacterKnownSpellsBlocking(dbCharacter.id)
+                val characterPreparedSpells: List<Spell> =
+                    fetchCharacterPreparedSpellsBlocking(dbCharacter.id)
+
+                dbCharacter.race = characterRace
+                dbCharacter.dndClass = characterDndClass
+                dbCharacter.skillProficiencies = characterSkills.toSet()
+                dbCharacter.weapon = characterWeapon
+                dbCharacter.spellsKnown = characterKnownSpells.toSet()
+                dbCharacter.preparedSpells = characterPreparedSpells.toSet()
+                selectedDndCharacter.value = dbCharacter
             }
         }
     }
@@ -87,9 +126,11 @@ class DndCharacterManagerRepository(
                     val characterRace = raceDao.getRaceById(character.raceId)
                     val characterDndClass = fetchDndClassBlocking(character.dndClassId)
                     val characterSkills = fetchCharacterSkillsBlocking(character.id)
-                    val characterWeapon: Weapon? = weaponDao.getWeapon(character.weaponId)
-                    val characterKnownSpells: List<Spell> = fetchCharacterKnownSpellsBlocking(character.id)
-                    val characterPreparedSpells: List<Spell> = fetchCharacterPreparedSpellsBlocking(character.id)
+                    val characterWeapon: Weapon = weaponDao.getWeapon(character.weaponId)
+                    val characterKnownSpells: List<Spell> =
+                        fetchCharacterKnownSpellsBlocking(character.id)
+                    val characterPreparedSpells: List<Spell> =
+                        fetchCharacterPreparedSpellsBlocking(character.id)
 
                     character.race = characterRace
                     character.dndClass = characterDndClass
@@ -99,21 +140,6 @@ class DndCharacterManagerRepository(
                     character.preparedSpells = characterPreparedSpells.toSet()
                 }
                 allCharacters.value = dbCharacters
-            }
-        }
-    }
-
-    fun fetchCharacterByName(name: String) {
-        viewModel.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val dbCharacter = dndCharacterDao.getCharacterByName(name)
-                val characterRace = raceDao.getRaceById(dbCharacter.raceId)
-
-                dbCharacter.race = characterRace
-                dbCharacter.dndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
-                dbCharacter.skillProficiencies =
-                    fetchCharacterSkillsBlocking(dbCharacter.id).toSet()
-                selectedDndCharacter.value = dbCharacter
             }
         }
     }
@@ -130,32 +156,16 @@ class DndCharacterManagerRepository(
     fun deleteCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                dndCharacterDao.deleteCharacter(dndCharacter)
-                allCharacters.value.removeIf { it.id == dndCharacter.id }
-            }
-        }
-    }
-
-    fun insertRace(race: Race) {
-        viewModel.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                raceDao.insert(race)
-            }
-        }
-    }
-
-    fun insertAllRaces(races: List<Race>){
-        viewModel.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                raceDao.insertAll(races)
+                val id = dndCharacterDao.deleteCharacter(dndCharacter)
+                allCharacters.value.removeIf { it.id == id }
             }
         }
     }
 
 
-    // Blocking functions used for DB testing to wait for results (no UI)
+    /** --------- Blocking functions used for DB testing to wait for results (no UI) --------- */
 
-    suspend fun fetchAllCharactersBlocking(): List<DndCharacter> {
+    fun fetchAllCharactersBlocking(): List<DndCharacter> {
         val dbCharacters = dndCharacterDao.getAllCharacters().toMutableList()
 
         for (dbCharacter in dbCharacters) {
@@ -202,7 +212,7 @@ class DndCharacterManagerRepository(
         return@withContext dbCharacter
     }
 
-    fun fetchCharacterSkillsBlocking(characterId: Int): List<Skill> {
+    private fun fetchCharacterSkillsBlocking(characterId: Int): List<Skill> {
         val dbSkills = skillDao.getSkillsForCharacter(characterId)
         dbSkills.forEach { skill ->
             val ability = abilityDao.getAbility(skill.abilityId)
@@ -211,7 +221,7 @@ class DndCharacterManagerRepository(
         return dbSkills
     }
 
-    fun fetchCharacterKnownSpellsBlocking(characterId: Int): List<Spell> {
+    private fun fetchCharacterKnownSpellsBlocking(characterId: Int): List<Spell> {
         val dbSpells = spellDao.getKnownSpellsForCharacter(characterId)
 
         return dbSpells
@@ -223,7 +233,7 @@ class DndCharacterManagerRepository(
         return dbSpells
     }
 
-    fun fetchDndClassBlocking(id: Int): DndClass {
+    private fun fetchDndClassBlocking(id: Int): DndClass {
         val dbDndClass = dndClassDao.getDndClassById(id)
         val primaryAbility = abilityDao.getAbility(dbDndClass.primaryAbilityId)
         val savingThrowProficiencies =
@@ -241,7 +251,7 @@ class DndCharacterManagerRepository(
         return spellDao.getAllSpells()
     }
 
-    suspend fun insertAllCharactersBlocking(dndCharacters: List<DndCharacter>) {
+    fun insertAllCharactersBlocking(dndCharacters: List<DndCharacter>) {
         for (character in dndCharacters) {
             val race = raceDao.getRaceByName(character.race!!.name)
             val dndClass = dndClassDao.getDndClassByName(character.dndClass!!.name)
@@ -290,8 +300,7 @@ class DndCharacterManagerRepository(
     }
 
 
-    // No interaction with DB below this line
-
+    /** --------------------- Functions to load Mock Characters --------------------- **/
 
     fun getAllCharacters() {
         viewModel.viewModelScope.launch {

@@ -13,18 +13,19 @@ interface RaceDao {
     suspend fun getAllRaces(): List<Race>
 
     @Query("SELECT * FROM Race WHERE id = :id LIMIT 1")
-    suspend fun getRaceById(id: Int): Race
+    fun getRaceById(id: Int): Race
 
     @Query("SELECT * FROM Race WHERE name = :name LIMIT 1")
-    suspend fun getRaceByName(name: String): Race
+    fun getRaceByName(name: String): Race
 
     @Insert
-    suspend fun insert(race: Race)
+    fun insert(race: Race)
+
     @Insert
-    suspend fun insertAll(race: List<Race>)
+    fun insertAll(race: List<Race>)
 
     @Delete
-    suspend fun delete(race: Race)
+    fun delete(race: Race)
 
 
 }

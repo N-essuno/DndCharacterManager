@@ -13,6 +13,8 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCr
 
 @Dao
 interface DndCharacterDao {
+    /** --------------------- SELECT QUERIES --------------------- **/
+
     @Query("SELECT * FROM DndCharacter")
     fun getAllCharacters(): List<DndCharacter>
 
@@ -63,11 +65,11 @@ interface DndCharacterDao {
 
         // Create and insert the cross reference entities
         val crossRefs = skillIds.map { skillId ->
-            DndCharacterSkillCrossRef(dndCharacterId = dndCharacterId.toInt(), skillId = skillId)
+            DndCharacterSkillCrossRef(dndCharacterId = dndCharacterId, skillId = skillId)
         }
 
         insertDndCharacterSkillCrossRefs(crossRefs)
-        return dndCharacterId.toInt()
+        return dndCharacterId
     }
 
     // insert queries needed to make relationships between DndClass and Spell lists
@@ -79,17 +81,17 @@ interface DndCharacterDao {
     fun insertDndCharacterKnownSpells(dndCharacter: DndCharacter): Int {
         val dndCharacterId = dndCharacter.id
         if (dndCharacter.spellsKnown == null) {
-            return dndCharacterId.toInt()
+            return dndCharacterId
         }
         val spellIds = dndCharacter.spellsKnown!!.map { it.id }
 
         // Create and insert the cross reference entities
         val crossRefs = spellIds.map { spellId ->
-            DndCharacterKnownSpellCrossRef(dndCharacterId = dndCharacterId.toInt(), spellId = spellId)
+            DndCharacterKnownSpellCrossRef(dndCharacterId = dndCharacterId, spellId = spellId)
         }
 
         insertDndCharacterKnownSpellCrossRefs(crossRefs)
-        return dndCharacterId.toInt()
+        return dndCharacterId
     }
 
     @Insert
@@ -105,19 +107,20 @@ interface DndCharacterDao {
 
         // Create and insert the cross reference entities
         val crossRefs = spellIds.map { spellId ->
-            DndCharacterPreparedSpellCrossRef(dndCharacterId = dndCharacterId.toInt(), spellId = spellId)
+            DndCharacterPreparedSpellCrossRef(dndCharacterId = dndCharacterId, spellId = spellId)
         }
 
         insertDndCharacterPreparedSpellCrossRefs(crossRefs)
-        return dndCharacterId.toInt()
+        return dndCharacterId
     }
 
 
-    /** --------------------- END INSERT QUERIES --------------------- **/
+    /** --------------------- DELETE QUERIES --------------------- **/
 
     // TODO check if delete annotation is more appropriate
     @Delete
-    fun deleteCharacter(dndCharacter: DndCharacter)
+    fun deleteCharacter(dndCharacter: DndCharacter): Int
+
     @Delete
     fun deleteCharactersByIds(dndCharacters: List<DndCharacter>)
     @Transaction

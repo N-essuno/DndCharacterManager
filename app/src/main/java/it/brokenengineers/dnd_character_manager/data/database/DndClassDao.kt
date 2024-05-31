@@ -27,10 +27,6 @@ interface DndClassDao {
     fun getAllDndClasses(): List<DndClass>
 
 
-
-
-
-
     // insert queries needed to make relationships between DndClass and Ability list
 
     @Insert

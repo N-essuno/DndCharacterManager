@@ -175,8 +175,6 @@ fun HomePage(
 ){
     val welcomeMessage = stringResource(id = R.string.welcome_message)
     val createCharacterString = stringResource(id = R.string.create_character_button)
-    // use to get all characters from DB instead of using mock data
-//    viewModel.fetchAllCharacters()
     val characters by viewModel.characters.collectAsState(null)
     Box(
         modifier = Modifier
