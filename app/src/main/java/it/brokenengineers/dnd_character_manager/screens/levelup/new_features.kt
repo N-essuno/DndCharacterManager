@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
@@ -16,7 +18,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 fun NewFeatures(featureList: List<Feature>) {
     Spacer(modifier = Modifier.padding(SmallPadding))
     Text(
-        text = "You have unlocked the following features:",
+        text = stringResource(R.string.features_unlocked),
         style = MaterialTheme.typography.titleMedium
     )
     // show a card with the ability

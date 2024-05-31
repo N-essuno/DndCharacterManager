@@ -90,5 +90,7 @@
     <string name="warning_exceeded_2_spells">You can only select 2 spells</string>
     <string name="level_up">Level Up!</string>
     <string name="stat_upgrade">%1$s Upgrade</string>
+    <string name="level_up_event_not_found">Level up event not found</string>
+    <string name="features_unlocked">You have unlocked the following features:</string>
 
 </resources>

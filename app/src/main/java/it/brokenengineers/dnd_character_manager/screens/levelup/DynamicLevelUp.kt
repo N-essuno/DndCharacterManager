@@ -2,8 +2,10 @@ package it.brokenengineers.dnd_character_manager.screens.levelup
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
@@ -76,7 +78,7 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
         }
 
     } else {
-        Text("Level up event not found")
+        Text(stringResource(R.string.level_up_event_not_found))
     }
 }
 
