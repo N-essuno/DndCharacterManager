@@ -44,6 +44,18 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
+/**
+ * Composable for the character creation screen.
+ * The user can create a new character by providing
+ * - character name
+ * - race (among the available, currently Dwarf and Eladrin)
+ * - class (among the available, currently Barbarian and Wizard)
+ * - (optional) an image of the character
+ * When the user confirms the creation, the character creation either progresses to the next screen
+ * or completes, bringing to the sheet of the newly created character.
+ * @param navController: NavController
+ * @param viewModel: DndCharacterManagerViewModel
+ */
 @Composable
 fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterManagerViewModel) {
     val tag = "BuildCharacterStart"
@@ -54,8 +66,6 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
     var characterClass by remember { mutableStateOf("") }
     var characterImage by remember { mutableStateOf<Uri?>(null) }
 
-    val characterImageText = stringResource(id = R.string.character_image_added)
-
     // Registers a photo picker activity launcher in single-select mode.
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         // Callback is invoked after the user selects a media item or closes the
@@ -63,11 +73,9 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         if (uri != null) {
             characterImage = uri
             Log.d(tag, "Selected URI: $uri")
-            Toast.makeText(context, characterImageText, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.character_image_added), Toast.LENGTH_SHORT).show()
         } else {
             Log.d(tag, "No media selected")
-//            Toast.makeText(context,
-//                context.getString(R.string.character_image_added), Toast.LENGTH_SHORT).show()
         }
     }
 
