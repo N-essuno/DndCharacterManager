@@ -17,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
@@ -58,7 +60,7 @@ fun AbilityScoreImprovement(character: DndCharacter, viewModel: DndCharacterMana
                 .padding(SmallPadding)
         ) {
             Text(
-                "Choose an ability score to improve by two, or two ability scores to improve by one.",
+                text = stringResource(R.string.ability_improvement_hint),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.padding(SmallPadding))
@@ -88,13 +90,13 @@ fun AbilityScoreImprovement(character: DndCharacter, viewModel: DndCharacterMana
                     confirmed = true
                 },
                 enabled = selectedScores.values.sumOf { it.intValue } > 0) {
-                Text("Confirm")
+                Text(stringResource(R.string.confirm))
             }
         }
     } else {
         val improvedScores = selectedScores.filterValues { it.intValue > 0 }.keys
 
-        Text("Ability scores increased!")
+        Text(stringResource(R.string.ability_scores_increased))
         improvedScores.forEach {
             StatIncrease(
                 statName = it.ability.name,

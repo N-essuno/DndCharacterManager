@@ -92,5 +92,7 @@
     <string name="stat_upgrade">%1$s Upgrade</string>
     <string name="level_up_event_not_found">Level up event not found</string>
     <string name="features_unlocked">You have unlocked the following features:</string>
+    <string name="ability_improvement_hint">Choose an ability score to improve by two, or two ability scores to improve by one.</string>
+    <string name="ability_scores_increased">Ability scores increased!</string>
 
 </resources>
