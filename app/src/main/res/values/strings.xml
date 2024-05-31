@@ -86,5 +86,7 @@
     <string name="error_creating_character">Error creating character</string>
     <string name="character_image">Character Image</string>
     <string name="delete_button">Delete Button</string>
+    <string name="choose_spells">Choose 2 new spells</string>
+    <string name="warning_exceeded_2_spells">You can only select 2 spells</string>
 
 </resources>

@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
@@ -31,7 +33,7 @@ fun NewSpells(
     val context = LocalContext.current
     var selectedSpells by remember { mutableStateOf<List<Spell>>(emptyList()) }
 
-    Text("Choose 2 new spells", style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.choose_spells), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.padding(SmallPadding))
     MockSpells().getAllSpells().forEach { magic ->
         ExpandableCard(
@@ -47,7 +49,8 @@ fun NewSpells(
                     selectedSpells + magic
                 } else {
                     // toast to warn user that they can only select 2 spells
-                    Toast.makeText(context, "You can only select 2 spells", Toast.LENGTH_SHORT)
+                    Toast.makeText(context,
+                        context.getString(R.string.warning_exceeded_2_spells), Toast.LENGTH_SHORT)
                         .show()
                     selectedSpells
                 }
@@ -72,7 +75,7 @@ fun NewSpells(
         },
         enabled = selectedSpells.size == 2
     ) {
-        Text("Confirm")
+        Text(stringResource(id = R.string.confirm))
     }
 }
 
