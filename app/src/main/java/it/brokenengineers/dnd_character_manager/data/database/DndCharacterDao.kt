@@ -28,8 +28,12 @@ interface DndCharacterDao {
 
     @Transaction
     fun insert(dndCharacter: DndCharacter): Int {
+        // insert the character without the lists of cross referenced entities (spells, skills)
+        // we need the character to be inserted to create the cross references
         val dndCharacterId = insertDndCharacter(dndCharacter)
         dndCharacter.id = dndCharacterId.toInt()
+
+        // insert the cross referenced entities
         insertDndCharacterSkillProficiencies(dndCharacter)
         insertDndCharacterKnownSpells(dndCharacter)
         insertDndCharacterPreparedSpells(dndCharacter)
@@ -39,11 +43,7 @@ interface DndCharacterDao {
     @Transaction
     fun insertAll(dndCharacters: List<DndCharacter>) {
         dndCharacters.forEach { dndCharacter ->
-            val dndCharacterId = insertDndCharacter(dndCharacter)
-            dndCharacter.id = dndCharacterId.toInt()
-            insertDndCharacterSkillProficiencies(dndCharacter)
-            insertDndCharacterKnownSpells(dndCharacter)
-            insertDndCharacterPreparedSpells(dndCharacter)
+            insert(dndCharacter)
         }
     }
 
@@ -72,7 +72,7 @@ interface DndCharacterDao {
         return dndCharacterId
     }
 
-    // insert queries needed to make relationships between DndClass and Spell lists
+    // insert queries needed to make relationships between DndCharacter and Spell lists
 
     @Insert
     fun insertDndCharacterKnownSpellCrossRefs(crossRefs: List<DndCharacterKnownSpellCrossRef>)

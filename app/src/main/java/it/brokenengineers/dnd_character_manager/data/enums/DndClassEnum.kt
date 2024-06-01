@@ -11,7 +11,8 @@ enum class DndClassEnum(val dndClass: DndClass) {
                 AbilityEnum.STRENGTH.ability,
                 AbilityEnum.CONSTITUTION.ability),
             primaryAbility = AbilityEnum.STRENGTH.ability,
-            primaryAbilityId = AbilityEnum.STRENGTH.ability.id
+            primaryAbilityId = AbilityEnum.STRENGTH.ability.id,
+            canUseSpells = false
         )
     ),
     WIZARD(
@@ -22,7 +23,8 @@ enum class DndClassEnum(val dndClass: DndClass) {
                 AbilityEnum.INTELLIGENCE.ability,
                 AbilityEnum.WISDOM.ability),
             primaryAbility = AbilityEnum.INTELLIGENCE.ability,
-            primaryAbilityId = AbilityEnum.INTELLIGENCE.ability.id
+            primaryAbilityId = AbilityEnum.INTELLIGENCE.ability.id,
+            canUseSpells = true
         )
     )
 }

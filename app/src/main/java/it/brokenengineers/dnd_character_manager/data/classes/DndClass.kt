@@ -20,12 +20,14 @@ data class DndClass(
     val name: String,
     @Ignore var savingThrowProficiencies: List<Ability>,
     @Ignore var primaryAbility: Ability?,
-    val primaryAbilityId: Int
+    val primaryAbilityId: Int,
+    val canUseSpells: Boolean
 ) {
     // Secondary constructor without the ignored fields
     constructor(
         id: Int = 0,
         name: String,
-        primaryAbilityId: Int
-    ) : this(id, name, emptyList(), null, primaryAbilityId)
+        primaryAbilityId: Int,
+        canUseSpells: Boolean
+    ) : this(id, name, emptyList(), null, primaryAbilityId, canUseSpells)
 }

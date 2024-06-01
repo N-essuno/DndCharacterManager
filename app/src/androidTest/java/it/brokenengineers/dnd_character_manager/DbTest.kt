@@ -105,6 +105,7 @@ class DbTest {
             for (j in testClass.savingThrowProficiencies.indices) {
                 assert(dndClass.savingThrowProficiencies[j].name == testClass.savingThrowProficiencies[j].name)
             }
+            assert(dndClass.canUseSpells == testClass.canUseSpells)
         }
     }
 
@@ -186,17 +187,19 @@ class DbTest {
             }
 
             // Weapon assertions
-            if (character.dndClass!!.name == DndClassEnum.BARBARIAN.name) {
+            if (character.dndClass!!.name == DndClassEnum.BARBARIAN.dndClass.name) {
                 assert(character.weapon != null)
                 assert(character.weapon!!.name == testCharacter.weapon!!.name)
                 assert(character.weapon!!.damage == testCharacter.weapon!!.damage)
+                // Can use spells assertion
+                assert(!character.dndClass!!.canUseSpells)
             }
             if (character.dndClass!!.name == DndClassEnum.WIZARD.name) {
                 assert(character.weapon == null)
             }
 
             // Spells assertions
-            if (character.dndClass!!.name == DndClassEnum.WIZARD.name) {
+            if (character.dndClass!!.name == DndClassEnum.WIZARD.dndClass.name) {
                 // Known spells assertions
                 assert(character.spellsKnown != null)
                 assert(character.spellsKnown!!.isNotEmpty())
@@ -220,6 +223,9 @@ class DbTest {
                     assert(characterPreparedSpellsList[j].level == testCharacterPreparedSpellsList[j].level)
                     assert(characterPreparedSpellsList[j].school == testCharacterPreparedSpellsList[j].school)
                 }
+
+                // Can use spells assertion
+                assert(character.dndClass!!.canUseSpells)
             }
         }
 

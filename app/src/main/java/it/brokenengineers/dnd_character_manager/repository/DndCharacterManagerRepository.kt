@@ -61,6 +61,7 @@ class DndCharacterManagerRepository(
                     val weapon = weaponDao.getWeaponByName(dndCharacter.weapon!!.name)
                     dndCharacter.weaponId = weapon.id
                 } else {
+                    // 99 is the id of the "None" weapon
                     dndCharacter.weaponId = 99
                 }
 

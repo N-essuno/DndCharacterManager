@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 
 @Entity(primaryKeys = ["dndCharacterId", "skillId"],
     foreignKeys = [
-        ForeignKey(entity = DndClass::class,
+        ForeignKey(entity = DndCharacter::class,
             parentColumns = ["id"],
             childColumns = ["dndCharacterId"],
             onDelete = ForeignKey.CASCADE),

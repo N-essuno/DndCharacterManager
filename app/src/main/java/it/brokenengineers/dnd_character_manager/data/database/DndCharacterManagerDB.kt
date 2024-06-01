@@ -57,6 +57,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
         @Volatile
         private var INSTANCE: DndCharacterManagerDB? = null
         // latch to wait for the database to be populated
+        // It delays the DB return until the population callback is completed (roomDatabaseCallback)
         private val latch = CountDownLatch(1)
 
         fun getDatabase(context: Context): DndCharacterManagerDB? {
@@ -84,7 +85,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
             }
             assert(INSTANCE != null)
             // roomDatabaseCallback will be called only after the first use of the DB
-            // Dummy query to trigger the callback
+            // The following is a Dummy query to trigger the callback
             runBlocking { INSTANCE?.raceDao()?.getAllRaces() }
             latch.await()
             return INSTANCE
@@ -112,7 +113,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         val dndClasses = DndClassEnum.entries.map { it.dndClass }
                         val skills = SkillEnum.entries.map { it.skill }
                         val weapon = Weapon(1, "Hammer", "1d12")
-                        val nullWeapon = Weapon(99, "None", "0")
+                        val nullWeapon = Weapon(99, "", "0")
 
                         val fireball = Spell(1, "Fireball", 3, "Evocation")
                         val magicMissile = Spell(2, "Magic Missile", 1, "Evocation")
