@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
@@ -31,7 +29,9 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 fun ExpandableCard(
     title: String, description:
     String, selected: Boolean,
-    onSelected: () -> Unit) {
+    onSelected: () -> Unit,
+    testTag: String = ""
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -71,7 +71,7 @@ fun ExpandableCard(
             // SELECT/DESELECT BUTTON
             IconButton(
                 onClick = onSelected,
-                modifier = Modifier.weight(0.1f).padding(end = SmallPadding)
+                modifier = Modifier.weight(0.1f).padding(end = SmallPadding).testTag(testTag)
             ) {
                 // show a plus icon
                 Icon(

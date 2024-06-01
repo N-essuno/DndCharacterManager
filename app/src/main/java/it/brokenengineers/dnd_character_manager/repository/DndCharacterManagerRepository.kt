@@ -47,7 +47,6 @@ class DndCharacterManagerRepository(
             // TODO use the following for loading only DB characters instead of Mock characters
 //            fetchAllCharacters()
             getAllCharacters()
-
         }
     }
 
@@ -68,6 +67,29 @@ class DndCharacterManagerRepository(
 
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
+                allCharacters.value.add(dndCharacter)
+                selectedDndCharacter.value = dndCharacter
+            }
+        }
+    }
+
+    fun updateCharacter(dndCharacter: DndCharacter) {
+        // TODO better check only for changes
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val race = raceDao.getRaceByName(dndCharacter.race!!.name)
+                val dndClass = dndClassDao.getDndClassByName(dndCharacter.dndClass!!.name)
+                dndCharacter.raceId = race.id
+                dndCharacter.dndClassId = dndClass.id
+                if (dndCharacter.weapon != null) {
+                    val weapon = weaponDao.getWeaponByName(dndCharacter.weapon!!.name)
+                    dndCharacter.weaponId = weapon.id
+                } else {
+                    // 99 is the id of the "None" weapon
+                    dndCharacter.weaponId = 99
+                }
+
+                dndCharacterDao.update(dndCharacter)
                 allCharacters.value.add(dndCharacter)
                 selectedDndCharacter.value = dndCharacter
             }

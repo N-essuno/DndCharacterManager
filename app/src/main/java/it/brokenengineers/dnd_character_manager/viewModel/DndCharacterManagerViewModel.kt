@@ -66,15 +66,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         // TODO clean method after implementation of Spells passed from UI
         viewModelScope.launch {
             // convert to Race and DndClass
-            val raceObj: Race
-            val dndClassObj: DndClass
-//            try{
-                raceObj = RaceEnum.valueOf(race.uppercase()).race
-                dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
-//            } catch (e: IllegalArgumentException){
-//                // IllegalArgument exception is thrown if the string is not a valid enum value
-//                return null
-//            }
+            val raceObj: Race = RaceEnum.valueOf(race.uppercase()).race
+            val dndClassObj: DndClass = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
             val newDndCharacter: DndCharacter?
 
             val abilityValues = initAbilityValuesForRace(raceObj)
@@ -111,8 +104,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 skillProficiencies = proficiencies,
                 remainingHp = maxHp,
                 tempHp = 0,
-                spellsKnown = knownSpells,
-                preparedSpells = preparedSpells,
+                spellsKnown = emptySet(), // TODO updated later if wizard
+                preparedSpells = emptySet(), // TODO updated later if wizard
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
                 weapon = weapon,
@@ -120,10 +113,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             )
 
             repository.insertCharacter(newDndCharacter)
-
-            // TODO move the selection in repository, State variables should be managed by the repository
-            repository.selectedDndCharacter.value = newDndCharacter
-//        return newDndCharacter // TODO should not return
         }
     }
 
@@ -407,12 +396,13 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
+                // get already known spells
                 val totalSpellsKnown = character.spellsKnown?.toMutableSet()
+                // add new spells passed from UI
                 totalSpellsKnown?.addAll(newSpells)
                 val newCharacter = character.copy(spellsKnown = totalSpellsKnown)
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                updateCharactersList(character, newCharacter) // TODO move into repository
+                repository.updateCharacter(newCharacter)
             }
         }
 

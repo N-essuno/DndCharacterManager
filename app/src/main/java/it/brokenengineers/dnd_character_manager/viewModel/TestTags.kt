@@ -2,6 +2,8 @@ package it.brokenengineers.dnd_character_manager.viewModel
 
 object TestTags {
 
+    val ADD_SPELLS_CONFIRM_BUTTON = "add_spells_confirm_button"
+
     // Home screen
     const val WELCOME_MESSAGE = "welcome_message"
     const val TEST_CARD = "test_card"

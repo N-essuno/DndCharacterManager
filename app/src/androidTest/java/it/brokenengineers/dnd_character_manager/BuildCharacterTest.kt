@@ -11,6 +11,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.repository.DndCharacterManagerRepository
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -117,12 +118,17 @@ class BuildCharacterTest {
             // Click the button to create the character
             composeTestRule.onNodeWithTag("create_character_button").performClick()
 
+            composeTestRule.onNodeWithTag("Fireball").performClick()
+            composeTestRule.onNodeWithTag("Magic Missile").performClick()
+            composeTestRule.onNodeWithTag(TestTags.ADD_SPELLS_CONFIRM_BUTTON).performClick()
+
             var character: DndCharacter? = null
 
             composeTestRule.runOnIdle {
                 // Use Room's testing APIs to query the database and get the character
                 character = runBlocking { repository.fetchCharacterByNameBlocking("Test Character") }
             }
+
             // Assert that the character was created successfully
             assert(character != null)
             // convert character result to DndCharacter object
@@ -140,7 +146,7 @@ class BuildCharacterTest {
             assert(character!!.spellsKnown != null)
             assert(character!!.spellsKnown!!.isNotEmpty())
             assert(character!!.preparedSpells != null)
-            assert(character!!.preparedSpells!!.isNotEmpty())
+            assert(character!!.preparedSpells!!.isEmpty())
 
             // clean up the database
             composeTestRule.runOnIdle {

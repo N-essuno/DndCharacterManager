@@ -22,6 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +67,25 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
     var characterRace by remember { mutableStateOf("") }
     var characterClass by remember { mutableStateOf("") }
     var characterImage by remember { mutableStateOf<Uri?>(null) }
+    val selectedCharacter by viewModel.selectedCharacter.collectAsState(null)
+
+    LaunchedEffect(selectedCharacter) {
+        selectedCharacter?.let { ch ->
+            if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
+                navController.navigate("choose_spells/${ch.id}"){
+                    popUpTo(navController.graph.findStartDestination().id)
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            } else {
+                navController.navigate("home") {
+                    popUpTo(navController.graph.findStartDestination().id)
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        }
+    }
 
     // Registers a photo picker activity launcher in single-select mode.
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -152,22 +173,22 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     dndClass = characterClass,
                     image = characterImageStorage
                 )
-                val ch = viewModel.selectedCharacter.value
-                if (ch != null) {
-                    if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
-                        navController.navigate("choose_spells/${ch.id}"){
-                            popUpTo(navController.graph.findStartDestination().id)
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    } else {
-                        navController.navigate("home") {
-                            popUpTo(navController.graph.findStartDestination().id)
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
+//                if (selectedCharacter != null) {
+//                    val ch = selectedCharacter!!
+//                    if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
+//                        navController.navigate("choose_spells/${ch.id}"){
+//                            popUpTo(navController.graph.findStartDestination().id)
+//                            launchSingleTop = true
+//                            restoreState = true
+//                        }
+//                    } else {
+//                        navController.navigate("home") {
+//                            popUpTo(navController.graph.findStartDestination().id)
+//                            launchSingleTop = true
+//                            restoreState = true
+//                        }
+//                    }
+//                }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

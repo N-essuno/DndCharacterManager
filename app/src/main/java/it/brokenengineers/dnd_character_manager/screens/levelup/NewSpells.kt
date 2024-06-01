@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -23,6 +24,7 @@ import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @Composable
 fun NewSpells(
@@ -37,6 +39,7 @@ fun NewSpells(
     Spacer(modifier = Modifier.padding(SmallPadding))
     MockSpells.getAllSpells().forEach { magic ->
         ExpandableCard(
+            testTag = magic.name,
             title = magic.name,
             description = magic.description,
             selected = selectedSpells.contains(magic),
@@ -62,6 +65,7 @@ fun NewSpells(
     }
     // CONFIRM BUTTON
     Button(
+        modifier = Modifier.testTag(TestTags.ADD_SPELLS_CONFIRM_BUTTON),
         onClick = {
             // save to view model
             viewModel.saveNewSpells(selectedSpells)
