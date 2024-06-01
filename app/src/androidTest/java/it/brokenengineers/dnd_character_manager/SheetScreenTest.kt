@@ -10,11 +10,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.navigation.NavController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
+import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteEqual
+import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteWithIdEqual
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 import org.junit.Assert
@@ -279,22 +280,5 @@ class SheetScreenTest {
     fun testNavigateToBuildCharacter(){
         composeTestRule.onNodeWithTag(TestTags.CREATE_CHARACTER_BUTTON).performClick()
         navController.assertCurrentRouteEqual("build_character")
-    }
-
-    private fun NavController.assertCurrentRouteEqual(expectedRouteName: String) {
-        val currentRoute = currentBackStackEntry?.destination?.route.toString()
-        Assert.assertEquals(expectedRouteName, currentRoute)
-    }
-
-    private fun NavController.assertCurrentRouteWithIdEqual(expectedRouteName: String) {
-        val id = currentBackStackEntry?.arguments?.getInt("characterId")
-        val currentRoute = currentBackStackEntry?.destination?.route
-            .toString().replace("{characterId}", id.toString())
-        Assert.assertEquals(expectedRouteName, currentRoute)
-    }
-
-    fun NavController.assertCurrentRouteContains(partialRoute: String) {
-        val currentRoute = currentBackStackEntry?.destination?.route.toString()
-        Assert.assertTrue(currentRoute.contains(partialRoute))
     }
 }

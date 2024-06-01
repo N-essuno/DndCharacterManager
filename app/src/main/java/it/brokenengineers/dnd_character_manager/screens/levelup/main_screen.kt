@@ -49,11 +49,12 @@ fun LevelUp(
             item { Text(text = stringResource(R.string.level_up), style = MaterialTheme.typography.titleLarge) }
             // hp upgrade from previous to current level
             viewModel.increaseLevel(character)  // TODO fix, recomposition of character card does not work when level is increased
+            // TODO viewModel should update the character after the levelup choices are made
             viewModel.increaseHpLevelUp(character)
             item {
                 StatIncrease(
                 "HP",
-                currentValue = getMaxHpStatic(
+                oldValue = getMaxHpStatic(
                     dndClass = character.dndClass!!,
                     level = character.level,
                     abilityValues = character.abilityValues

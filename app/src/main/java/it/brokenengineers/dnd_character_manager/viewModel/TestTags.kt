@@ -55,5 +55,13 @@ object TestTags {
     const val N_SLOT_TEXT = "n_slot_text"
     const val USE_SLOT_BUTTON = "use_slot_button"
 
+    // Build character
+    const val BUILD_CHARACTER_TITLE = "build_character_title"
+
+    // Level up
+    const val STAT_INCREASE_NAME = "stat_increase_name"
+    const val STAT_INCREASE_OLD_VAL = "_increase_old_val"
+    const val STAT_INCREASE_NEW_VAL = "_increase_new_val"
+
 
 }

@@ -46,7 +46,7 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
         currentLevelUpEvent.increaseProficiencyBonus?.let {
             val currentValue = character.getProficiencyBonus()
             val newValue = currentValue + 1
-            StatIncrease(statName = "Proficiency Bonus", currentValue = currentValue, newValue = newValue)
+            StatIncrease(statName = "Proficiency Bonus", oldValue = currentValue, newValue = newValue)
         }
         currentLevelUpEvent.increaseAbilityScore?.let {
             AbilityScoreImprovement(
@@ -55,7 +55,7 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
             )
         }
         currentLevelUpEvent.increaseNumRages?.let {
-            StatIncrease(statName = "Rages per day", currentValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
+            StatIncrease(statName = "Rages per day", oldValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
         }
         currentLevelUpEvent.chooseNewSpells?.let {
             NewSpells(
@@ -80,6 +80,9 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
     } else {
         Text(stringResource(R.string.level_up_event_not_found))
     }
+
+    // TODO should have a confirm button. Once clicked all the changes are staged and the character
+    // TODO levels up, along with all the changes made in the previous composables.
 }
 
 data class LevelUpEvent(
