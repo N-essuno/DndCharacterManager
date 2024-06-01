@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
@@ -55,12 +54,12 @@ fun LevelUp(
                 StatIncrease(
                 "HP",
                 currentValue = getMaxHpStatic(
-                    dndClass = character.dndClass,
+                    dndClass = character.dndClass!!,
                     level = character.level,
                     abilityValues = character.abilityValues
                 ),
                 newValue = getMaxHpStatic(
-                    dndClass = character.dndClass,
+                    dndClass = character.dndClass!!,
                     level = character.level + 1,
                     abilityValues = character.abilityValues
                 ),

@@ -7,14 +7,16 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
@@ -28,7 +30,22 @@ import java.io.IOException
 
 class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     private var characterDao = db.characterDao()
-    private val repository = DndCharacterManagerRepository(this, characterDao)
+    private var raceDao = db.raceDao()
+    private var dndClassDao = db.dndClassDao()
+    private var abilityDao = db.abilityDao()
+    private var skillDao = db.skillDao()
+    private var weaponDao = db.weaponDao()
+    private var spellDao = db.spellDao()
+    private val repository = DndCharacterManagerRepository(
+        this,
+        characterDao,
+        raceDao,
+        abilityDao,
+        dndClassDao,
+        skillDao,
+        weaponDao,
+        spellDao
+    )
     var characters = repository.allCharacters
         private set
     var selectedCharacter = repository.selectedDndCharacter
@@ -41,43 +58,73 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         repository.getCharacterById(id)
     }
 
-    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?): DndCharacter?{
-        // convert to Race and DndClass
-        val raceObj: Race
-        val dndClassObj: DndClass
-        try{
-            raceObj = RaceEnum.valueOf(race.uppercase()).race
-            dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
-        } catch (e: IllegalArgumentException){
-            // IllegalArgument exception is thrown if the string is not a valid enum value
-            return null
-        }
-        var newDndCharacter: DndCharacter? = null
+    fun fetchAllCharacters() {
+        repository.fetchAllCharacters()
+    }
+
+    fun createCharacter(name: String, race: String, dndClass: String, image: Uri?) {
+        // TODO clean method after implementation of Spells passed from UI
         viewModelScope.launch {
+            // convert to Race and DndClass
+            val raceObj: Race
+            val dndClassObj: DndClass
+//            try{
+                raceObj = RaceEnum.valueOf(race.uppercase()).race
+                dndClassObj = DndClassEnum.valueOf(dndClass.uppercase()).dndClass
+//            } catch (e: IllegalArgumentException){
+//                // IllegalArgument exception is thrown if the string is not a valid enum value
+//                return null
+//            }
+            val newDndCharacter: DndCharacter?
+
             val abilityValues = initAbilityValuesForRace(raceObj)
             val spellSlots = initSpellSlotsForClass(dndClassObj)
             val proficiencies = initProficienciesForClass(dndClassObj)
             val maxHp = getMaxHpStatic(dndClassObj, 1, abilityValues)
 
+            var weapon: Weapon? = null
+            if (dndClassObj.name == DndClassEnum.BARBARIAN.dndClass.name) {
+                weapon = Weapon(1, "Hammer", "1d12")
+            }
+
+            val spell1: Spell = MockSpells.getSpellByName("Fireball")!!
+            val spell2: Spell = MockSpells.getSpellByName("Magic Missile")!!
+
+            val knownSpells: MutableSet<Spell> = mutableSetOf()
+            val preparedSpells: MutableSet<Spell> = mutableSetOf()
+
+            if (dndClassObj.name == DndClassEnum.WIZARD.dndClass.name) {
+                knownSpells.add(spell1)
+                knownSpells.add(spell2)
+                preparedSpells.add(spell1)
+            }
+
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
+                raceId = raceObj.id,
                 dndClass = dndClassObj,
+                dndClassId = dndClassObj.id,
                 image = image?.toString(),
                 level = 1,
                 abilityValues = abilityValues,
                 skillProficiencies = proficiencies,
                 remainingHp = maxHp,
                 tempHp = 0,
-                spellsKnown = emptySet(),
-                preparedSpells = emptySet(),
+                spellsKnown = knownSpells,
+                preparedSpells = preparedSpells,
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
-                weapon = null
+                weapon = weapon,
+                weaponId = weapon?.id ?: 99
             )
-            newDndCharacter?.let { repository.addCharacter(newDndCharacter!!) }
+
+            repository.insertCharacter(newDndCharacter)
+
+            // TODO move the selection in repository, State variables should be managed by the repository
+            repository.selectedDndCharacter.value = newDndCharacter
+//        return newDndCharacter // TODO should not return
         }
-        return newDndCharacter
     }
 
     fun addHit(hitValue: Int) {
@@ -301,7 +348,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     fun increaseHpLevelUp(character: DndCharacter) {
         viewModelScope.launch {
             val newRemainingHp = getMaxHpStatic(
-                dndClass = character.dndClass,
+                dndClass = character.dndClass!!,
                 level = character.level + 1,
                 abilityValues = character.abilityValues
             )
@@ -329,7 +376,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 // recover HP to max
                 val newRemainingHp = getMaxHpStatic(
-                    dndClass = character.dndClass,
+                    dndClass = character.dndClass!!,
                     level = character.level,
                     abilityValues = character.abilityValues
                 )

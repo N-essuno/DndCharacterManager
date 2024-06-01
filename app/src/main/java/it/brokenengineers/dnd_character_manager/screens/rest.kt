@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -38,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.composables.StatelessIncrDecrRow
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
@@ -52,7 +51,6 @@ fun Rest(
     navController: NavHostController,
     viewModel: DndCharacterManagerViewModel
 ) {
-    val context = LocalContext.current
     val shortRestClicked = remember { mutableStateOf(false) }
     val longRestClicked = remember { mutableStateOf(false) }
 
