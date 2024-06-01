@@ -161,7 +161,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                             restoreState = true
                         }
                     } else {
-                        navController.navigate("sheet/${ch.id}") {
+                        navController.navigate("home") {
                             popUpTo(navController.graph.findStartDestination().id)
                             launchSingleTop = true
                             restoreState = true

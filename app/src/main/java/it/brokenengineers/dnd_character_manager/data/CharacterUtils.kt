@@ -101,17 +101,23 @@ fun getAbilityModifierStatic(
     abilityEnum: AbilityEnum,
     abilityValues: Map<Ability, Int>
 ): Int {
-    return (abilityValues[abilityEnum.ability]!! - 10) / 2
+    // get ability value from abilityValues filtering by name
+    val abilityValue = getAbilityValue(abilityEnum, abilityValues)
+    return (abilityValue!! - 10) / 2
 }
 
 fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Ability, Int>): Int {
-    val abilityEnum = AbilityEnum.valueOf(dndClass.primaryAbility.name)
+    val abilityEnum = AbilityEnum.valueOf(dndClass.primaryAbility!!.name)
 
     return if (dndClass == DndClassEnum.WIZARD.dndClass) {
         level + getAbilityModifierStatic(abilityEnum, abilityValues)
     } else {
         0
     }
+}
+
+fun getAbilityValue(abilityEnum: AbilityEnum, abilityValues: Map<Ability, Int>): Int? {
+    return abilityValues.entries.find { it.key.name == abilityEnum.ability.name }?.value
 }
 
 fun getRagesPerDay(level: Int): Int {

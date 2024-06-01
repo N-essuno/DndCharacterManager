@@ -40,6 +40,7 @@ import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.composables.StatelessIncrDecrRow
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
