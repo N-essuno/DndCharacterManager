@@ -146,14 +146,14 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     // save image to storage
                     characterImageStorage = viewModel.saveImage(characterImage!!, context)
                 }
-                val ch = viewModel.createCharacter(
+                viewModel.createCharacter(
                     name = characterName,
                     race = characterRace,
                     dndClass = characterClass,
                     image = characterImageStorage
                 )
+                val ch = viewModel.selectedCharacter.value
                 if (ch != null) {
-                    // if character is wizard go to new spells screen
                     if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
                         navController.navigate("choose_spells/${ch.id}"){
                             popUpTo(navController.graph.findStartDestination().id)
@@ -167,9 +167,6 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                             restoreState = true
                         }
                     }
-                } else {
-                    Toast.makeText(context,
-                        context.getString(R.string.error_creating_character), Toast.LENGTH_SHORT).show()
                 }
             },
             enabled = characterName.isNotEmpty() &&

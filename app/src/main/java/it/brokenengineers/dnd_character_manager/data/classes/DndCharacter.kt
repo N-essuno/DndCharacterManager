@@ -201,7 +201,7 @@ data class DndCharacter(
     }
 
     fun getMaxSpellSlotsForSpellLevel(spellLevel: Int): Int {
-        return getMaxSpellSlots(spellLevel, dndClass, level)
+        return getMaxSpellSlots(spellLevel, dndClass!!, level)
     }
 
     fun getRecoverableSpellSlots(): Map<Int, Int> {
@@ -220,7 +220,7 @@ data class DndCharacter(
     }
 
     fun getPrimaryAbility(): Ability {
-        return dndClass.primaryAbility
+        return dndClass!!.primaryAbility!!
     }
 
     fun getSpellLevelsOfPreparedSpells(): Set<Int> {

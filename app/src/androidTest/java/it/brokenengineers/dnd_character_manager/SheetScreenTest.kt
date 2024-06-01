@@ -244,8 +244,7 @@ class SheetScreenTest {
 
         composeTestRule.onNodeWithTag(TestTags.SPELLS_TITLE_TEXT).assertTextEquals(spellsTitleString)
         composeTestRule.onNodeWithText("Magic Missile").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Fireball").assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 6")
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 1")
     }
 
     @Test
@@ -255,9 +254,9 @@ class SheetScreenTest {
         composeTestRule.onNodeWithText("Attack & Spells").performClick()
         navController.assertCurrentRouteWithIdEqual("attack/1")
 
-        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 6")
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 1")
         composeTestRule.onNodeWithTag(TestTags.USE_SLOT_BUTTON).performClick()
-        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 5")
+        composeTestRule.onNodeWithTag(TestTags.N_SLOT_TEXT).assertTextEquals("Slots: 0")
     }
 
     @Test

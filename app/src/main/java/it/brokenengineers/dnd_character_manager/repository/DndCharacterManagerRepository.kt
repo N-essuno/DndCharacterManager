@@ -19,9 +19,9 @@ import it.brokenengineers.dnd_character_manager.data.database.SpellDao
 import it.brokenengineers.dnd_character_manager.data.database.WeaponDao
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
-import it.brokenengineers.dnd_character_manager.screens.levelup.MockSpells
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +45,8 @@ class DndCharacterManagerRepository(
     fun init() {
         viewModel.viewModelScope.launch {
             // TODO use the following for loading only DB characters instead of Mock characters
-            fetchAllCharacters()
-//            getAllCharacters()
+//            fetchAllCharacters()
+            getAllCharacters()
 
         }
     }
@@ -69,6 +69,7 @@ class DndCharacterManagerRepository(
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
                 allCharacters.value.add(dndCharacter)
+                selectedDndCharacter.value = dndCharacter
             }
         }
     }
@@ -342,9 +343,7 @@ class DndCharacterManagerRepository(
         val dwarf = RaceEnum.DWARF.race
 
         // Mock Spells
-        // TODO refactor wth Mock Spells
-        val fireball = Spell(1, "Fireball", 3, "Evocation")
-        val magicMissile = Spell(2, "Magic Missile", 1, "Evocation")
+        val magicMissile: Spell = MockSpells.getSpellByName("Magic Missile")!!
 
         // Mock Ability Values
         val abilityValues1 = mapOf(
@@ -384,10 +383,10 @@ class DndCharacterManagerRepository(
             skillProficiencies = setOf(arcana, history),
             remainingHp = 7,
             tempHp = 0,
-            spellsKnown = setOf(fireball, magicMissile),
-            preparedSpells = setOf(fireball),
+            spellsKnown = setOf(magicMissile),
+            preparedSpells = setOf(magicMissile),
             availableSpellSlots = mapOf(
-                1 to 0,
+                1 to 1,
             ),
             inventoryItems = setOf(item1, item2),
             image = null,

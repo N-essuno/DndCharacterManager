@@ -3,12 +3,11 @@ package it.brokenengineers.dnd_character_manager.screens.levelup
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease

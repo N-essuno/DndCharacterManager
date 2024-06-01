@@ -18,6 +18,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
 import kotlinx.coroutines.CoroutineScope
@@ -115,8 +116,8 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         val weapon = Weapon(1, "Hammer", "1d12")
                         val nullWeapon = Weapon(99, "", "0")
 
-                        val fireball = Spell(1, "Fireball", 3, "Evocation")
-                        val magicMissile = Spell(2, "Magic Missile", 1, "Evocation")
+                        val fireball: Spell = MockSpells.getSpellByName("Fireball")!!
+                        val magicMissile: Spell = MockSpells.getSpellByName("Magic Missile")!!
 
                         Log.i("DndCharacterManagerDB", "Start populating database")
 

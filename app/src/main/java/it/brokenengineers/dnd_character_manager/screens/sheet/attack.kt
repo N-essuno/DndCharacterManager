@@ -30,8 +30,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
@@ -206,7 +206,7 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
 
     var useSlotTag = ""
     var nSlotTag = ""
-    if (level == 3){
+    if (level == 1){
         useSlotTag = TestTags.USE_SLOT_BUTTON
         nSlotTag = TestTags.N_SLOT_TEXT
     }

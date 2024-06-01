@@ -12,11 +12,11 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
-import it.brokenengineers.dnd_character_manager.data.database.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
@@ -87,8 +87,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weapon = Weapon(1, "Hammer", "1d12")
             }
 
-            val spell1 = Spell(1, "Fireball", 3, "Evocation")
-            val spell2 = Spell(2, "Magic Missile", 1, "Evocation")
+            val spell1: Spell = MockSpells.getSpellByName("Fireball")!!
+            val spell2: Spell = MockSpells.getSpellByName("Magic Missile")!!
 
             val knownSpells: MutableSet<Spell> = mutableSetOf()
             val preparedSpells: MutableSet<Spell> = mutableSetOf()
@@ -348,7 +348,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     fun increaseHpLevelUp(character: DndCharacter) {
         viewModelScope.launch {
             val newRemainingHp = getMaxHpStatic(
-                dndClass = character.dndClass,
+                dndClass = character.dndClass!!,
                 level = character.level + 1,
                 abilityValues = character.abilityValues
             )
@@ -376,7 +376,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 // recover HP to max
                 val newRemainingHp = getMaxHpStatic(
-                    dndClass = character.dndClass,
+                    dndClass = character.dndClass!!,
                     level = character.level,
                     abilityValues = character.abilityValues
                 )
