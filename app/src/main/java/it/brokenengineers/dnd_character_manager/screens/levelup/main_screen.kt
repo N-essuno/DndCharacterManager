@@ -28,6 +28,24 @@ import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.ui.theme.XXLPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
+
+/**
+ * Level up screen.
+ * This screen displays the events that happen when a character levels up.
+ * Some of the events are automatic, like the increase in HP, while others require the user to make
+ * a choice.
+ *
+ * The following events are handled:
+ * - HP increase (always, automatic)
+ * - Learning new features (automatic)
+ * - Ability score increase (automatic)
+ * - Choosing a subclass [Arcane Tradition, Primal Path] (user choice)
+ * - Choosing new spells (user choice)
+ *
+ * @param characterId the id of the character to level up
+ * @param navController the navigation controller
+ * @param viewModel the view model
+ */
 @Composable
 fun LevelUp(
     characterId: Int,
@@ -50,6 +68,7 @@ fun LevelUp(
                 verticalArrangement = Arrangement.Top
             ) {
                 item {
+                    // CHARACTER CARD (summary of the character statistics at the old level)
                     CharacterCard(
                         dndCharacter = character,
                         navController = navController,
@@ -58,6 +77,7 @@ fun LevelUp(
                 }
                 item { Text(text = stringResource(R.string.level_up), style = MaterialTheme.typography.titleLarge) }
                 item {
+                    // HP INCREASE
                     StatIncrease(
                     "HP",
                     oldValue = getMaxHpStatic(
@@ -71,7 +91,9 @@ fun LevelUp(
                         abilityValues = character.abilityValues
                     ),
                 ) }
-                item { DynamicLevelUp(
+                item {
+                    // OTHER LEVEL UP EVENTS
+                    DynamicLevelUp(
                     character = character,
                     viewModel = viewModel,
                     navController = navController,
@@ -84,6 +106,7 @@ fun LevelUp(
             }
         }
     } else {
+        // Loading screen, shown while the level up is being committed
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
