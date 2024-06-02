@@ -69,8 +69,8 @@ class DndCharacterManagerRepository(
 
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
-                allCharacters.value.add(dndCharacter)
-                selectedDndCharacter.value = dndCharacter
+                fetchCharacterByName(dndCharacter.name)
+                fetchAllCharacters()
             }
         }
     }
@@ -449,10 +449,10 @@ class DndCharacterManagerRepository(
             charisma to 11
         )
 
-        val item1 = InventoryItem(1, "Health potion", 5, 1.5)
-        val item2 = InventoryItem(2, "Paper", 1, 0.2)
-        val item3 = InventoryItem(3, "Brick", 1, 2.5)
-        val item4 = InventoryItem(4, "Book", 1, 2.0)
+        val item1 = InventoryItem("Health potion", 5, 1.5)
+        val item2 = InventoryItem("Paper", 1, 0.2)
+        val item3 = InventoryItem("Brick", 1, 2.5)
+        val item4 = InventoryItem("Book", 1, 2.0)
 
         val weapon1 = Weapon(1, "Hammer", "1d12")
 
