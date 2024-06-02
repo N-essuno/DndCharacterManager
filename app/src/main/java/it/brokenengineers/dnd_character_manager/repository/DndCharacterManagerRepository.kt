@@ -89,10 +89,9 @@ class DndCharacterManagerRepository(
                     // 99 is the id of the "None" weapon
                     dndCharacter.weaponId = 99
                 }
-
                 dndCharacterDao.update(dndCharacter)
-                allCharacters.value.add(dndCharacter)
-                selectedDndCharacter.value = dndCharacter
+                fetchCharacterByName(dndCharacter.name)
+                fetchAllCharacters()
             }
         }
     }

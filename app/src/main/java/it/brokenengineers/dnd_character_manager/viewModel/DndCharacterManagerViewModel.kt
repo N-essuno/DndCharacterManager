@@ -16,7 +16,6 @@ import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
-import it.brokenengineers.dnd_character_manager.data.enums.MockSpells
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
@@ -84,17 +83,17 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weapon = Weapon(1, "Hammer", "1d12")
             }
 
-            val spell1: Spell = MockSpells.getSpellByName("Fireball")!!
-            val spell2: Spell = MockSpells.getSpellByName("Magic Missile")!!
-
-            val knownSpells: MutableSet<Spell> = mutableSetOf()
-            val preparedSpells: MutableSet<Spell> = mutableSetOf()
-
-            if (dndClassObj.name == DndClassEnum.WIZARD.dndClass.name) {
-                knownSpells.add(spell1)
-                knownSpells.add(spell2)
-                preparedSpells.add(spell1)
-            }
+//            val spell1: Spell = MockSpells.getSpellByName("Fireball")!!
+//            val spell2: Spell = MockSpells.getSpellByName("Magic Missile")!!
+//
+//            val knownSpells: MutableSet<Spell> = mutableSetOf()
+//            val preparedSpells: MutableSet<Spell> = mutableSetOf()
+//
+//            if (dndClassObj.name == DndClassEnum.WIZARD.dndClass.name) {
+//                knownSpells.add(spell1)
+//                knownSpells.add(spell2)
+//                preparedSpells.add(spell1)
+//            }
 
             newDndCharacter = DndCharacter(
                 name = name,
@@ -108,8 +107,8 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 skillProficiencies = proficiencies,
                 remainingHp = maxHp,
                 tempHp = 0,
-                spellsKnown = emptySet(), // TODO updated later if wizard
-                preparedSpells = emptySet(), // TODO updated later if wizard
+                spellsKnown = emptySet(),
+                preparedSpells = emptySet(),
                 availableSpellSlots = spellSlots,
                 inventoryItems = emptySet(),
                 weapon = weapon,
@@ -134,8 +133,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     val newRemainHp = character.remainingHp - newHitValue
                     newCharacter = character.copy(tempHp = newTempHp, remainingHp = newRemainHp)
                 }
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
+                repository.updateCharacter(newCharacter)
                 // TODO update character in database by repository
             }
         }
@@ -147,9 +145,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newRemainingHp = character.remainingHp + hp
                 val newCharacter = character.copy(remainingHp = newRemainingHp)
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                repository.updateCharacter(newCharacter)
             }
         }
     }
@@ -160,9 +156,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newRemainingHp = character.remainingHp - hp
                 val newCharacter = character.copy(remainingHp = newRemainingHp)
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                repository.updateCharacter(newCharacter)
             }
         }
     }
@@ -173,9 +167,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newTempHp = character.tempHp + tempHp
                 val newCharacter = character.copy(tempHp = newTempHp)
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                repository.updateCharacter(newCharacter)
             }
         }
     }
@@ -186,9 +178,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             if (character != null) {
                 val newTempHp = character.tempHp - tempHp
                 val newCharacter = character.copy(tempHp = newTempHp)
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                repository.updateCharacter(newCharacter)
             }
         }
     }

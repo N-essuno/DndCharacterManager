@@ -156,10 +156,6 @@ interface DndCharacterDao {
         if (currentSpellsKnown.isEmpty()) {
             insertDndCharacterKnownSpells(dndCharacter)
         } else {
-            val knownSpellsNames = dndCharacter.spellsKnown!!.map { it.name }
-            val currentSpellsNames = currentSpellsKnown.map { it.name }
-            val spellsToRemove = currentSpellsNames.filter { !knownSpellsNames.contains(it) }
-            val spellsToAdd = knownSpellsNames.filter { !currentSpellsNames.contains(it) }
             updateDndCharacterKnownSpells(dndCharacter)
         }
 
