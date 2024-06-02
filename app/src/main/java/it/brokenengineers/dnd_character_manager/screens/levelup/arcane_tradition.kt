@@ -14,10 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @Composable
 fun ChooseArcaneTradition(
@@ -56,14 +58,20 @@ fun ChooseArcaneTradition(
                     title = tradition.name,
                     description = tradition.description,
                     selected = selectedTradition == tradition,
-                    onSelected = { selectedTradition = tradition }
+                    onSelected = { selectedTradition = tradition },
+                    testTag = "${TestTags.CHOOSE_ARCANE_TRADITION}_${tradition.name}"
                 )
                 Spacer(modifier = Modifier.padding(SmallPadding))
             }
         } else {
+            val arcaneTraditionChosenName = arcaneTraditionChosen.value!!.name
+
             Text(
-                text = arcaneTraditionChosen.value!!.name,
-                style = MaterialTheme.typography.titleMedium
+                text = arcaneTraditionChosenName,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.testTag(
+                    "${TestTags.ARCANE_TRADITION_CHOSEN}_${arcaneTraditionChosenName}"
+                )
             )
         }
 
@@ -75,6 +83,7 @@ fun ChooseArcaneTradition(
                     done.value = true
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .testTag(TestTags.CONFIRM_ARCANE_TRADITION),
             ) {
                 Text(stringResource(R.string.confirm))
             }

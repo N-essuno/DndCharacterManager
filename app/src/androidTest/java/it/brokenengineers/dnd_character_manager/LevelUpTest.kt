@@ -13,7 +13,6 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManage
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
-import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteEqual
 import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteWithIdEqual
 import org.junit.Before
 import org.junit.Rule
@@ -64,15 +63,15 @@ class LevelUpTest {
         navController.assertCurrentRouteWithIdEqual("levelup/1")
 
         // get character params
-        val char = viewModel.selectedCharacter.value
-        val charClass = char?.dndClass
+        val charLevel1 = viewModel.selectedCharacter.value
+        val charClass = charLevel1?.dndClass
         // assert character level 1
-        assert(char?.level == 1)
+        assert(charLevel1?.level == 1)
         // Character level is still the old one at this point. After selecting the new level choices
         // and committing, the view model will update the character level along with the
         // other changes.
-        val hpLevel1 = getMaxHpStatic(charClass!!, char.level, char.abilityValues)
-        val hpLevel2 = getMaxHpStatic(charClass, char.level+1, char.abilityValues)
+        val hpLevel1 = getMaxHpStatic(charClass!!, charLevel1.level, charLevel1.abilityValues)
+        val hpLevel2 = getMaxHpStatic(charClass, charLevel1.level+1, charLevel1.abilityValues)
 
         // Assert hp upgrade
         composeTestRule.onNodeWithTag(TestTags.STAT_INCREASE_NAME + "_HP").assertTextEquals("HP Upgrade")
@@ -83,8 +82,19 @@ class LevelUpTest {
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Fireball").performClick()
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
-        // confirm text with tag spells_chosen exists
         composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
+
+        // Assert Choose Arcane tradition
+        composeTestRule.onNodeWithTag(TestTags.CHOOSE_ARCANE_TRADITION+"_Illusion").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CONFIRM_ARCANE_TRADITION).performClick()
+        composeTestRule.onNodeWithTag(TestTags.ARCANE_TRADITION_CHOSEN+"_Illusion").assertExists()
+
+        // Assert level up committed
+        composeTestRule.onNodeWithTag(TestTags.CONFIRM_LEVELUP).performClick()
+        navController.assertCurrentRouteWithIdEqual("sheet/1")
+        // Assert character level 2
+        val charLevel2 = viewModel.selectedCharacter.value
+        assert(charLevel2?.level == 2)
     }
 
 }

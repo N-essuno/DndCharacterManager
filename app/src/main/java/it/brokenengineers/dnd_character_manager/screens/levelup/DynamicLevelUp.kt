@@ -8,6 +8,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -21,6 +23,7 @@ import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @Composable
 fun DynamicLevelUp(
@@ -119,7 +122,8 @@ fun DynamicLevelUp(
                     restoreState = true
                 }
             },
-            enabled = optionalSelectionsDone
+            enabled = optionalSelectionsDone,
+            modifier = Modifier.testTag(TestTags.CONFIRM_LEVELUP)
         ) {
             Text(stringResource(id = R.string.confirm))
         }
