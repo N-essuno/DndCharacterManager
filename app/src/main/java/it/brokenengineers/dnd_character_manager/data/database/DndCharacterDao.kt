@@ -142,28 +142,7 @@ interface DndCharacterDao {
     fun update(dndCharacter: DndCharacter) {
         // update the character
         updateDndCharacter(dndCharacter)
-        // update the cross referenced entities
-        val currentSkills = getSkillsForCharacter(dndCharacter.id)
-        val currentSpellsKnown = getKnownSpellsForCharacter(dndCharacter.id)
-        val currentPreparedSpells = getPreparedSpellsForCharacter(dndCharacter.id)
-
-        if (currentSkills.isEmpty()) {
-            insertDndCharacterSkillProficiencies(dndCharacter)
-        } else {
-            updateDndCharacterSkillProficiencies(dndCharacter)
-        }
-
-        if (currentSpellsKnown.isEmpty()) {
-            insertDndCharacterKnownSpells(dndCharacter)
-        } else {
-            updateDndCharacterKnownSpells(dndCharacter)
-        }
-
-        if (currentPreparedSpells.isEmpty()) {
-            insertDndCharacterPreparedSpells(dndCharacter)
-        } else {
-            updateDndCharacterPreparedSpells(dndCharacter)
-        }
+        // other update queries if needed (e.g. cross references)
     }
 
     @Update

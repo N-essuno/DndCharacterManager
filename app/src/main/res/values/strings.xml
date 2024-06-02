@@ -40,11 +40,6 @@
 
     <string name="saving_throws">Saving Throws</string>
 
-<!--    <string name="home_navbar">Home</string>-->
-<!--    <string name="sheet_navbar">Sheet</string>-->
-<!--    <string name="inventory_navbar">Inventory</string>-->
-<!--    <string name="spells_navbar">Spells</string>-->
-
     <!-- Inventory -->
 
     <string name="inventory_title">Inventory</string>
@@ -112,5 +107,7 @@
     <string name="add">Add</string>
     <string name="spell_slots_left">Spell Slots Left</string>
     <string name="spells_prepared">Spells Prepared</string>
+    <string name="no_spells_to_recover">No spells to recover or no spells prepared.</string>
+    <string name="not_a_spellcaster">You are not a spellcaster, cannot recover slots.</string>
 
 </resources>

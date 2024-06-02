@@ -107,7 +107,6 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column {
-
             Text(text = stringResource(R.string.character_builder), style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.padding(SmallPadding))
             Text(text = stringResource(R.string.name), style = MaterialTheme.typography.bodyLarge)
@@ -173,22 +172,6 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     dndClass = characterClass,
                     image = characterImageStorage
                 )
-//                if (selectedCharacter != null) {
-//                    val ch = selectedCharacter!!
-//                    if(ch.dndClass == DndClassEnum.WIZARD.dndClass){
-//                        navController.navigate("choose_spells/${ch.id}"){
-//                            popUpTo(navController.graph.findStartDestination().id)
-//                            launchSingleTop = true
-//                            restoreState = true
-//                        }
-//                    } else {
-//                        navController.navigate("home") {
-//                            popUpTo(navController.graph.findStartDestination().id)
-//                            launchSingleTop = true
-//                            restoreState = true
-//                        }
-//                    }
-//                }
             },
             enabled = characterName.isNotEmpty() &&
                         characterRace.isNotEmpty() &&

@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 data class Spell (
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     val name: String,
-    // TODO need to add spell description for the choose Spell view
     val description: String,
     val level: Int,
     val school: String

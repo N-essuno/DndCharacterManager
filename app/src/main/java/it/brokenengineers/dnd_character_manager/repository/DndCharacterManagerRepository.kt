@@ -96,6 +96,38 @@ class DndCharacterManagerRepository(
         }
     }
 
+    fun longRest(dndCharacter: DndCharacter) {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                // only updates the character values, not cross refs
+                dndCharacterDao.updateDndCharacter(dndCharacter)
+                // update prepared spells cross refs
+                changePreparedSpells(dndCharacter)
+                fetchCharacterByName(dndCharacter.name)
+                fetchAllCharacters()
+            }
+        }
+    }
+
+    fun changePreparedSpells(newCharacter: DndCharacter){
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dbCharacter = dndCharacterDao.getCharacterByName(newCharacter.name)
+                val newSpellsPrepared = newCharacter.preparedSpells
+
+                val spellsCrossRefs: MutableList<DndCharacterPreparedSpellCrossRef> = mutableListOf()
+                newSpellsPrepared?.forEach{ spell ->
+                    val dbSpell = spellDao.getSpellByName(spell.name)
+                    spellsCrossRefs.add(DndCharacterPreparedSpellCrossRef(dbCharacter.id, dbSpell.id))
+                }
+                dndCharacterDao.deleteAllPreparedSpellsForCharacter(dbCharacter.id)
+                dndCharacterDao.insertDndCharacterPreparedSpellCrossRefs(spellsCrossRefs)
+                fetchCharacterByName(dbCharacter.name)
+                fetchAllCharacters()
+            }
+        }
+    }
+
     fun insertAllCharacters(dndCharacters: List<DndCharacter>) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -131,25 +163,6 @@ class DndCharacterManagerRepository(
                 }
                 dndCharacterDao.insertDndCharacterKnownSpellCrossRefs(spellsCrossRefs)
                 fetchCharacterByName(newCharacter.name)
-                fetchAllCharacters()
-            }
-        }
-    }
-
-    fun changePreparedSpells(newCharacter: DndCharacter){
-        viewModel.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val character = dndCharacterDao.getCharacterByName(newCharacter.name)
-                val newSpellsPrepared = character.preparedSpells
-
-                val spellsCrossRefs: MutableList<DndCharacterPreparedSpellCrossRef> = mutableListOf()
-                newSpellsPrepared?.forEach{ spell ->
-                    val dbSpell = spellDao.getSpellByName(spell.name)
-                    spellsCrossRefs.add(DndCharacterPreparedSpellCrossRef(character.id, dbSpell.id))
-                }
-                dndCharacterDao.deleteAllPreparedSpellsForCharacter(character.id)
-                dndCharacterDao.insertDndCharacterPreparedSpellCrossRefs(spellsCrossRefs)
-                fetchCharacterByName(character.name)
                 fetchAllCharacters()
             }
         }

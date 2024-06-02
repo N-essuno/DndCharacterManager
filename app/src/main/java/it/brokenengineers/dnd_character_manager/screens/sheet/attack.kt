@@ -333,13 +333,6 @@ fun WeaponRow(weapon: Weapon){
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ){
-//        RadioButton(
-//            // TODO set depending on proficient weapons
-//            modifier = Modifier.size(RadioButtonMedium),
-//            selected = true,
-//            onClick = { }
-//        )
-//        Text("|", style = MaterialTheme.typography.bodyLarge) // Added vertical bar
         Column(
             modifier = Modifier.weight(0.8f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -374,8 +367,6 @@ fun WeaponRow(weapon: Weapon){
             )
 
         }
-
-
     }
 }
 

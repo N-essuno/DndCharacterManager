@@ -83,18 +83,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weapon = Weapon(1, "Hammer", "1d12")
             }
 
-//            val spell1: Spell = MockSpells.getSpellByName("Fireball")!!
-//            val spell2: Spell = MockSpells.getSpellByName("Magic Missile")!!
-//
-//            val knownSpells: MutableSet<Spell> = mutableSetOf()
-//            val preparedSpells: MutableSet<Spell> = mutableSetOf()
-//
-//            if (dndClassObj.name == DndClassEnum.WIZARD.dndClass.name) {
-//                knownSpells.add(spell1)
-//                knownSpells.add(spell2)
-//                preparedSpells.add(spell1)
-//            }
-
             newDndCharacter = DndCharacter(
                 name = name,
                 race = raceObj,
@@ -256,27 +244,10 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
-    private fun orderSetByName(items: MutableSet<InventoryItem>): MutableSet<InventoryItem> {
-        val newList = items.toMutableList()
-        newList.sortBy { it.name }
-        return newList.toMutableSet()
-    }
-
-    // TODO to remove after DB implementation, used just for testing
-    fun updateCharactersList(oldDndCharacter: DndCharacter, newDndCharacter: DndCharacter) {
-        viewModelScope.launch {
-            val newChars = repository.allCharacters.value.toMutableList()
-            newChars.remove(oldDndCharacter)
-            newChars.add(newDndCharacter)
-            repository.allCharacters.value = newChars
-        }
-    }
-
     /**
      * Recover HP and spell slots after a short rest
      * @param slotsToRecover a list of the number of slots to recover for each spell level. If null,
      * there are either no slots to recover or the character is not a spellcaster
-     * @return the updated character after the short rest
      */
     fun shortRest(slotsToRecover: List<Int>?) {
         viewModelScope.launch {
@@ -290,11 +261,26 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     val newSlots = oldSlots?.mapValues {
                         it.value + mapSlotsToRecover.getOrDefault(it.key, 0)
                     }
-
-                    // TODO spellSlots should be an object, otherwise dao update is not possible
-//                    newSlots?.let {characterDao.updateAvailableSpellSlots(character.id, newSlots)}
+                    val newCharacter = character.copy(availableSpellSlots = newSlots)
+                    repository.updateCharacter(newCharacter)
                 }
             }
+        }
+    }
+
+    private fun orderSetByName(items: MutableSet<InventoryItem>): MutableSet<InventoryItem> {
+        val newList = items.toMutableList()
+        newList.sortBy { it.name }
+        return newList.toMutableSet()
+    }
+
+    // TODO to remove after DB implementation, used just for testing
+    fun updateCharactersList(oldDndCharacter: DndCharacter, newDndCharacter: DndCharacter) {
+        viewModelScope.launch {
+            val newChars = repository.allCharacters.value.toMutableList()
+            newChars.remove(oldDndCharacter)
+            newChars.add(newDndCharacter)
+            repository.allCharacters.value = newChars
         }
     }
 
@@ -356,12 +342,11 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 newCharacter = character.copy(remainingHp = newRemainingHp)
                 // recover spell slots
                 spellsToPrepare?.let {
-                    newCharacter = character.copy(preparedSpells = spellsToPrepare.toSet())
+                    newCharacter = newCharacter.copy(preparedSpells = spellsToPrepare.toSet())
                     Log.d("ViewModel", "New Prepared spells: ${newCharacter.preparedSpells}")
                 }
-                repository.selectedDndCharacter.value = newCharacter
-                updateCharactersList(character, newCharacter)
-                // TODO update character in database by repository
+                // TODO add slots recover
+                repository.longRest(newCharacter)
             }
         }
     }
@@ -389,7 +374,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 repository.insertKnownSpells(newCharacter)
             }
         }
-
     }
 
     /**

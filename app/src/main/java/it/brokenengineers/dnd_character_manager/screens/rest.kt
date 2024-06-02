@@ -1,6 +1,7 @@
 package it.brokenengineers.dnd_character_manager.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +44,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.ui.composables.CharacterCard
 import it.brokenengineers.dnd_character_manager.ui.composables.StatelessIncrDecrRow
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
+import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
@@ -78,14 +81,18 @@ fun Rest(
                 // button to take either a short or long rest
 
                 Row(modifier = Modifier.padding(SmallPadding)) {
-                    Column {
+                    Column (
+                        modifier = Modifier.weight(1f)
+                    ){
                         CharacterCard(
                             dndCharacter = character,
                             navController = navController,
                             onHomePage = false
                         )
                     }
-                    Column {
+                    Column (
+                        modifier = Modifier.weight(1f)
+                    ) {
                         HpRecovery(
                             character = character,
                             shortRestClicked = shortRestClicked.value,
@@ -176,11 +183,11 @@ fun ShortRest(
     navController: NavHostController
 ) {
     val character by viewModel.selectedCharacter.collectAsState(initial = null)
-    var selectedSlots: MutableState<List<MutableIntState>>? = null
+    var selectedSlots: MutableState<List<MutableIntState>>?
 
     character?.let { char ->
         // show hp recovery
-        if(char.canRecoverSpells()){
+        if(char.canUseSpells()){
             // list of currently selected slots for each spell level
             selectedSlots = remember {  // list itself is a state so that slots left is updated
                 mutableStateOf(List(char.getMaxSpellLevelInPreparedSpells()) {
@@ -188,28 +195,50 @@ fun ShortRest(
                 })
             }
 
-            SpellRecovery(
-                character = char,
-                selectedSlots = selectedSlots!!.value
+            if(selectedSlots?.value?.isNotEmpty() == true){
+                SpellRecovery(
+                    character = char,
+                    selectedSlots = selectedSlots!!.value
+                )
+
+                Spacer(modifier = Modifier.height(SmallPadding))
+                Button(onClick = {
+                    // convert selectedSlots to list of ints
+                    val selectedSlotsInts = selectedSlots?.value?.map { it.intValue } ?: listOf()
+
+                    viewModel.shortRest(selectedSlotsInts)
+
+                    navController.navigate("sheet/${character?.id}") {
+                        popUpTo(navController.graph.findStartDestination().id)
+
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            } else {
+                Toast.makeText(
+                    LocalContext.current,
+                    stringResource(R.string.no_spells_to_recover),
+                    Toast.LENGTH_SHORT).show()
+                Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+                Text(
+                    text = stringResource(R.string.no_spells_to_recover),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        } else {
+            Toast.makeText(
+                LocalContext.current,
+                stringResource(R.string.not_a_spellcaster),
+                Toast.LENGTH_SHORT).show()
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+            Text(
+                text = stringResource(R.string.not_a_spellcaster),
+                style = MaterialTheme.typography.bodyLarge
             )
         }
-    }
-
-    Spacer(modifier = Modifier.height(SmallPadding))
-    Button(onClick = {
-        // convert selectedSlots to list of ints
-        val selectedSlotsInts = selectedSlots?.value?.map { it.intValue } ?: listOf()
-
-        viewModel.shortRest(selectedSlotsInts)
-
-        navController.navigate("sheet/${character?.id}") {
-            popUpTo(navController.graph.findStartDestination().id)
-
-            launchSingleTop = true
-            restoreState = true
-        }
-    }) {
-        Text(stringResource(R.string.confirm))
     }
 }
 

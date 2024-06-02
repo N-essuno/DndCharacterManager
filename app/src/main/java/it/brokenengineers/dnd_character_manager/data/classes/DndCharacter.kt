@@ -193,9 +193,8 @@ data class DndCharacter(
         return preparedSpells?.map { it.name }?.contains(spell.name) ?: false
     }
 
-    fun canRecoverSpells(): Boolean {
-        return getRecoverableSpellSlots().values.sum() > 0
-//                && dndClass.isMagicUser TODO after adding isMagicUser to DndClass remove comment
+    fun canUseSpells(): Boolean {
+        return dndClass!!.canUseSpells
     }
 
     fun getNumRecoverableSlotsForShortRest(): Int {
@@ -226,6 +225,9 @@ data class DndCharacter(
         return dndClass!!.primaryAbility!!
     }
 
+    /**
+     * Returns the levels of the spells that are prepared
+     */
     fun getSpellLevelsOfPreparedSpells(): Set<Int> {
         return preparedSpells?.map { it.level }?.toSet() ?: setOf()
     }
