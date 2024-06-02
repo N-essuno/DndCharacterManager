@@ -27,7 +27,6 @@ fun ChooseNewSpells(
 ) {
     val context = LocalContext.current
 
-    Text(stringResource(R.string.choose_spells), style = MaterialTheme.typography.titleMedium)
 
     // get all spells
     val allSpells = MockSpells.getAllSpells()
@@ -35,13 +34,17 @@ fun ChooseNewSpells(
     val character = viewModel.selectedCharacter.collectAsState().value
     val knownSpells = character?.spellsKnown
     // filter out spells already known by character
-    var spellsToDisplay = allSpells.filter { !knownSpells?.contains(it)!! }
+    var spellsToDisplay = allSpells.filter { spell ->
+        knownSpells?.none { knownSpell -> knownSpell.name == spell.name } ?: true
+    }
     // get max spell level learnable by character
     val maxSpellLevel = character?.getMaxSpellLevel() ?: 0
     // filter out spells with level higher than max spell level
     spellsToDisplay = spellsToDisplay.filter { it.level <= maxSpellLevel }
 
     if(!done.value) {
+        Text(stringResource(R.string.choose_spells), style = MaterialTheme.typography.titleMedium)
+
         spellsToDisplay.forEach { spell ->
             ExpandableCard(
                 title = spell.name,

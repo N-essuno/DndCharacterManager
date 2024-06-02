@@ -115,9 +115,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         val skills = SkillEnum.entries.map { it.skill }
                         val weapon = Weapon(1, "Hammer", "1d12")
                         val nullWeapon = Weapon(99, "", "0")
-
-                        val fireball: Spell = MockSpells.getSpellByName("Fireball")!!
-                        val magicMissile: Spell = MockSpells.getSpellByName("Magic Missile")!!
+                        val spells = MockSpells.getAllSpells()
 
                         Log.i("DndCharacterManagerDB", "Start populating database")
 
@@ -126,7 +124,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         dndClassDao.insertAllDndClassesWithAbilities(dndClasses)
                         skillDao.insertAll(skills)
                         weaponDao.insertAll(listOf(weapon, nullWeapon))
-                        spellDao.insertAll(listOf(fireball, magicMissile))
+                        spellDao.insertAll(spells)
 
                         Log.i("DndCharacterManagerDB", "DB Populated, calling countDown()")
                         latch.countDown()

@@ -45,7 +45,63 @@ object MockSpells {
             description = "You invoke both death and life upon a 10-foot-radius sphere centered on a point within range. Each creature of your choice in that area must make a Constitution saving throw, taking 2d6 necrotic damage on a failed save, or half as much damage on a successful one.",
             level = 2,
             school = "Necromancy"
-        )
+        ),
+        Spell(
+            id = 7,
+            name = "Trabacca's Touch",
+            description = "Trabacca was a powerful necromancer who was able to control the life force of others. You can use this spell to drain the life force of a creature you touch.",
+            level = 1,
+            school = "Necromancy"
+        ),
+        Spell(
+            id = 8,
+            name = "Granny descent",
+            description = "You summon the spirit of an old lady who will descend upon your enemies, scaring them to death.",
+            level = 1,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 9,
+            name = "Einar's Embrace",
+            description = "You summon the spirit of Einar, the god of the sea, who will embrace your enemies in a watery prison.",
+            level = 1,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 10,
+            name = "Where's the pump?",
+            description = "You summon Edoardo's pump that will suck the life force out of your enemies.",
+            level = 1,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 11,
+            name = "Ocru Puntu",
+            description = "You summon a sardinan sheep that will blind your enemies spitting on them",
+            level = 1,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 12,
+            name = "Noman's cigar",
+            description = "A gargantuan cigar will rise from the ground and burn your enemies to ashes.",
+            level = 2,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 13,
+            name = "Saba's Disgusting flatbread",
+            description = "You summon a flatbread that will disgust your enemies to death.",
+            level = 2,
+            school = "Evocation"
+        ),
+        Spell(
+            id = 14,
+            name = "It clogged on its own",
+            description = "You tell a series of senseless excuses from your flatmate. Deals 2d10 psychic damage.",
+            level = 2,
+            school = "Illusion"
+        ),
     ) // TODO should be a list retrieved from viewModel, containing spells that the character can learn
 
 

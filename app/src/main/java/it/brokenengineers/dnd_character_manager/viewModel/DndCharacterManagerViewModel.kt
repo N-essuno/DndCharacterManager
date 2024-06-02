@@ -365,12 +365,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         viewModelScope.launch {
             val character = selectedCharacter.value
             if (character != null) {
-                // get already known spells
-                val totalSpellsKnown = character.spellsKnown?.toMutableSet()
-                // add new spells passed from UI
-//                totalSpellsKnown?.addAll(newSpells)
                 val newCharacter = character.copy(spellsKnown = newSpells.toSet())
-                updateCharactersList(character, newCharacter) // TODO move into repository
                 repository.insertKnownSpells(newCharacter)
             }
         }
@@ -379,9 +374,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     fun levelUp(character: DndCharacter){
         viewModelScope.launch {
             val newCharacter = character.copy(level = character.level + 1)
-            repository.selectedDndCharacter.value = newCharacter
-            updateCharactersList(character, newCharacter)
-            // TODO update character in database by repository
+            repository.updateCharacter(newCharacter)
         }
     }
 

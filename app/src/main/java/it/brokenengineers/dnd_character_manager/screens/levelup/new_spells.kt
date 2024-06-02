@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +35,14 @@ fun NewSpells(
 ) {
     val context = LocalContext.current
     var selectedSpells by remember { mutableStateOf<List<Spell>>(emptyList()) }
+    val character by viewModel.selectedCharacter.collectAsState(initial = null)
 
     Text(stringResource(R.string.choose_spells), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.padding(SmallPadding))
-    MockSpells.getAllSpells().forEach { magic ->
+    // get max spell level learnable by character
+    val maxSpellLevel = character?.getMaxSpellLevel() ?: 0
+    // filter out spells with level higher than max spell level
+    MockSpells.getAllSpells().filter { it.level <= maxSpellLevel }.forEach { magic ->
         ExpandableCard(
             testTag = magic.name,
             title = magic.name,
@@ -69,7 +74,7 @@ fun NewSpells(
         onClick = {
             // save to view model
             viewModel.saveNewSpells(selectedSpells)
-            // redirect to character sheet
+            // redirect to home
             navController.navigate("home") {
                 popUpTo(navController.graph.findStartDestination().id)
 

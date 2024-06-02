@@ -217,6 +217,15 @@ data class DndCharacter(
         return recoverableSlots
     }
 
+    fun getMaxRecoverableSpellSlots(): Map<Int, Int> {
+        val recoverableSlots = mutableMapOf<Int, Int>()
+        for (i in 1..5) {
+            val maxSlots = getMaxSpellSlotsForSpellLevel(i)
+            recoverableSlots[i] = maxSlots
+        }
+        return recoverableSlots
+    }
+
     fun getNumPrepareableSpells(): Int {
         return getAbilityModifier(getPrimaryAbility())
     }
@@ -245,7 +254,7 @@ data class DndCharacter(
      */
     fun getMaxSpellLevel(): Int {
         // Get the map of recoverable spell slots, the key is the spell level and the value is the number of slots
-        val spellSlotsRecoverable = getRecoverableSpellSlots()
+        val spellSlotsRecoverable = getMaxRecoverableSpellSlots()
         // Filter out the entries with value > 0 and get the max key, this tells us the highest spell level that can be learned
         return spellSlotsRecoverable.entries
             .filter { it.value > 0 }

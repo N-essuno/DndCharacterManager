@@ -104,6 +104,8 @@ fun DynamicLevelUp(
                 arcaneTraditionChosen = arcaneTraditionChosen,
                 done = levelUpViewModel.arcaneSelectionDone
             )
+        } else {
+            levelUpViewModel.arcaneSelectionDone.value = true
         }
 
         Button(
