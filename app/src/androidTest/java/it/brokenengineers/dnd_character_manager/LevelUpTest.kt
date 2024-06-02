@@ -76,10 +76,15 @@ class LevelUpTest {
 
         // Assert hp upgrade
         composeTestRule.onNodeWithTag(TestTags.STAT_INCREASE_NAME + "_HP").assertTextEquals("HP Upgrade")
-        // Assert old hp
         composeTestRule.onNodeWithTag("HP${TestTags.STAT_INCREASE_OLD_VAL}").assertTextEquals(hpLevel1.toString())
-        // Assert new hp
         composeTestRule.onNodeWithTag("HP${TestTags.STAT_INCREASE_NEW_VAL}").assertTextEquals(hpLevel2.toString())
+
+        // Assert Choose Spells
+        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Fireball").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
+        // confirm text with tag spells_chosen exists
+        composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
     }
 
 }

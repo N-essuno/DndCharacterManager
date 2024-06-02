@@ -1,7 +1,6 @@
 package it.brokenengineers.dnd_character_manager.viewModel
 
 object TestTags {
-
     // Home screen
     const val WELCOME_MESSAGE = "welcome_message"
     const val TEST_CARD = "test_card"
@@ -62,6 +61,10 @@ object TestTags {
     const val STAT_INCREASE_NAME = "stat_increase_name"
     const val STAT_INCREASE_OLD_VAL = "_increase_old_val"
     const val STAT_INCREASE_NEW_VAL = "_increase_new_val"
+    const val CHOOSE_SPELL = "choose_spell"
+    const val CONFIRM_SPELLS = "confirm_spells"
+    const val SPELLS_CHOSEN = "spells_chosen"
+
 
 
 }

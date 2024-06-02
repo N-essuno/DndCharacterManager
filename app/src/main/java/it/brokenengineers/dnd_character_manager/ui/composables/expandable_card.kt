@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 
@@ -31,7 +32,9 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 fun ExpandableCard(
     title: String, description:
     String, selected: Boolean,
-    onSelected: () -> Unit) {
+    onSelected: () -> Unit,
+    testTag: String? = null
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -68,21 +71,26 @@ fun ExpandableCard(
                     weight(0.1f).
                     padding(end = SmallPadding)
             )
+            val selectModifier = testTag?.let {
+                Modifier.weight(0.1f).padding(end = SmallPadding).testTag(
+                    it
+                )
+            } ?: Modifier.weight(0.1f).padding(end = SmallPadding)
             // SELECT/DESELECT BUTTON
             IconButton(
                 onClick = onSelected,
-                modifier = Modifier.weight(0.1f).padding(end = SmallPadding)
+                modifier = selectModifier
             ) {
                 // show a plus icon
                 Icon(
                     painter = painterResource(id =
-                        if (selected) android.R.drawable.ic_input_delete
-                        else android.R.drawable.ic_input_add
+                    if (selected) android.R.drawable.ic_input_delete
+                    else android.R.drawable.ic_input_add
                     ),
                     contentDescription = "Select",
                     tint =
-                        if (selected) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSurface
+                    if (selected) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onSurface
                 )
             }
         }

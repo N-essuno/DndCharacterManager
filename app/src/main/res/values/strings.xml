@@ -112,5 +112,6 @@
     <string name="add">Add</string>
     <string name="spell_slots_left">Spell Slots Left</string>
     <string name="spells_prepared">Spells Prepared</string>
+    <string name="spells_chosen">You chose the following spells:</string>
 
 </resources>

@@ -415,7 +415,15 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 // TODO update character in database by repository
             }
         }
+    }
 
+    fun levelUp(character: DndCharacter){
+        viewModelScope.launch {
+            val newCharacter = character.copy(level = character.level + 1)
+            repository.selectedDndCharacter.value = newCharacter
+            updateCharactersList(character, newCharacter)
+            // TODO update character in database by repository
+        }
     }
 
     /**
