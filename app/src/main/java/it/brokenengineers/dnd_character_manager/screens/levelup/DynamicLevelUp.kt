@@ -1,20 +1,39 @@
 package it.brokenengineers.dnd_character_manager.screens.levelup
 
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
+import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @Composable
-fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewModel, navController: NavHostController) {
+fun DynamicLevelUp(
+    character: DndCharacter,
+    viewModel: DndCharacterManagerViewModel,
+    navController: NavHostController,
+    levelUpCommitted: MutableState<Boolean>
+) {
+    val levelUpViewModel = remember { LevelUpViewModel() }
+
     val barbarian = DndClassEnum.BARBARIAN.dndClass
     val wizard = DndClassEnum.WIZARD.dndClass
 
@@ -38,43 +57,75 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
     val currentLevel = character.level
     val currentLevelUpEvent = levelUpEvents.find { it.dndClass == characterClass && it.newLevel == currentLevel+1 }
 
+    // create empty mutable list
+    val selectedSpells = remember { mutableStateOf<List<Spell>>(emptyList()) }
+
+
+    val optionalSelectionsDone by remember {
+        derivedStateOf {
+            levelUpViewModel.arcaneSelectionDone.value && levelUpViewModel.spellSelectionDone.value
+        }
+    }
+
     if (currentLevelUpEvent != null) {
         // Handle the level up event
         currentLevelUpEvent.newFeatures?.let {
             NewFeatures(it)
         }
-        currentLevelUpEvent.increaseProficiencyBonus?.let {
+        if (currentLevelUpEvent.increaseProficiencyBonus) {
             val currentValue = character.getProficiencyBonus()
             val newValue = currentValue + 1
-            StatIncrease(statName = "Proficiency Bonus", currentValue = currentValue, newValue = newValue)
+            StatIncrease(statName = "Proficiency Bonus", oldValue = currentValue, newValue = newValue)
         }
-        currentLevelUpEvent.increaseAbilityScore?.let {
+        if (currentLevelUpEvent.increaseAbilityScore) {
             AbilityScoreImprovement(
                 character = character,
                 viewModel = viewModel
             )
         }
-        currentLevelUpEvent.increaseNumRages?.let {
-            StatIncrease(statName = "Rages per day", currentValue = getRagesPerDay(currentLevel), newValue = getRagesPerDay(currentLevel+1))
+        if (currentLevelUpEvent.increaseNumRages) {
+            val currentValue = getRagesPerDay(currentLevel)
+            val newValue = getRagesPerDay(currentLevel+1)
+            StatIncrease(statName = "Rages per day", oldValue = currentValue, newValue = newValue)
         }
-        currentLevelUpEvent.chooseNewSpells?.let {
-            NewSpells(
-                characterId = character.id,
+        if(currentLevelUpEvent.chooseNewSpells) {
+            ChooseNewSpells(
+                spellsChosen = selectedSpells,
                 viewModel = viewModel,
-                navController = navController
+                done = levelUpViewModel.spellSelectionDone
             )
         }
-        currentLevelUpEvent.choosePrimalPath?.let {
-//            ChoosePrimalPath(
-//                character = character,
-//                viewModel = viewModel
+        if(currentLevelUpEvent.choosePrimalPath) {
+            // ChoosePrimalPath(character = character, viewModel = viewModel)
         }
-        currentLevelUpEvent.chooseArcaneTradition?.let {
-            ArcaneTradition(
-                character = character,
-                viewModel = viewModel,
-                navController = navController
+        if(currentLevelUpEvent.chooseArcaneTradition) {
+            val arcaneTraditionChosen = remember { mutableStateOf<ArcaneTraditionItem?>(null) }
+            ChooseArcaneTradition(
+                arcaneTraditionChosen = arcaneTraditionChosen,
+                done = levelUpViewModel.arcaneSelectionDone
             )
+        }
+
+        Button(
+            onClick = {
+                levelUpCommitted.value = true
+                // save to view model
+                viewModel.saveNewSpells(selectedSpells.value)
+                // save arcane tradition
+                // viewModel.saveArcaneTradition(arcaneTraditionChosen.value)
+                viewModel.levelUp(character)
+                // redirect to character sheet
+                navController.navigate("sheet/${character.id}") {
+                    popUpTo(navController.graph.findStartDestination().id)
+
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            enabled = optionalSelectionsDone,
+            modifier = Modifier.testTag(TestTags.CONFIRM_LEVELUP)
+        ) {
+            Text(stringResource(id = R.string.confirm))
         }
 
     } else {
@@ -82,15 +133,20 @@ fun DynamicLevelUp(character: DndCharacter, viewModel: DndCharacterManagerViewMo
     }
 }
 
+class LevelUpViewModel : ViewModel() {
+    val arcaneSelectionDone = mutableStateOf(false)
+    val spellSelectionDone = mutableStateOf(false)
+}
+
 data class LevelUpEvent(
     val dndClass: DndClass,
     val newLevel: Int,
     val newFeatures: List<Feature>? = null,
-    val increaseProficiencyBonus: Boolean? = false,
-    val increaseAbilityScore: Boolean? = null,
-    val increaseNumRages: Boolean? = null,
-    val chooseNewSpells: Boolean? = false,
+    val increaseProficiencyBonus: Boolean = false,
+    val increaseAbilityScore: Boolean = false,
+    val increaseNumRages: Boolean = false,
+    val chooseNewSpells: Boolean = false,
 //    val newPrimalPathFeature: Boolean? = false,
-    val choosePrimalPath: Boolean? = false,
-    val chooseArcaneTradition: Boolean? = false,
+    val choosePrimalPath: Boolean = false,
+    val chooseArcaneTradition: Boolean = false,
 )

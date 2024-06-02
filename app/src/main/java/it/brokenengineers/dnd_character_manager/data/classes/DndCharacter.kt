@@ -239,4 +239,16 @@ data class DndCharacter(
     fun getHpAfterShortRest(): Int {
         return min(remainingHp + getMaxHp() / 2, getMaxHp())
     }
+
+    /**
+     * Returns the max level of spell that can be learned by the character.
+     */
+    fun getMaxSpellLevel(): Int {
+        // Get the map of recoverable spell slots, the key is the spell level and the value is the number of slots
+        val spellSlotsRecoverable = getRecoverableSpellSlots()
+        // Filter out the entries with value > 0 and get the max key, this tells us the highest spell level that can be learned
+        return spellSlotsRecoverable.entries
+            .filter { it.value > 0 }
+            .maxByOrNull { it.key }?.key ?: 0
+    }
 }

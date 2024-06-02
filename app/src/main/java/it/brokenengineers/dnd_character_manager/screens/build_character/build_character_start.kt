@@ -45,6 +45,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.LargePadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 /**
  * Composable for the character creation screen.
@@ -107,7 +108,11 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column {
-            Text(text = stringResource(R.string.character_builder), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(R.string.character_builder),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.testTag(TestTags.BUILD_CHARACTER_TITLE)
+            )
             Spacer(modifier = Modifier.padding(SmallPadding))
             Text(text = stringResource(R.string.name), style = MaterialTheme.typography.bodyLarge)
             // text field for character name

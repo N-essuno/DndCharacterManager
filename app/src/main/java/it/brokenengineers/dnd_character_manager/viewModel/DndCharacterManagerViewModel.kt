@@ -376,6 +376,15 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
+    fun levelUp(character: DndCharacter){
+        viewModelScope.launch {
+            val newCharacter = character.copy(level = character.level + 1)
+            repository.selectedDndCharacter.value = newCharacter
+            updateCharactersList(character, newCharacter)
+            // TODO update character in database by repository
+        }
+    }
+
     /**
      * Save the image in local storage
      * @param characterImage the Uri of the image to save, it is a temporary file

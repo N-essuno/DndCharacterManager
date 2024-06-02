@@ -7,28 +7,25 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
-import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.ui.composables.ExpandableCard
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
-import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
-/**
- * Composable for choosing an Arcane Tradition for a Wizard character
- * @param character the character to choose the arcane tradition for
- * @param viewModel the view model to handle the character
- */
 @Composable
-fun ArcaneTradition(character: DndCharacter, viewModel: DndCharacterManagerViewModel, navController: NavHostController) {
+fun ChooseArcaneTradition(
+    arcaneTraditionChosen: MutableState<ArcaneTraditionItem?>,
+    done: MutableState<Boolean>
+) {
     Column(
         modifier = Modifier
             .padding(SmallPadding)
@@ -53,30 +50,40 @@ fun ArcaneTradition(character: DndCharacter, viewModel: DndCharacterManagerViewM
 
         var selectedTradition by remember { mutableStateOf<ArcaneTraditionItem?>(null) }
 
-        // Create an expandable card for each tradition
-        traditions.forEach { tradition ->
-            ExpandableCard(
-                title = tradition.name,
-                description = tradition.description,
-                selected = selectedTradition == tradition,
-                onSelected = { selectedTradition = tradition }
+
+        if(arcaneTraditionChosen.value == null){
+            // Create an expandable card for each tradition
+            traditions.forEach { tradition ->
+                ExpandableCard(
+                    title = tradition.name,
+                    description = tradition.description,
+                    selected = selectedTradition == tradition,
+                    onSelected = { selectedTradition = tradition },
+                    testTag = "${TestTags.CHOOSE_ARCANE_TRADITION}_${tradition.name}"
+                )
+                Spacer(modifier = Modifier.padding(SmallPadding))
+            }
+        } else {
+            val arcaneTraditionChosenName = arcaneTraditionChosen.value!!.name
+
+            Text(
+                text = arcaneTraditionChosenName,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.testTag(
+                    "${TestTags.ARCANE_TRADITION_CHOSEN}_${arcaneTraditionChosenName}"
+                )
             )
-            Spacer(modifier = Modifier.padding(SmallPadding))
         }
 
         // Save the selected tradition
-        if (selectedTradition != null) {
+        if (selectedTradition != null && !done.value) {
             Button(
                 onClick = {
-                    viewModel.chooseArcaneTradition(character, selectedTradition!!.name)
-                    navController.navigate("sheet/${character.id}") {
-                        popUpTo(navController.graph.findStartDestination().id)
-
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    arcaneTraditionChosen.value = selectedTradition
+                    done.value = true
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
+                    .testTag(TestTags.CONFIRM_ARCANE_TRADITION),
             ) {
                 Text(stringResource(R.string.confirm))
             }

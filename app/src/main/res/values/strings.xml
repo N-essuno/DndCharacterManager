@@ -109,5 +109,5 @@
     <string name="spells_prepared">Spells Prepared</string>
     <string name="no_spells_to_recover">No spells to recover or no spells prepared.</string>
     <string name="not_a_spellcaster">You are not a spellcaster, cannot recover slots.</string>
-
+    <string name="spells_chosen">You chose the following spells:</string>
 </resources>

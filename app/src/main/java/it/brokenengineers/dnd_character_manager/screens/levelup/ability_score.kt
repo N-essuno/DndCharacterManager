@@ -97,7 +97,7 @@ fun AbilityScoreImprovement(character: DndCharacter, viewModel: DndCharacterMana
         improvedScores.forEach {
             StatIncrease(
                 statName = it.ability.name,
-                currentValue = character.getAbilityValue(it),
+                oldValue = character.getAbilityValue(it),
                 newValue = character.getAbilityValue(it) + (if(improvedScores.size == 1) 2 else 1)
             )
         }
