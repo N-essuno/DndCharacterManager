@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterKnownSpellCrossRef
+import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterPreparedSpellCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
@@ -74,7 +76,6 @@ class DndCharacterManagerRepository(
     }
 
     fun updateCharacter(dndCharacter: DndCharacter) {
-        // TODO better check only for changes
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val race = raceDao.getRaceByName(dndCharacter.race!!.name)
@@ -118,10 +119,71 @@ class DndCharacterManagerRepository(
         }
     }
 
+    fun insertKnownSpells(newCharacter: DndCharacter) {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val character = dndCharacterDao.getCharacterByName(newCharacter.name)
+                val spellsToAdd = newCharacter.spellsKnown
+
+                val spellsCrossRefs: MutableList<DndCharacterKnownSpellCrossRef> = mutableListOf()
+                spellsToAdd?.forEach{ spell ->
+                    val dbSpell = spellDao.getSpellByName(spell.name)
+                    spellsCrossRefs.add(DndCharacterKnownSpellCrossRef(character.id, dbSpell.id))
+                }
+                dndCharacterDao.insertDndCharacterKnownSpellCrossRefs(spellsCrossRefs)
+                fetchCharacterByName(newCharacter.name)
+                fetchAllCharacters()
+            }
+        }
+    }
+
+    fun changePreparedSpells(newCharacter: DndCharacter){
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val character = dndCharacterDao.getCharacterByName(newCharacter.name)
+                val newSpellsPrepared = character.preparedSpells
+
+                val spellsCrossRefs: MutableList<DndCharacterPreparedSpellCrossRef> = mutableListOf()
+                newSpellsPrepared?.forEach{ spell ->
+                    val dbSpell = spellDao.getSpellByName(spell.name)
+                    spellsCrossRefs.add(DndCharacterPreparedSpellCrossRef(character.id, dbSpell.id))
+                }
+                dndCharacterDao.deleteAllPreparedSpellsForCharacter(character.id)
+                dndCharacterDao.insertDndCharacterPreparedSpellCrossRefs(spellsCrossRefs)
+                fetchCharacterByName(character.name)
+                fetchAllCharacters()
+            }
+        }
+    }
+
     fun fetchCharacterByName(name: String) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val dbCharacter = dndCharacterDao.getCharacterByName(name)
+                val characterRace = raceDao.getRaceById(dbCharacter.raceId)
+                val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
+                val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
+                val characterWeapon: Weapon = weaponDao.getWeapon(dbCharacter.weaponId)
+                val characterKnownSpells: List<Spell> =
+                    fetchCharacterKnownSpellsBlocking(dbCharacter.id)
+                val characterPreparedSpells: List<Spell> =
+                    fetchCharacterPreparedSpellsBlocking(dbCharacter.id)
+
+                dbCharacter.race = characterRace
+                dbCharacter.dndClass = characterDndClass
+                dbCharacter.skillProficiencies = characterSkills.toSet()
+                dbCharacter.weapon = characterWeapon
+                dbCharacter.spellsKnown = characterKnownSpells.toSet()
+                dbCharacter.preparedSpells = characterPreparedSpells.toSet()
+                selectedDndCharacter.value = dbCharacter
+            }
+        }
+    }
+
+    fun fetchCharacterById(id: Int) {
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dbCharacter = dndCharacterDao.getCharacterById(id)
                 val characterRace = raceDao.getRaceById(dbCharacter.raceId)
                 val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
                 val characterSkills = fetchCharacterSkillsBlocking(dbCharacter.id)
@@ -336,7 +398,9 @@ class DndCharacterManagerRepository(
 
     fun getCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
-            selectedDndCharacter.value = allCharacters.value.find { it.id == id }
+            // TODO review
+            fetchCharacterById(id)
+//            selectedDndCharacter.value = allCharacters.value.find { it.id == id }
             Log.i(tag, "Repository: selectedCharacter updated: $selectedDndCharacter")
         }
     }
@@ -450,5 +514,9 @@ class DndCharacterManagerRepository(
             dndCharacter1,
             dndCharacter2
         )
+    }
+
+    fun clearSelectedCharacter() {
+        selectedDndCharacter.value = null
     }
 }

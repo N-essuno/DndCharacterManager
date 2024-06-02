@@ -63,7 +63,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
 
         fun getDatabase(context: Context): DndCharacterManagerDB? {
             // TODO remove later. Used to test the database population
-//            context.deleteDatabase("dnd_character_manager_database")
+            context.deleteDatabase("dnd_character_manager_database")
 
             if (INSTANCE == null) {
                 // ensure only one instance of the database is created even if multiple threads try to create an instance

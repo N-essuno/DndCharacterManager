@@ -637,17 +637,17 @@ fun AbilityRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val wisdomString = stringResource(id = R.string.wisdom)
     val charismaString = stringResource(id = R.string.charisma)
 
-    val strValue = dndCharacter.abilityValues[AbilityEnum.STRENGTH.ability].toString()
+    val strValue = dndCharacter.getAbilityValue(AbilityEnum.STRENGTH).toString()
     val strModifier = dndCharacter.getAbilityModifier(AbilityEnum.STRENGTH).toString()
-    val dexValue = dndCharacter.abilityValues[AbilityEnum.DEXTERITY.ability].toString()
+    val dexValue = dndCharacter.getAbilityValue(AbilityEnum.DEXTERITY).toString()
     val dexModifier = dndCharacter.getAbilityModifier(AbilityEnum.DEXTERITY).toString()
-    val conValue = dndCharacter.abilityValues[AbilityEnum.CONSTITUTION.ability].toString()
+    val conValue = dndCharacter.getAbilityValue(AbilityEnum.CONSTITUTION).toString()
     val conModifier = dndCharacter.getAbilityModifier(AbilityEnum.CONSTITUTION).toString()
-    val intValue = dndCharacter.abilityValues[AbilityEnum.INTELLIGENCE.ability].toString()
+    val intValue = dndCharacter.getAbilityValue(AbilityEnum.INTELLIGENCE).toString()
     val intModifier = dndCharacter.getAbilityModifier(AbilityEnum.INTELLIGENCE).toString()
-    val wisValue = dndCharacter.abilityValues[AbilityEnum.WISDOM.ability].toString()
+    val wisValue = dndCharacter.getAbilityValue(AbilityEnum.WISDOM).toString()
     val wisModifier = dndCharacter.getAbilityModifier(AbilityEnum.WISDOM).toString()
-    val chaValue = dndCharacter.abilityValues[AbilityEnum.CHARISMA.ability].toString()
+    val chaValue = dndCharacter.getAbilityValue(AbilityEnum.CHARISMA).toString()
     val chaModifier = dndCharacter.getAbilityModifier(AbilityEnum.CHARISMA).toString()
 
     Row (

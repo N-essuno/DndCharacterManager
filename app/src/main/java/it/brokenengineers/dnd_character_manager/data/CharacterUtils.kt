@@ -102,7 +102,7 @@ fun getAbilityModifierStatic(
     abilityValues: Map<Ability, Int>
 ): Int {
     // get ability value from abilityValues filtering by name
-    val abilityValue = getAbilityValue(abilityEnum, abilityValues)
+    val abilityValue = getAbilityValueStatic(abilityEnum, abilityValues)
     return (abilityValue!! - 10) / 2
 }
 
@@ -116,7 +116,7 @@ fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Abil
     }
 }
 
-fun getAbilityValue(abilityEnum: AbilityEnum, abilityValues: Map<Ability, Int>): Int? {
+fun getAbilityValueStatic(abilityEnum: AbilityEnum, abilityValues: Map<Ability, Int>): Int? {
     return abilityValues.entries.find { it.key.name == abilityEnum.ability.name }?.value
 }
 

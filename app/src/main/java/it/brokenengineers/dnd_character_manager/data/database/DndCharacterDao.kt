@@ -156,6 +156,10 @@ interface DndCharacterDao {
         if (currentSpellsKnown.isEmpty()) {
             insertDndCharacterKnownSpells(dndCharacter)
         } else {
+            val knownSpellsNames = dndCharacter.spellsKnown!!.map { it.name }
+            val currentSpellsNames = currentSpellsKnown.map { it.name }
+            val spellsToRemove = currentSpellsNames.filter { !knownSpellsNames.contains(it) }
+            val spellsToAdd = knownSpellsNames.filter { !currentSpellsNames.contains(it) }
             updateDndCharacterKnownSpells(dndCharacter)
         }
 
@@ -244,6 +248,12 @@ interface DndCharacterDao {
             deleteCharactersByIds(testCharacters)
         }
     }
+
+    @Query("DELETE FROM DndCharacterPreparedSpellCrossRef WHERE dndCharacterId = :id")
+    fun deleteAllPreparedSpellsForCharacter(id: Int)
+
     @Query("DELETE FROM DndCharacter")
     suspend fun deleteAll()
+
+
 }

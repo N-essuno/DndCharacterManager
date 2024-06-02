@@ -58,6 +58,10 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         repository.getCharacterById(id)
     }
 
+    fun fetchCharacterByName(name: String) {
+        repository.fetchCharacterByName(name)
+    }
+
     fun fetchAllCharacters() {
         repository.fetchAllCharacters()
     }
@@ -399,10 +403,10 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 // get already known spells
                 val totalSpellsKnown = character.spellsKnown?.toMutableSet()
                 // add new spells passed from UI
-                totalSpellsKnown?.addAll(newSpells)
-                val newCharacter = character.copy(spellsKnown = totalSpellsKnown)
+//                totalSpellsKnown?.addAll(newSpells)
+                val newCharacter = character.copy(spellsKnown = newSpells.toSet())
                 updateCharactersList(character, newCharacter) // TODO move into repository
-                repository.updateCharacter(newCharacter)
+                repository.insertKnownSpells(newCharacter)
             }
         }
 
@@ -443,5 +447,9 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         } catch (e: IOException) {
             Log.e("ViewModel", "Error saving bitmap to file", e)
         }
+    }
+
+    fun clearSelectedCharacter() {
+        repository.clearSelectedCharacter()
     }
 }

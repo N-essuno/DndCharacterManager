@@ -41,7 +41,6 @@ import it.brokenengineers.dnd_character_manager.screens.Rest
 import it.brokenengineers.dnd_character_manager.screens.build_character.BuildCharacterStart
 import it.brokenengineers.dnd_character_manager.screens.build_character.ChooseSpellsScreen
 import it.brokenengineers.dnd_character_manager.screens.levelup.LevelUp
-import it.brokenengineers.dnd_character_manager.screens.levelup.NewSpells
 import it.brokenengineers.dnd_character_manager.screens.sheet.AttackScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.CharacterSheetScreen
 import it.brokenengineers.dnd_character_manager.screens.sheet.InventoryScreen
@@ -193,6 +192,7 @@ fun HomePage(
     val welcomeMessage = stringResource(id = R.string.welcome_message)
     val createCharacterString = stringResource(id = R.string.create_character_button)
     val characters by viewModel.characters.collectAsState(null)
+    viewModel.clearSelectedCharacter()
     Box(
         modifier = Modifier
             .fillMaxSize()

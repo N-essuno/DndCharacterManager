@@ -70,7 +70,7 @@ fun NewSpells(
             // save to view model
             viewModel.saveNewSpells(selectedSpells)
             // redirect to character sheet
-            navController.navigate("sheet/${characterId}") {
+            navController.navigate("home") {
                 popUpTo(navController.graph.findStartDestination().id)
 
                 launchSingleTop = true

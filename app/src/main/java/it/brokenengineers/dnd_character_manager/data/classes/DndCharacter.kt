@@ -9,7 +9,7 @@ import it.brokenengineers.dnd_character_manager.data.database.Converters
 import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.SkillEnum
-import it.brokenengineers.dnd_character_manager.data.getAbilityValue
+import it.brokenengineers.dnd_character_manager.data.getAbilityValueStatic
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
 import it.brokenengineers.dnd_character_manager.data.getMaxSpellSlots
 import kotlin.math.ceil
@@ -107,7 +107,7 @@ data class DndCharacter(
     }
 
     fun getAbilityValue(abilityEnum: AbilityEnum): Int {
-        return abilityValues[abilityEnum.ability] ?: 0 // TODO fix according to Utils
+        return getAbilityValueStatic(abilityEnum, abilityValues) ?: 0
     }
 
     fun getArmorClass(): Int {
@@ -133,11 +133,12 @@ data class DndCharacter(
     }
 
     fun getAbilityModifier(abilityEnum: AbilityEnum): Int {
-        return (getAbilityValue(abilityEnum, abilityValues)!! - 10) / 2
+        return (getAbilityValueStatic(abilityEnum, abilityValues)!! - 10) / 2
     }
 
     private fun getAbilityModifier(ability: Ability): Int {
-        return (abilityValues[ability]!! - 10) / 2
+        val abilityEnum = AbilityEnum.valueOf(ability.name.uppercase())
+        return (getAbilityValue(abilityEnum) - 10) / 2
     }
 
     fun getSkills(): List<Pair<Skill, Int>> {
@@ -167,7 +168,7 @@ data class DndCharacter(
     }
 
     fun getMaxCarryWeight(): Double {
-        return abilityValues[AbilityEnum.STRENGTH.ability]!! * 15.0
+        return getAbilityValue(AbilityEnum.STRENGTH) * 15.0
     }
 
     fun getCurrentCarryWeight(): Double {
@@ -179,7 +180,9 @@ data class DndCharacter(
     }
 
     fun getAttackBonus(): Int {
-        return abilityValues[dndClass!!.primaryAbility]!! + getProficiencyBonus()
+        val primaryAbilityUppercase = dndClass!!.primaryAbility!!.name.uppercase()
+        val primaryAbilityValue = getAbilityValue(AbilityEnum.valueOf(primaryAbilityUppercase))
+        return primaryAbilityValue + getProficiencyBonus()
     }
 
     fun getSpellDcSavingThrow(): Int {
