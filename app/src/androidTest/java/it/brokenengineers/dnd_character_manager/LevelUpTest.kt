@@ -43,16 +43,6 @@ class LevelUpTest {
         }
     }
 
-//    @Test
-//    fun testNavigateLevelUp() {
-//        // Select mock character to level up
-//        composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
-//        navController.assertCurrentRouteWithIdEqual("sheet/1")
-//        // Click on level up button
-//        composeTestRule.onNodeWithTag(TestTags.LEVELUP_BUTTON).performClick()
-//        navController.assertCurrentRouteEqual("levelup/1")
-//    }
-
     @Test
     fun testLevelUpSilvano() {
         // Select mock character to level up

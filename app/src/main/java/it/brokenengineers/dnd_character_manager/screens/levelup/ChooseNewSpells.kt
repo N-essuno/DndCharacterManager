@@ -35,7 +35,11 @@ fun ChooseNewSpells(
     val character = viewModel.selectedCharacter.collectAsState().value
     val knownSpells = character?.spellsKnown
     // filter out spells already known by character
-    val spellsToDisplay = allSpells.filter { !knownSpells?.contains(it)!! }
+    var spellsToDisplay = allSpells.filter { !knownSpells?.contains(it)!! }
+    // get max spell level learnable by character
+    val maxSpellLevel = character?.getMaxSpellLevel() ?: 0
+    // filter out spells with level higher than max spell level
+    spellsToDisplay = spellsToDisplay.filter { it.level <= maxSpellLevel }
 
     if(!done.value) {
         spellsToDisplay.forEach { spell ->
