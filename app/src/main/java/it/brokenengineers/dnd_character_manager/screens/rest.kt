@@ -3,12 +3,15 @@ package it.brokenengineers.dnd_character_manager.screens
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -47,6 +50,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import kotlin.math.max
 import kotlin.math.min
 
 @Composable
@@ -347,13 +351,16 @@ fun LongRest(
         // Create a list of states for each spell
         val selectedStates = remember { spellsKnown.map { mutableStateOf(false) } }
 
-        Column(modifier = Modifier.padding(SmallPadding)) {
+        Column(
+            modifier = Modifier.padding(SmallPadding)
+        ) {
             Text(
                 stringResource(R.string.spells_to_prepare),
                 style = MaterialTheme.typography.titleMedium)
             LazyColumn(modifier = Modifier
                 .height(300.dp)
-                .padding(SmallPadding)) {
+                .padding(SmallPadding)
+                .weight(1f)) {
                 items(spellsKnown.size) { index ->
                     val spell = spellsKnown[index]
                     PrepareSpellRow(
@@ -379,35 +386,37 @@ fun LongRest(
                 }
             }
             Spacer(modifier = Modifier.height(SmallPadding))
-        }
 
-        Column{
-            Text(
-                text = stringResource(
-                    R.string.you_selected_n_out_of_m_spells,
-                    numSpellsToPrepare.intValue,
-                    // if ability modifier is negative (e.g. -1), then numPrepareableSpells should
-                    // be 0 rather than -1
-                    min(numPrepareableSpells,0)
-                ),
-                style = MaterialTheme.typography.bodyLarge)
-            Button(
-                onClick = {
-                    // TODO save changes to character via viewModel
-                    viewModel.longRest(spellsToPrepare)
-                    navController.navigate("sheet/${character.id}") {
-                        popUpTo(navController.graph.findStartDestination().id)
+            Box(modifier = Modifier.weight(0.2f).align(Alignment.CenterHorizontally), contentAlignment = Alignment.BottomCenter) {
+                Column(modifier = Modifier.align(Alignment.Center)) {
+                    Text(
+                        text = stringResource(
+                            R.string.you_selected_n_out_of_m_spells,
+                            numSpellsToPrepare.intValue,
+                            // if ability modifier is negative (e.g. -1), then numPrepareableSpells should
+                            // be 0 rather than -1
+                            max(numPrepareableSpells, 0)
+                        ),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Button(
+                        onClick = {
+                            viewModel.longRest(spellsToPrepare)
+                            navController.navigate("sheet/${character.id}") {
+                                popUpTo(navController.graph.findStartDestination().id)
 
-                        launchSingleTop = true
-                        restoreState = true
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(stringResource(R.string.confirm))
                     }
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(stringResource(R.string.confirm))
+                }
             }
         }
-
     }
 }
 

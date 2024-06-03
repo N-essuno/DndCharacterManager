@@ -356,9 +356,6 @@ fun WeaponRow(weapon: Weapon){
     }
 }
 
-// TODO: bottone di conferma dopo short rest/long rest non si vede,
-//  quando può usare spells di livello 2 non vengono aggiornati il numero di slots di liv 2
-
 //@Preview(showBackground = true)
 //@Composable
 //fun SpellsScreenPreview() {
