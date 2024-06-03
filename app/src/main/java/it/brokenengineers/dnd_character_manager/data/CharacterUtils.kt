@@ -50,6 +50,11 @@ fun initEmptySpellSlots(): Map<Int, Int> {
     )
 }
 
+/**
+ * Initializes the spell slots for a level 1 character of the given class
+ * @param dndClass the class to initialize the spell slots for
+ * @return a map of spell level to number of spell slots
+ */
 fun initSpellSlotsForClass(dndClass: DndClass): Map<Int, Int> {
     return when (dndClass) {
         DndClassEnum.BARBARIAN.dndClass -> mapOf()
@@ -134,6 +139,13 @@ fun getRagesPerDay(level: Int): Int {
     }
 }
 
+/**
+ * Returns the maximum number of spell slots for a given spell level, dnd class and character level
+ * @param spellLevel the level of the spell
+ * @param dndClass the class of the character
+ * @param level the level of the character
+ * @return the maximum number of spell slots
+ */
 fun getMaxSpellSlots(spellLevel: Int, dndClass: DndClass, level: Int): Int {
     if (dndClass.name == DndClassEnum.WIZARD.dndClass.name) {
         when (level) {

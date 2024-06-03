@@ -18,6 +18,7 @@ import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManage
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
+import it.brokenengineers.dnd_character_manager.data.getMaxSpellSlots
 import it.brokenengineers.dnd_character_manager.data.initAbilityValuesForRace
 import it.brokenengineers.dnd_character_manager.data.initProficienciesForClass
 import it.brokenengineers.dnd_character_manager.data.initSpellSlotsForClass
@@ -322,6 +323,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
             val character = selectedCharacter.value
             character?.let {
                 var newCharacter: DndCharacter = character
+                // increase ability scores if not empty
                 if (abilityIncrease.isNotEmpty()) {
                     val newAbilityValues = character.abilityValues.toMutableMap()
                     abilityIncrease.forEach { (ability, amount) ->
@@ -335,11 +337,28 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     repository.updateCharacter(newCharacter)
                 }
 
+                // Increase available spell slots
+                if(character.canUseSpells()){
+                    // build a map of the new available spell slots
+                    val newSpellSlots: Map<Int, Int>
+                    val oldSlots = character.availableSpellSlots
+                    val newSlots = oldSlots?.toMutableMap()
+                    for (i in 1..4) {
+                        val maxSlots = getMaxSpellSlots(i, character.dndClass!!, character.level + 1)
+                        newSlots?.set(i, maxSlots)
+                    }
+                    newSpellSlots = newSlots?.toMap() ?: emptyMap()
+                    newCharacter = newCharacter.copy(availableSpellSlots = newSpellSlots)
+                    repository.updateCharacter(newCharacter)
+                }
+
+                // Increase Hp
                 val newRemainingHp = getMaxHpStatic(
                     dndClass = character.dndClass!!,
                     level = character.level + 1,
                     abilityValues = character.abilityValues
                 )
+                // Increase level
                 newCharacter = newCharacter.copy(
                     remainingHp = newRemainingHp,
                     level = character.level + 1
