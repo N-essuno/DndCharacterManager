@@ -153,12 +153,13 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
             )
             Spacer(modifier = Modifier.padding(MediumPadding))
             // image picker button
-            Button(onClick = {
-                pickMedia.launch(PickVisualMediaRequest())
-            }) {
-                Text(text = stringResource(R.string.add_character_image))
-            }
-            CharacterImageCard(characterImage)
+//            Button(onClick = {
+//                pickMedia.launch(PickVisualMediaRequest())
+//            }) {
+//                Text(text = stringResource(R.string.add_character_image))
+//            }
+            // ignoring image features since we didn't implement them
+//            CharacterImageCard(characterImage)
         }
 
 
@@ -170,6 +171,7 @@ fun BuildCharacterStart(navController: NavController, viewModel: DndCharacterMan
                     Log.d(tag, "Trying to save image")
                     // save image to storage
                     characterImageStorage = viewModel.saveImage(characterImage!!, context)
+                    Log.d("Image saved", "Image saved to $characterImageStorage")
                 }
                 viewModel.createCharacter(
                     name = characterName,

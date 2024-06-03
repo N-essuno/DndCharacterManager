@@ -86,5 +86,4 @@ class LevelUpTest {
         val charLevel2 = viewModel.selectedCharacter.value
         assert(charLevel2?.level == 2)
     }
-
 }
