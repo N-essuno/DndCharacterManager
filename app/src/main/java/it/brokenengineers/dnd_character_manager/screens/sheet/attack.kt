@@ -33,6 +33,7 @@ import it.brokenengineers.dnd_character_manager.R
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
+import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.theme.IconButtonMedium
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.OverBottomNavBar
@@ -77,10 +78,11 @@ fun MeleeScreen(
 ) {
     val meleeTitle = stringResource(id = R.string.melee_title)
     val attackBonusString = stringResource(id = R.string.attack_bonus)
-//    val damageBonusString = stringResource(id = R.string.damage_bonus)
+    val totalRagesString = stringResource(id = R.string.total_rages)
     val weapon = dndCharacter.weapon
     val weaponList = listOf(weapon)
     val attackBonus = dndCharacter.getAttackBonus()
+    val totalRages = getRagesPerDay(dndCharacter.level)
 
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController, dndCharacter.id) }
@@ -106,19 +108,20 @@ fun MeleeScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(MediumVerticalSpacing))
+
             Row (
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // TODO set depending on character stats
                 Text(
                     modifier = Modifier.padding(SmallPadding),
                     text = "$attackBonusString $attackBonus",
                 )
-//        Text(
-//            modifier = Modifier.padding(SmallPadding),
-//            text = "$damageBonusString $damageBonus",
-//        )
+                Text(
+                    modifier = Modifier.padding(SmallPadding),
+                    text = "$totalRagesString $totalRages",
+                )
             }
         }
     }
@@ -242,7 +245,6 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
         }
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .height(ScrollColumnHeightMedium)
                 .verticalScroll(scrollState)
@@ -290,7 +292,6 @@ fun SpellsTitleRow(){
 
 @Composable
 fun WeaponTableHeader(){
-//    val proficiencyString = stringResource(id = R.string.proficiency)
     val weaponString = stringResource(id = R.string.weapon)
     val damageString = stringResource(id = R.string.damage)
 
@@ -298,13 +299,8 @@ fun WeaponTableHeader(){
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ){
-//        Text(
-//            modifier = Modifier.padding(SmallPadding),
-//            text = proficiencyString,
-//            style = MaterialTheme.typography.bodyLarge
-//        )
         Column(
-            modifier = Modifier.weight(1.6f),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -313,6 +309,7 @@ fun WeaponTableHeader(){
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+        Text("|", style = MaterialTheme.typography.bodyLarge)
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -334,24 +331,13 @@ fun WeaponRow(weapon: Weapon){
         modifier = Modifier.fillMaxWidth()
     ){
         Column(
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 modifier = Modifier.padding(SmallPadding),
                 text = weapon.name,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-        Column (
-            modifier = Modifier.weight(0.8f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ){
-            Icon(
-                // TODO change icon to weapon icon
-                Icons.Default.Build,
-                modifier = Modifier.size(IconButtonMedium),
-                contentDescription = "Weapon"
+                style = MaterialTheme.typography.bodyMedium
             )
         }
 
@@ -363,12 +349,15 @@ fun WeaponRow(weapon: Weapon){
             Text(
                 modifier = Modifier.padding(SmallPadding),
                 text = weapon.damage,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium
             )
 
         }
     }
 }
+
+// TODO: bottone di conferma dopo short rest/long rest non si vede,
+//  quando può usare spells di livello 2 non vengono aggiornati il numero di slots di liv 2
 
 //@Preview(showBackground = true)
 //@Composable
