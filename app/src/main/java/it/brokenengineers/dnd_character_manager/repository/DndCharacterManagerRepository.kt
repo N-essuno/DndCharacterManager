@@ -47,8 +47,8 @@ class DndCharacterManagerRepository(
     fun init() {
         viewModel.viewModelScope.launch {
             // TODO use the following for loading only DB characters instead of Mock characters
-//            fetchAllCharacters()
-            getAllCharacters()
+            fetchAllCharacters()
+//            getAllCharacters()
         }
     }
 

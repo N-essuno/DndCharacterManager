@@ -384,6 +384,7 @@ fun ImageAndDamageRow(
             ) {
                 showDialogTempHp.value = true
             }
+            Log.d("Sheet test", "Testing of character: ${viewModel.selectedCharacter.value}")
             MyButton(
                 modifier = Modifier
                     .testTag(TestTags.HIT_BUTTON)
