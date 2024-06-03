@@ -12,6 +12,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterPrepare
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacterSkillCrossRef
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.DndClassAbilityCrossRef
+import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
 import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Skill
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
@@ -126,11 +127,112 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         weaponDao.insertAll(listOf(weapon, nullWeapon))
                         spellDao.insertAll(spells)
 
+                        insertMockCharacters()
+
                         Log.i("DndCharacterManagerDB", "DB Populated, calling countDown()")
                         latch.countDown()
                     }
                 }
             }
+
+        private fun insertMockCharacters() {
+            // Mock Abilities
+            val strength = AbilityEnum.STRENGTH.ability
+            val dexterity = AbilityEnum.DEXTERITY.ability
+            val constitution = AbilityEnum.CONSTITUTION.ability
+            val intelligence = AbilityEnum.INTELLIGENCE.ability
+            val wisdom = AbilityEnum.WISDOM.ability
+            val charisma = AbilityEnum.CHARISMA.ability
+
+            // Mock Skills
+            val athletics = SkillEnum.ATHLETICS.skill
+            val acrobatics = SkillEnum.ACROBATICS.skill
+            val arcana = SkillEnum.ARCANA.skill
+            val history = SkillEnum.HISTORY.skill
+
+            // Mock DndClasses
+            val barbarian = DndClassEnum.BARBARIAN.dndClass
+            val wizard = DndClassEnum.WIZARD.dndClass
+
+            // Mock Races
+            val eladrin = RaceEnum.ELADRIN.race
+            val dwarf = RaceEnum.DWARF.race
+
+            // Mock Spells
+            val magicMissile: Spell = MockSpells.getSpellByName("Magic Missile")!!
+
+            // Mock Ability Values
+            val abilityValues1 = mapOf(
+                strength to 15,
+                dexterity to 14,
+                constitution to 13,
+                intelligence to 12,
+                wisdom to 10,
+                charisma to 8
+            )
+
+            val abilityValues2 = mapOf(
+                strength to 10,
+                dexterity to 12,
+                constitution to 14,
+                intelligence to 16,
+                wisdom to 13,
+                charisma to 11
+            )
+
+            val item1 = InventoryItem("Health potion", 5, 1.5)
+            val item2 = InventoryItem("Paper", 1, 0.2)
+            val item3 = InventoryItem("Brick", 1, 2.5)
+            val item4 = InventoryItem("Book", 1, 2.0)
+
+            val weapon1 = Weapon(1, "Hammer", "1d12")
+
+            val silvano = DndCharacter(
+                id = 1,
+                name = "Silvano",
+                race = eladrin,
+                raceId = eladrin.id,
+                dndClass = wizard,
+                dndClassId = wizard.id,
+                level = 1,
+                abilityValues = abilityValues1,
+                skillProficiencies = setOf(arcana, history),
+                remainingHp = 7,
+                tempHp = 0,
+                spellsKnown = setOf(magicMissile),
+                preparedSpells = setOf(magicMissile),
+                availableSpellSlots = mapOf(
+                    1 to 1,
+                ),
+                inventoryItems = setOf(item1, item2),
+                image = null,
+                weapon = null,
+                weaponId = 99
+            )
+
+            val broken = DndCharacter(
+                id = 2,
+                name = "Broken",
+                race = dwarf,
+                raceId = dwarf.id,
+                dndClass = barbarian,
+                dndClassId = barbarian.id,
+                level = 1,
+                image = null,
+                abilityValues = abilityValues2,
+                skillProficiencies = setOf(athletics, acrobatics),
+                remainingHp = 12,
+                tempHp = 0,
+                spellsKnown = null,
+                preparedSpells = null,
+                availableSpellSlots = null,
+                inventoryItems = setOf(item3, item4),
+                weapon = weapon1,
+                weaponId = weapon1.id
+            )
+
+            INSTANCE?.characterDao()?.insertAll(listOf(silvano, broken))
+        }
     }
 
 }
