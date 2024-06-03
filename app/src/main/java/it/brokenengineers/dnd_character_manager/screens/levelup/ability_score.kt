@@ -7,11 +7,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,37 +17,38 @@ import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
 import it.brokenengineers.dnd_character_manager.ui.composables.StatelessIncrDecrRow
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
-import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 
 /**
  * AbilityScoreImprovement is a composable that allows the user to increase the ability scores of the character.
  * The user can choose to increase one ability score by two points or two ability scores by one point.
  *
  * @param character the character to level up
- * @param viewModel the view model to handle the character data and store the changes in the database
+ * @param levelUpViewModel the view model that handles the level up process
+ * @param done a mutable state that indicates if the user has finished selecting the ability scores to improve
  */
 @Composable
-fun AbilityScoreImprovement(character: DndCharacter, viewModel: DndCharacterManagerViewModel) {
-    var confirmed by remember {mutableStateOf(false)}
-
-    // Map each ability score to a mutable state, holding the number of times the user has selected it
-    val selectedScores = AbilityEnum.entries.associateWith { remember { mutableIntStateOf(0) } }
+fun AbilityScoreImprovement(
+    character: DndCharacter,
+    levelUpViewModel: LevelUpViewModel,
+    done: MutableState<Boolean>
+) {
+    val abilityValueImprovements = levelUpViewModel.abilityValuesImprovements
 
     fun onIncreaseScore(score: AbilityEnum) {
-        if(selectedScores.values.sumOf { it.intValue } >= 2) {
+        if(abilityValueImprovements.values.sumOf { it.intValue } >= 2) {
             // If the user has already selected two ability scores, do nothing
             return
         }
-        selectedScores[score]?.intValue = selectedScores[score]?.intValue?.plus(1) ?: 0
+        abilityValueImprovements[score]?.intValue = abilityValueImprovements[score]?.intValue?.plus(1) ?: 0
     }
 
     fun onDecreaseScore(score: AbilityEnum) {
-        if((selectedScores[score]?.intValue ?: 0) > 0) {
-            selectedScores[score]?.intValue = selectedScores[score]?.intValue?.minus(1) ?: 0
+        if((abilityValueImprovements[score]?.intValue ?: 0) > 0) {
+            abilityValueImprovements[score]?.intValue = abilityValueImprovements[score]?.intValue?.minus(1) ?: 0
         }
     }
 
-    if(!confirmed){
+    if(!done.value){
         Column(
             modifier = Modifier
                 .padding(SmallPadding)
@@ -64,34 +61,25 @@ fun AbilityScoreImprovement(character: DndCharacter, viewModel: DndCharacterMana
             for (ability in AbilityEnum.entries) {
                 StatelessIncrDecrRow(
                     label = "${ability.ability.name}: ${character.getAbilityValue(ability)}",
-                    timesSelected = selectedScores[ability]?.intValue ?: 0,
+                    timesSelected = abilityValueImprovements[ability]?.intValue ?: 0,
                     onAdd = { onIncreaseScore(ability) },
-                    enabledAddCondition = { selectedScores.values.sumOf { it.intValue } < 2 },
+                    enabledAddCondition = { abilityValueImprovements.values.sumOf { it.intValue } < 2 },
                     onRemove = { onDecreaseScore(ability) },
-                    enabledRemoveCondition = { (selectedScores[ability]?.intValue ?: 0) > 0 }
+                    enabledRemoveCondition = { (abilityValueImprovements[ability]?.intValue ?: 0) > 0 }
                 )
             }
 
             Button(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
-                    val abilityScores = selectedScores.filterValues { it.intValue > 0 }.keys
-                    if(abilityScores.size == 1) {
-                        // If the user has selected one ability score, increase it by two
-                        viewModel.increaseAbilityScore(character, abilityScores.first(), 2)
-                    } else if(abilityScores.size == 2) {
-                        // If the user has selected two ability scores, increase them by one
-                        viewModel.increaseAbilityScore(character, abilityScores.first(), 1)
-                        viewModel.increaseAbilityScore(character, abilityScores.last(), 1)
-                    }
-                    confirmed = true
+                    done.value = true
                 },
-                enabled = selectedScores.values.sumOf { it.intValue } > 0) {
+                enabled = abilityValueImprovements.values.sumOf { it.intValue } > 0) {
                 Text(stringResource(R.string.confirm))
             }
         }
     } else {
-        val improvedScores = selectedScores.filterValues { it.intValue > 0 }.keys
+        val improvedScores = abilityValueImprovements.filterValues { it.intValue > 0 }.keys
 
         Text(stringResource(R.string.ability_scores_increased))
         improvedScores.forEach {

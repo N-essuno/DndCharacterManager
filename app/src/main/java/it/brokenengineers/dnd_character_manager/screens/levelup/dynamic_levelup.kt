@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
+import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.getRagesPerDay
 import it.brokenengineers.dnd_character_manager.ui.composables.StatIncrease
@@ -58,12 +60,15 @@ fun DynamicLevelUp(
     val currentLevelUpEvent = levelUpEvents.find { it.dndClass == characterClass && it.newLevel == currentLevel+1 }
 
     // create empty mutable list
+    // todo rafactor inside levelupview model
     val selectedSpells = remember { mutableStateOf<List<Spell>>(emptyList()) }
 
 
     val optionalSelectionsDone by remember {
         derivedStateOf {
-            levelUpViewModel.arcaneSelectionDone.value && levelUpViewModel.spellSelectionDone.value
+            levelUpViewModel.arcaneSelectionDone.value &&
+                    levelUpViewModel.spellSelectionDone.value &&
+                    levelUpViewModel.abilityValuesImprovementsDone.value
         }
     }
 
@@ -80,8 +85,12 @@ fun DynamicLevelUp(
         if (currentLevelUpEvent.increaseAbilityScore) {
             AbilityScoreImprovement(
                 character = character,
-                viewModel = viewModel
+                levelUpViewModel = levelUpViewModel,
+                done = levelUpViewModel.abilityValuesImprovementsDone
             )
+        } else {
+            // If the user does not have to increase ability scores, set the done state to true
+            levelUpViewModel.abilityValuesImprovementsDone.value = true
         }
         if (currentLevelUpEvent.increaseNumRages) {
             val currentValue = getRagesPerDay(currentLevel)
@@ -94,6 +103,8 @@ fun DynamicLevelUp(
                 viewModel = viewModel,
                 done = levelUpViewModel.spellSelectionDone
             )
+        } else {
+            levelUpViewModel.spellSelectionDone.value = true
         }
         if(currentLevelUpEvent.choosePrimalPath) {
             // ChoosePrimalPath(character = character, viewModel = viewModel)
@@ -111,11 +122,31 @@ fun DynamicLevelUp(
         Button(
             onClick = {
                 levelUpCommitted.value = true
-                // save to view model
+                // SAVE SPELLS
                 viewModel.saveNewSpells(selectedSpells.value)
-                // save arcane tradition
+
+                // INCREASE ABILITY SCORES
+                // Get the ability scores (STRENGTH, WISDOM, ..) that the user has selected
+                val abilityScores = levelUpViewModel.abilityValuesImprovements.filterValues { it.intValue > 0 }.keys
+
+                // convert to map of Ability to Int
+//                val abilityScoresInt = abilityScores.map {
+                // TODO simplify by calling viewModel
+                if(abilityScores.size == 1) {
+                    // If the user has selected one ability score, increase it by two
+                    viewModel.increaseAbilityScore(character, abilityScores.first(), 2)
+                } else if(abilityScores.size == 2) {
+                    // If the user has selected two ability scores, increase them by one
+                    viewModel.increaseAbilityScore(character, abilityScores.first(), 1)
+                    viewModel.increaseAbilityScore(character, abilityScores.last(), 1)
+                }
+
+                // SAVE ARCANE TRADITION
                 // viewModel.saveArcaneTradition(arcaneTraditionChosen.value)
+
+                // LEVEL UP
                 viewModel.levelUp(character)
+
                 // redirect to character sheet
                 navController.navigate("sheet/${character.id}") {
                     popUpTo(navController.graph.findStartDestination().id)
@@ -138,6 +169,9 @@ fun DynamicLevelUp(
 class LevelUpViewModel : ViewModel() {
     val arcaneSelectionDone = mutableStateOf(false)
     val spellSelectionDone = mutableStateOf(false)
+    val abilityValuesImprovementsDone = mutableStateOf(false)
+
+    val abilityValuesImprovements = AbilityEnum.entries.associateWith { mutableIntStateOf(0) }
 }
 
 data class LevelUpEvent(
