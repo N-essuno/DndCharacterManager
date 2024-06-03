@@ -80,13 +80,13 @@ fun initProficienciesForClass(dndClass: DndClass): Set<Skill> {
 }
 
 fun getMaxHpStatic(dndClass: DndClass, level: Int, abilityValues: Map<Ability, Int>): Int {
-    return if (dndClass == DndClassEnum.BARBARIAN.dndClass) {
+    return if (dndClass.name == DndClassEnum.BARBARIAN.dndClass.name) {
         if (level == 1) {
             12 + getAbilityModifierStatic(AbilityEnum.CONSTITUTION, abilityValues)
         } else {
             12 + (7 + getAbilityModifierStatic(AbilityEnum.CONSTITUTION, abilityValues)) * (level - 1)
         }
-    } else if (dndClass == DndClassEnum.WIZARD.dndClass) {
+    } else if (dndClass.name == DndClassEnum.WIZARD.dndClass.name) {
         if (level == 1) {
             6 + getAbilityModifierStatic(AbilityEnum.CONSTITUTION, abilityValues)
         } else {
@@ -109,7 +109,7 @@ fun getAbilityModifierStatic(
 fun getMaxPreparedSpells(dndClass: DndClass, level: Int, abilityValues: Map<Ability, Int>): Int {
     val abilityEnum = AbilityEnum.valueOf(dndClass.primaryAbility!!.name)
 
-    return if (dndClass == DndClassEnum.WIZARD.dndClass) {
+    return if (dndClass.name == DndClassEnum.WIZARD.dndClass.name) {
         level + getAbilityModifierStatic(abilityEnum, abilityValues)
     } else {
         0
@@ -135,7 +135,7 @@ fun getRagesPerDay(level: Int): Int {
 }
 
 fun getMaxSpellSlots(spellLevel: Int, dndClass: DndClass, level: Int): Int {
-    if (dndClass == DndClassEnum.WIZARD.dndClass) {
+    if (dndClass.name == DndClassEnum.WIZARD.dndClass.name) {
         when (level) {
             1 -> return when (spellLevel) {
                 1 -> 2

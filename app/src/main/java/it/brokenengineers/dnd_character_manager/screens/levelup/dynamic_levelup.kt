@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import it.brokenengineers.dnd_character_manager.R
+import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.Feature
@@ -126,26 +127,24 @@ fun DynamicLevelUp(
                 viewModel.saveNewSpells(selectedSpells.value)
 
                 // INCREASE ABILITY SCORES
-                // Get the ability scores (STRENGTH, WISDOM, ..) that the user has selected
-                val abilityScores = levelUpViewModel.abilityValuesImprovements.filterValues { it.intValue > 0 }.keys
-
+                // Get the pair ability int (scores) for abilities (STRENGTH, WISDOM, ..) selected by user
+                val abilityScores = levelUpViewModel.abilityValuesImprovements.filterValues { it.intValue > 0 }
                 // convert to map of Ability to Int
-//                val abilityScoresInt = abilityScores.map {
-                // TODO simplify by calling viewModel
-                if(abilityScores.size == 1) {
-                    // If the user has selected one ability score, increase it by two
-                    viewModel.increaseAbilityScore(character, abilityScores.first(), 2)
-                } else if(abilityScores.size == 2) {
-                    // If the user has selected two ability scores, increase them by one
-                    viewModel.increaseAbilityScore(character, abilityScores.first(), 1)
-                    viewModel.increaseAbilityScore(character, abilityScores.last(), 1)
+                val abilityIntMap: Map<Ability, Int> = abilityScores.mapKeys { entry ->
+                    entry.key.ability
+                }.mapValues { entry ->
+                    entry.value.intValue
+                }
+
+                if (abilityIntMap.isNotEmpty()) {
+                    viewModel.increaseAbilityScore(abilityIntMap)
                 }
 
                 // SAVE ARCANE TRADITION
-                // viewModel.saveArcaneTradition(arcaneTraditionChosen.value)
+//                 viewModel.saveArcaneTradition(arcaneTraditionChosen.value)
 
                 // LEVEL UP
-                viewModel.levelUp(character)
+                viewModel.levelUp()
 
                 // redirect to character sheet
                 navController.navigate("sheet/${character.id}") {

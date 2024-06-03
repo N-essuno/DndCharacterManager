@@ -79,12 +79,12 @@ fun CharacterSheetScreen(
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
 
-    char?.let { character ->
-        val savingThrowsString = stringResource(id = R.string.saving_throws)
-        val scrollState = rememberScrollState()
-        Scaffold(
-            bottomBar = { CharacterSheetNavBar(navController, characterId) }
-        ) { innerPadding ->
+    Scaffold(
+        bottomBar = { CharacterSheetNavBar(navController, characterId) }
+    ) { innerPadding ->
+        char?.let { character ->
+            val savingThrowsString = stringResource(id = R.string.saving_throws)
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxSize()

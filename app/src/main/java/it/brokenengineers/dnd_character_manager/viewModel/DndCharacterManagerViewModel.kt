@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import it.brokenengineers.dnd_character_manager.data.classes.Ability
 import it.brokenengineers.dnd_character_manager.data.classes.DndCharacter
 import it.brokenengineers.dnd_character_manager.data.classes.DndClass
 import it.brokenengineers.dnd_character_manager.data.classes.InventoryItem
@@ -14,7 +15,6 @@ import it.brokenengineers.dnd_character_manager.data.classes.Race
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 import it.brokenengineers.dnd_character_manager.data.classes.Weapon
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
-import it.brokenengineers.dnd_character_manager.data.enums.AbilityEnum
 import it.brokenengineers.dnd_character_manager.data.enums.DndClassEnum
 import it.brokenengineers.dnd_character_manager.data.enums.RaceEnum
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
@@ -290,41 +290,21 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
      * @param abilityEnum the ability score to increase
      * @param amount the amount to increase the ability score by
      */
-    fun increaseAbilityScore(character: DndCharacter, abilityEnum: AbilityEnum, amount: Int) {
+    fun increaseAbilityScore(abilityIncrease: Map<Ability, Int>) {
         viewModelScope.launch {
-            val ability = abilityEnum.ability
-            val newAbilityValues = character.abilityValues.toMutableMap()
-            newAbilityValues[ability] = character.abilityValues[ability]!! + amount
-            // TODO update character in database using repository
-            // temporary update of character in repository
-            val newCharacter = character.copy(abilityValues = newAbilityValues)
-            repository.selectedDndCharacter.value = newCharacter
-            updateCharactersList(character, newCharacter)
-            // temporary update of character in repository
-        }
-    }
-
-    fun increaseHpLevelUp(character: DndCharacter) {
-        viewModelScope.launch {
-            val newRemainingHp = getMaxHpStatic(
-                dndClass = character.dndClass!!,
-                level = character.level + 1,
-                abilityValues = character.abilityValues
-            )
-            val newCharacter = character.copy(remainingHp = newRemainingHp)
-            repository.selectedDndCharacter.value = newCharacter
-            updateCharactersList(character, newCharacter)
-            // TODO update character in database by repository
-        }
-
-    }
-
-    fun increaseLevel(character: DndCharacter) {
-        viewModelScope.launch {
-            val newCharacter = character.copy(level = character.level + 1)
-            repository.selectedDndCharacter.value = newCharacter
-            updateCharactersList(character, newCharacter)
-            // TODO update character in database by repository
+            val character = selectedCharacter.value
+            if (character != null) {
+                val newAbilityValues = character.abilityValues.toMutableMap()
+                abilityIncrease.forEach { (ability, amount) ->
+                    newAbilityValues.entries.forEach { entry ->
+                        if (entry.key.name == ability.name) {
+                            entry.setValue(entry.value + amount)
+                        }
+                    }
+                }
+                val newCharacter = character.copy(abilityValues = newAbilityValues)
+                repository.updateCharacter(newCharacter)
+            }
         }
     }
 
@@ -371,10 +351,21 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
-    fun levelUp(character: DndCharacter){
+    fun levelUp(){
         viewModelScope.launch {
-            val newCharacter = character.copy(level = character.level + 1)
-            repository.updateCharacter(newCharacter)
+            val character = selectedCharacter.value
+            character?.let {
+                val newRemainingHp = getMaxHpStatic(
+                    dndClass = character.dndClass!!,
+                    level = character.level + 1,
+                    abilityValues = character.abilityValues
+                )
+                val newCharacter = character.copy(
+                    remainingHp = newRemainingHp,
+                    level = character.level + 1
+                )
+                repository.updateCharacter(newCharacter)
+            }
         }
     }
 

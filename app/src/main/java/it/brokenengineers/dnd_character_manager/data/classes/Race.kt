@@ -12,5 +12,5 @@ data class Race (
     val name: String,
     val walkSpeed: Int,
     val size: String,
-    val abilityScoreIncrease: List<AbilityScoreIncrease>,
+    val abilityScoreIncrease: List<AbilityScoreIncrease>, // TODO maybe not needed anymore
 )
