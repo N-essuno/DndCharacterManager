@@ -145,7 +145,8 @@ data class DndCharacter(
         val skills = mutableListOf<Pair<Skill, Int>>()
         for (enumEntry in SkillEnum.entries) {
             var skillValue = getAbilityModifier(enumEntry.skill.ability!!)
-            if (skillProficiencies!!.contains(enumEntry.skill)) {
+
+            if (skillProficiencies!!.map{it.name}.contains(enumEntry.skill.name)) {
                 skillValue += getProficiencyBonus()
             }
             val pair = Pair(enumEntry.skill, skillValue)
@@ -164,7 +165,7 @@ data class DndCharacter(
     }
 
     fun isProficientInAbility(abilityEnum: AbilityEnum): Boolean {
-        return dndClass!!.savingThrowProficiencies.contains(abilityEnum.ability)
+        return dndClass!!.savingThrowProficiencies.map { it.name }.contains(abilityEnum.ability.name)
     }
 
     fun getMaxCarryWeight(): Double {

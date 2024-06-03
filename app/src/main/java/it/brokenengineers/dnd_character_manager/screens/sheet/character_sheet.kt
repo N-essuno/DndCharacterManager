@@ -968,12 +968,12 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String, proficiency
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (nameText, bonusText, proficiencyCheckBok) = createRefs()
+            val (nameText, bonusText, proficiencyCheckBox) = createRefs()
             RoundCheckbox(
                 check = proficiency,
                 modifier = Modifier
                     .size(CheckBoxMedium)
-                    .constrainAs(proficiencyCheckBok) {
+                    .constrainAs(proficiencyCheckBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
@@ -984,7 +984,7 @@ fun SavingThrowCard(modifier: Modifier, name: String, bonus: String, proficiency
                 text = name,
                 modifier = Modifier
                     .constrainAs(nameText) {
-                        start.linkTo(proficiencyCheckBok.end)
+                        start.linkTo(proficiencyCheckBox.end)
                         top.linkTo(parent.top)
                         end.linkTo(bonusText.start)
                         bottom.linkTo(parent.bottom)

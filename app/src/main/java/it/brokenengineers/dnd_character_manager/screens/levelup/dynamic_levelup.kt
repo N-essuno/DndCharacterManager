@@ -161,7 +161,7 @@ fun DynamicLevelUp(
         }
 
     } else {
-        Text(stringResource(R.string.level_up_event_not_found))
+        Text(stringResource(R.string.error_level_up_not_found))
     }
 }
 
