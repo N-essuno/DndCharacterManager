@@ -284,30 +284,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
-    /**
-     * Increase an ability score by a certain amount
-     * @param character the character to level up
-     * @param abilityEnum the ability score to increase
-     * @param amount the amount to increase the ability score by
-     */
-    fun increaseAbilityScore(abilityIncrease: Map<Ability, Int>) {
-        viewModelScope.launch {
-            val character = selectedCharacter.value
-            if (character != null) {
-                val newAbilityValues = character.abilityValues.toMutableMap()
-                abilityIncrease.forEach { (ability, amount) ->
-                    newAbilityValues.entries.forEach { entry ->
-                        if (entry.key.name == ability.name) {
-                            entry.setValue(entry.value + amount)
-                        }
-                    }
-                }
-                val newCharacter = character.copy(abilityValues = newAbilityValues)
-                repository.updateCharacter(newCharacter)
-            }
-        }
-    }
-
     fun longRest(spellsToPrepare: List<Spell>?) {
         viewModelScope.launch {
             val character = selectedCharacter.value
@@ -331,16 +307,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
-    fun chooseArcaneTradition(character: DndCharacter, name: String) {
-        viewModelScope.launch {
-            // TODO character should have an arcane tradition field
-//            val newCharacter = character.copy(arcaneTradition = name)
-//            repository.selectedDndCharacter.value = newCharacter
-//            updateCharactersList(character, newCharacter)
-            // TODO update character in database by repository
-        }
-    }
-
     fun saveNewSpells(newSpells: List<Spell>) {
         viewModelScope.launch {
             val character = selectedCharacter.value
@@ -351,16 +317,30 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
         }
     }
 
-    fun levelUp(){
+    fun levelUp(abilityIncrease: Map<Ability, Int>){
         viewModelScope.launch {
             val character = selectedCharacter.value
             character?.let {
+                var newCharacter: DndCharacter = character
+                if (abilityIncrease.isNotEmpty()) {
+                    val newAbilityValues = character.abilityValues.toMutableMap()
+                    abilityIncrease.forEach { (ability, amount) ->
+                        newAbilityValues.entries.forEach { entry ->
+                            if (entry.key.name == ability.name) {
+                                entry.setValue(entry.value + amount)
+                            }
+                        }
+                    }
+                    newCharacter = character.copy(abilityValues = newAbilityValues)
+                    repository.updateCharacter(newCharacter)
+                }
+
                 val newRemainingHp = getMaxHpStatic(
                     dndClass = character.dndClass!!,
                     level = character.level + 1,
                     abilityValues = character.abilityValues
                 )
-                val newCharacter = character.copy(
+                newCharacter = newCharacter.copy(
                     remainingHp = newRemainingHp,
                     level = character.level + 1
                 )

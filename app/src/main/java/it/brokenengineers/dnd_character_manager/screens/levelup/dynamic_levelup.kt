@@ -45,7 +45,7 @@ fun DynamicLevelUp(
 
         // BARBARIAN
         LevelUpEvent(dndClass = barbarian, newLevel = 2, newFeatures = listOf(Feature.RECKLESS_ATTACK, Feature.DANGER_SENSE)),
-        LevelUpEvent(dndClass = barbarian, newLevel = 3, choosePrimalPath = true, increaseNumRages = true),
+        LevelUpEvent(dndClass = barbarian, newLevel = 3, increaseNumRages = true),
         LevelUpEvent(dndClass = barbarian, newLevel = 4, increaseAbilityScore = true),
         LevelUpEvent(dndClass = barbarian, newLevel = 5, increaseProficiencyBonus = true, newFeatures = listOf(Feature.EXTRA_ATTACK, Feature.FAST_MOVEMENT)),
 
@@ -107,9 +107,6 @@ fun DynamicLevelUp(
         } else {
             levelUpViewModel.spellSelectionDone.value = true
         }
-        if(currentLevelUpEvent.choosePrimalPath) {
-            // ChoosePrimalPath(character = character, viewModel = viewModel)
-        }
         if(currentLevelUpEvent.chooseArcaneTradition) {
             val arcaneTraditionChosen = remember { mutableStateOf<ArcaneTraditionItem?>(null) }
             ChooseArcaneTradition(
@@ -136,15 +133,8 @@ fun DynamicLevelUp(
                     entry.value.intValue
                 }
 
-                if (abilityIntMap.isNotEmpty()) {
-                    viewModel.increaseAbilityScore(abilityIntMap)
-                }
-
-                // SAVE ARCANE TRADITION
-//                 viewModel.saveArcaneTradition(arcaneTraditionChosen.value)
-
                 // LEVEL UP
-                viewModel.levelUp()
+                viewModel.levelUp(abilityIntMap)
 
                 // redirect to character sheet
                 navController.navigate("sheet/${character.id}") {
@@ -181,7 +171,5 @@ data class LevelUpEvent(
     val increaseAbilityScore: Boolean = false,
     val increaseNumRages: Boolean = false,
     val chooseNewSpells: Boolean = false,
-//    val newPrimalPathFeature: Boolean? = false,
-    val choosePrimalPath: Boolean = false,
     val chooseArcaneTradition: Boolean = false,
 )
