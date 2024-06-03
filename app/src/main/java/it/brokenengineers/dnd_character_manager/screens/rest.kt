@@ -47,6 +47,7 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import kotlin.math.min
 
 @Composable
 fun Rest(
@@ -382,10 +383,12 @@ fun LongRest(
 
         Column{
             Text(
-                stringResource(
+                text = stringResource(
                     R.string.you_selected_n_out_of_m_spells,
                     numSpellsToPrepare.intValue,
-                    numPrepareableSpells
+                    // if ability modifier is negative (e.g. -1), then numPrepareableSpells should
+                    // be 0 rather than -1
+                    min(numPrepareableSpells,0)
                 ),
                 style = MaterialTheme.typography.bodyLarge)
             Button(
