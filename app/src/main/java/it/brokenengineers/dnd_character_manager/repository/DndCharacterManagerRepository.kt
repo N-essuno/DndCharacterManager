@@ -192,7 +192,7 @@ class DndCharacterManagerRepository(
         }
     }
 
-    fun fetchCharacterById(id: Int) {
+    private fun fetchCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val dbCharacter = dndCharacterDao.getCharacterById(id)

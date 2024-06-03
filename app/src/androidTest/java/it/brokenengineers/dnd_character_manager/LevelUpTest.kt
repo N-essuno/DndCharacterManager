@@ -47,8 +47,12 @@ class LevelUpTest {
     fun testLevelUpSilvano() {
         // Select mock character to level up
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
+
+        waitForUiUpdate()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         // Click on level up button
+
+        waitForUiUpdate()
         composeTestRule.onNodeWithTag(TestTags.LEVELUP_BUTTON).performClick()
         navController.assertCurrentRouteWithIdEqual("levelup/1")
 
@@ -69,9 +73,11 @@ class LevelUpTest {
         composeTestRule.onNodeWithTag("HP${TestTags.STAT_INCREASE_NEW_VAL}").assertTextEquals(hpLevel2.toString())
 
         // Assert Choose Spells
-        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Fireball").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Trabacca's Touch").performClick()
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
+
+        waitForUiUpdate()
         composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
 
         // Assert Choose Arcane tradition
@@ -85,5 +91,10 @@ class LevelUpTest {
         // Assert character level 2
         val charLevel2 = viewModel.selectedCharacter.value
         assert(charLevel2?.level == 2)
+    }
+
+    private fun waitForUiUpdate(){
+        composeTestRule.mainClock.advanceTimeBy(5000) // wait for half a second
+        composeTestRule.waitForIdle()
     }
 }
