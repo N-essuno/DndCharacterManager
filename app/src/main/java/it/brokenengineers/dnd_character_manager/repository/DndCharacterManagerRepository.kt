@@ -192,7 +192,7 @@ class DndCharacterManagerRepository(
         }
     }
 
-    private fun fetchCharacterById(id: Int) {
+    fun fetchCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 Log.d("CharacterSheet", "Fetching character: $id")
