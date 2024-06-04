@@ -69,7 +69,7 @@ class DndCharacterManagerRepository(
 
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
-                fetchCharacterByName(dndCharacter.name)
+//                fetchCharacterByName(dndCharacter.name)
                 fetchAllCharacters()
             }
         }

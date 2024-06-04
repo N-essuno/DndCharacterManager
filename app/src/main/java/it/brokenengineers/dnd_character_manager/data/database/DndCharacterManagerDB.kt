@@ -63,10 +63,12 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
         private val latch = CountDownLatch(1)
         private var initCharacters: Boolean = true
 
-        fun getDatabase(context: Context, initCharacters: Boolean = true): DndCharacterManagerDB? {
-            // TODO remove later. Used to test the database population
-//            val dbDelete = context.deleteDatabase("dnd_character_manager_database")
-//            Log.i("CharacterSheet", "DB deleted: $dbDelete")
+        fun getDatabase(context: Context, initCharacters: Boolean = true, usingUI: Boolean = true): DndCharacterManagerDB? {
+            if (usingUI) {
+                val dbDelete = context.deleteDatabase("dnd_character_manager_database")
+                Log.i("CharacterSheet", "DB deleted: $dbDelete")
+            }
+
 
             this.initCharacters = initCharacters
 

@@ -1,6 +1,7 @@
 package it.brokenengineers.dnd_character_manager
 
 import android.content.Context
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,9 +12,10 @@ import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import it.brokenengineers.dnd_character_manager.data.database.DndCharacterManagerDB
 import it.brokenengineers.dnd_character_manager.data.getMaxHpStatic
+import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteWithIdEqual
+import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerTheme
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
-import it.brokenengineers.dnd_character_manager.test_utils.assertCurrentRouteWithIdEqual
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,15 +33,17 @@ class LevelUpTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            appContext = LocalContext.current
-            // DB not used in this test but needed for ViewModel
-            val db = DndCharacterManagerDB.getDatabase(appContext)
-            assert(db != null)
-            viewModel = DndCharacterManagerViewModel(db!!)
-            viewModel.init()
-            navController = TestNavHostController(appContext)
-            navController.navigatorProvider.addNavigator(ComposeNavigator())
-            CustomNavigationHost(navController = navController, viewModel = viewModel)
+            DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
+                appContext = LocalContext.current
+                // DB not used in this test but needed for ViewModel
+                val db = DndCharacterManagerDB.getDatabase(appContext)
+                assert(db != null)
+                viewModel = DndCharacterManagerViewModel(db!!)
+                viewModel.init()
+                navController = TestNavHostController(appContext)
+                navController.navigatorProvider.addNavigator(ComposeNavigator())
+                CustomNavigationHost(navController = navController, viewModel = viewModel)
+            }
         }
     }
 
@@ -69,7 +73,7 @@ class LevelUpTest {
         composeTestRule.onNodeWithTag("HP${TestTags.STAT_INCREASE_NEW_VAL}").assertTextEquals(hpLevel2.toString())
 
         // Assert Choose Spells
-        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Fireball").performClick()
+        composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cure Wounds").performClick()
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
         composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
