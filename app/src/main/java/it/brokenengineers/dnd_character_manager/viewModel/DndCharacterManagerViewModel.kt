@@ -300,7 +300,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     newCharacter = newCharacter.copy(preparedSpells = spellsToPrepare.toSet())
                     Log.d("ViewModel", "New Prepared spells: ${newCharacter.preparedSpells}")
                 }
-                // TODO add slots recover
                 repository.longRest(newCharacter)
             }
         }

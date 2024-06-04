@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -35,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -50,8 +49,8 @@ import it.brokenengineers.dnd_character_manager.ui.theme.MediumPadding
 import it.brokenengineers.dnd_character_manager.ui.theme.MediumVerticalSpacing
 import it.brokenengineers.dnd_character_manager.ui.theme.SmallPadding
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
+import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 import kotlin.math.max
-import kotlin.math.min
 
 @Composable
 fun Rest(
@@ -119,7 +118,7 @@ fun Rest(
                             longRestClicked.value = false
 //                        Toast.makeText(context, "Short Rest taken", Toast.LENGTH_SHORT).show()
                         },
-                        modifier = Modifier.padding(SmallPadding)
+                        modifier = Modifier.padding(SmallPadding).testTag(TestTags.SHORT_REST_BUTTON)
                     ) {
                         Text(stringResource(R.string.short_rest))
                     }
@@ -130,7 +129,7 @@ fun Rest(
                             shortRestClicked.value = false
 //                        Toast.makeText(context, "Long Rest taken", Toast.LENGTH_SHORT).show()
                         },
-                        modifier = Modifier.padding(SmallPadding)
+                        modifier = Modifier.padding(SmallPadding).testTag(TestTags.LONG_REST_BUTTON)
                     ) {
                         Text(stringResource(R.string.long_rest))
                     }
@@ -207,7 +206,9 @@ fun ShortRest(
                 )
 
                 Spacer(modifier = Modifier.height(SmallPadding))
-                Button(onClick = {
+                Button(
+                    modifier = Modifier.testTag(TestTags.CONFIRM_REST_BUTTON),
+                    onClick = {
                     // convert selectedSlots to list of ints
                     val selectedSlotsInts = selectedSlots?.value?.map { it.intValue } ?: listOf()
 
@@ -254,8 +255,8 @@ fun SpellRecovery(
 ) {
     // maps spell level to number of recoverable slots
     val slotsRecoverable: Map<Int, Int> = character.getRecoverableSpellSlots()
-    // number of slots recoverable for short rest for character
-    val maxSlotsRecoverable = character.getNumRecoverableSlotsForShortRest()
+    // sum values of slots recoverable for all levels
+    val maxSlotsRecoverable = slotsRecoverable.values.sum()
     // sum of selected slots, derived from selectedSlots
     val selectedSlotsSum by remember {
         derivedStateOf { selectedSlots.sumOf { it.intValue } }
@@ -341,7 +342,6 @@ fun LongRest(
     navController: NavHostController,
     character: DndCharacter
 ) {
-    // TODO check if magic user, if it is show spells to prepare, otherwise do not
     val spellsKnown = character.spellsKnown?.toList()
     val numPrepareableSpells = character.getNumPrepareableSpells()
     val spellsToPrepare = remember {mutableListOf<Spell>()}
@@ -411,6 +411,7 @@ fun LongRest(
                             }
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
+                            .testTag(TestTags.CONFIRM_REST_BUTTON)
                     ) {
                         Text(stringResource(R.string.confirm))
                     }
@@ -459,7 +460,8 @@ fun PrepareSpellRow(
             IconButton(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .weight(0.1f),
+                    .weight(0.1f)
+                    .testTag(TestTags.ADD_ITEM_BUTTON),
                 onClick = {
                     onAdd()
                     selected.value = true

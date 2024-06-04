@@ -255,7 +255,9 @@ fun SpellsLevelColumn(level: Int, dndCharacter: DndCharacter, viewModel: DndChar
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
-                            modifier = Modifier.size(RadioButtonMedium),
+                            modifier = Modifier
+                                .size(RadioButtonMedium)
+                                .testTag(TestTags.PREPARED_SPELL_RADIO_BUTTON),
                             selected = dndCharacter.isSpellPrepared(spell),
                             onClick = { }
                         )
