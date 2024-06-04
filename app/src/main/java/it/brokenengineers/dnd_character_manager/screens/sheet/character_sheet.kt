@@ -44,7 +44,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -67,26 +66,30 @@ import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerVie
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
+/**
+ * Composable for the character sheet screen.
+ * It shows the character's main information, abilities, skills, saving throws,
+ * and allows the user to manage the character's hit points, level up, and rest.
+ * @param navController: NavController
+ * @param characterId: Int (id of the character to show)
+ * @param viewModel: DndCharacterManagerViewModel
+ * */
 fun CharacterSheetScreen(
     navController: NavHostController,
     characterId: Int,
     viewModel: DndCharacterManagerViewModel
 ) {
+    // when id passed changed fetch the character
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
-//        viewModel.getCharacterById(characterId)
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
-
-    Log.d("CharacterSheet", "Just inside: $char")
 
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         char?.let { character ->
-            Log.d("CharacterSheet", "Recompostion: $character")
             val savingThrowsString = stringResource(id = R.string.saving_throws)
             val scrollState = rememberScrollState()
             Column(
@@ -171,10 +174,8 @@ fun CharacterSheetScreen(
                 }
             }
         } ?: run {
-            Log.d("CharacterSheet", "character is null")
             // fetch the character until correct recompose
             while (viewModel.selectedCharacter.value == null) {
-                // wait 1 second
                 viewModel.fetchCharacterById(characterId)
                 Thread.sleep(500)
             }
@@ -183,6 +184,10 @@ fun CharacterSheetScreen(
     }
 }
 
+/**
+ * Composable showing basic character information: race, class, hit points.
+ * Contains buttons to start rest and level up
+ * */
 @Composable
 fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navController: NavHostController) {
     Row (
@@ -335,6 +340,10 @@ fun LevelUpButton(modifier: Modifier, navController: NavHostController, dndChara
     }
 }
 
+/**
+ * Composable used to manage the character's (temp) hit points.
+ * It shows the character's image and various buttons to manage the hit points.
+ * */
 @Composable
 fun ImageAndDamageRow(
     modifier: Modifier,
@@ -369,7 +378,6 @@ fun ImageAndDamageRow(
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                     },
-                // TODO get character image URL
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"
             )
@@ -537,6 +545,9 @@ fun ImageAndDamageRow(
     }
 }
 
+/**
+ * Composable showing character's info about: proficiency bonus, walk speed, initiative, armor class.
+ * */
 @Composable
 fun MainInfo(modifier: Modifier, dndCharacter: DndCharacter) {
     val profBonusString = stringResource(id = R.string.prof_bonus)
@@ -641,6 +652,9 @@ fun MainInfoElem(modifier: Modifier, name: String, value: String) {
     }
 }
 
+/**
+ * Composable showing character's ability values and modifiers.
+ * */
 @Composable
 fun AbilityRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val strengthString = stringResource(id = R.string.strength)
@@ -791,6 +805,9 @@ fun AbilityCard(modifier: Modifier, name: String, value: String, bonus: String) 
     }
 }
 
+/**
+ * Composable showing character's skills and their values.
+ * */
 @Composable
 fun SkillRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val skills1 = dndCharacter.getSkills().slice(0..8)
@@ -873,6 +890,9 @@ fun SkillBox(name: String, value: String) {
     }
 }
 
+/**
+ * Composable showing character's saving throws, their values, and eventual proficiencies.
+ * */
 @Composable
 fun SavingThrowsRow(modifier: Modifier, dndCharacter: DndCharacter) {
     val strengthString = stringResource(id = R.string.strength)
@@ -1046,6 +1066,11 @@ fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
     }
 }
 
+
+/**
+ * Composable for the bottom navigation bar shown in:
+ *    character sheet screen, inventory screen, and attack screen.
+ * */
 @Composable
 fun CharacterSheetNavBar(navController: NavHostController, characterId: Int) {
     BottomNavigation (
@@ -1077,15 +1102,6 @@ fun CharacterSheetNavBar(navController: NavHostController, characterId: Int) {
         }
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    val navController = rememberNavController()
-//    DndCharacterManagerTheme {
-//        CharacterSheetScreen(navController, it, viewModel)
-//    }
-//}
 
 sealed class BottomNavItem(val route: String, val label: String) {
     data object Home : BottomNavItem("home", "Home")

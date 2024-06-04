@@ -45,8 +45,6 @@ import it.brokenengineers.dnd_character_manager.ui.theme.SmallVerticalSpacing
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 
-// TODO add gold visualization
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun InventoryScreen(

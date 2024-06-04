@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.screens.levelup
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -108,7 +107,6 @@ fun LevelUp(
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
-            Log.d("LevelUp", "Loading")
         }
     }
 }

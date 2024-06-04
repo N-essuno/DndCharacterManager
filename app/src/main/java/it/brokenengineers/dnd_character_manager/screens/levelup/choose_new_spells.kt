@@ -1,6 +1,5 @@
 package it.brokenengineers.dnd_character_manager.screens.levelup
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +64,6 @@ fun ChooseNewSpells(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    Log.d("New Spells", spellsChosen.toString())
                 },
                 testTag = "${TestTags.CHOOSE_SPELL}_${spell.name}"
             )
