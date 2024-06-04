@@ -102,7 +102,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                 weapon = weapon,
                 weaponId = weapon?.id ?: 99
             )
-
             repository.insertCharacter(newDndCharacter)
         }
     }
