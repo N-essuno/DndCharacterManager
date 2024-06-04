@@ -17,12 +17,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -277,6 +279,7 @@ fun InventoryItemRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
     val itemNameString = stringResource(id = R.string.item_name)
@@ -316,18 +319,30 @@ fun AddItemButton(modifier: Modifier, viewModel: DndCharacterManagerViewModel) {
                 Column {
 
                     TextField(
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
                         modifier = Modifier.testTag(TestTags.DIALOG_ITEM_NAME_FIELD),
                         value = itemName.value,
                         onValueChange = { itemName.value = it },
                         label = { Text(itemNameString) }
                     )
                     TextField(
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
                         modifier = Modifier.testTag(TestTags.DIALOG_ITEM_QUANTITY_FIELD),
                         value = quantity.value,
                         onValueChange = { quantity.value = it },
                         label = { Text(quantityString) }
                     )
                     TextField(
+                        colors = TextFieldDefaults.colors(
+                            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                        ),
                         modifier = Modifier.testTag(TestTags.DIALOG_ITEM_WEIGHT_FIELD),
                         value = weight.value,
                         onValueChange = { weight.value = it },

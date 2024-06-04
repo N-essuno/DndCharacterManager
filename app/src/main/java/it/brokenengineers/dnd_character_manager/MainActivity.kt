@@ -235,7 +235,7 @@ fun HomePage(
                 .align(Alignment.BottomCenter)
                 .padding(MediumPadding),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             onClick = {

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -357,7 +358,7 @@ fun LevelUpButton(modifier: Modifier, navController: NavHostController, dndChara
 @Composable
 fun ImageAndDamageRow(
     modifier: Modifier,
-    dndCharacter: DndCharacter, // TODO: do not remove, maybe needed later to get image URL
+    dndCharacter: DndCharacter,
     viewModel: DndCharacterManagerViewModel
 ) {
     val hitButtonString = stringResource(id = R.string.hit_button)
@@ -1068,6 +1069,9 @@ fun RoundCheckbox(modifier: Modifier, check: Boolean) {
 @Composable
 fun MyButton(modifier: Modifier, text: String, onClick: () -> Unit) {
     Button(
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         onClick = onClick,
         modifier = modifier
             .padding(end = SmallPadding)
