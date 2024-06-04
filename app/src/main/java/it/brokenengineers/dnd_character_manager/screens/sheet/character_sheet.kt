@@ -455,7 +455,7 @@ fun ImageAndDamageRow(
                     modifier = Modifier.testTag(TestTags.DIALOG_HIT_FIELD),
                     value = hitValue.value,
                     onValueChange = { hitValue.value = it },
-                    label = { Text(hpString) }
+                    label = { Text(text=hpString, color = MaterialTheme.colorScheme.onSurface) }
                 )
             },
             confirmButton = {
@@ -485,7 +485,7 @@ fun ImageAndDamageRow(
                     modifier = Modifier.testTag(TestTags.DIALOG_HP_FIELD),
                     value = hp.value,
                     onValueChange = { hp.value = it },
-                    label = { Text(hpString) }
+                    label = { Text(hpString, color = MaterialTheme.colorScheme.onSurface) }
                 )
             },
             confirmButton = {
@@ -526,7 +526,7 @@ fun ImageAndDamageRow(
                     modifier = Modifier.testTag(TestTags.DIALOG_TEMP_HP_FIELD),
                     value = tempHp.value,
                     onValueChange = { tempHp.value = it },
-                    label = { Text(tempHpString) }
+                    label = { Text(tempHpString, color = MaterialTheme.colorScheme.onSurface) }
                 )
             },
             confirmButton = {
@@ -1092,7 +1092,7 @@ fun CharacterSheetNavBar(navController: NavHostController, characterId: Int) {
         BottomNavItem.items.forEach { screen ->
             BottomNavigationItem(
                 icon = { },
-                label = { Text(screen.label) },
+                label = { Text(screen.label, color = MaterialTheme.colorScheme.onSurface) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     var route = "home"
