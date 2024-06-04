@@ -87,10 +87,6 @@ class SheetScreenTest {
         val tempHpString = appContext.getString(R.string.temp_hp)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
-//        composeTestRule.onNodeWithTag(TestTags.EDIT_TEMP_HP_BUTTON).performClick()
-//        composeTestRule.onNodeWithTag(TestTags.DIALOG_TEMP_HP_FIELD).performTextInput("5")
-//        composeTestRule.onNodeWithTag(TestTags.DIALOG_ADD_TEMP_HP_BUTTON).performClick()
-//        composeTestRule.onNodeWithTag(TestTags.TEMP_HP_TEXT).assertTextEquals("$tempHpString: 5")
 
         composeTestRule.onNodeWithTag(TestTags.EDIT_TEMP_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_TEMP_HP_FIELD).performTextInput("5")
@@ -116,11 +112,6 @@ class SheetScreenTest {
 
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
-
-//        composeTestRule.onNodeWithTag(TestTags.EDIT_HP_BUTTON).performClick()
-//        composeTestRule.onNodeWithTag(TestTags.DIALOG_HP_FIELD).performTextInput("7")
-//        composeTestRule.onNodeWithTag(TestTags.DIALOG_LOSE_HP_BUTTON).performClick()
-//        composeTestRule.onNodeWithTag(TestTags.HP_TEXT).assertTextEquals("$hpString: 0/7")
 
         composeTestRule.onNodeWithTag(TestTags.EDIT_HP_BUTTON).performClick()
         composeTestRule.onNodeWithTag(TestTags.DIALOG_HP_FIELD).performTextInput("7")
