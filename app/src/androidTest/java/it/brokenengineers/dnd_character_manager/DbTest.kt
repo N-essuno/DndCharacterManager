@@ -26,7 +26,7 @@ class DbTest {
     @Before
     fun init() {
         // initialize db and repository
-        db = DndCharacterManagerDB.getDatabase(context)!!
+        db = DndCharacterManagerDB.getDatabase(context, false)!!
         repository = runBlocking {
             DndCharacterManagerRepository(
                 DndCharacterManagerViewModel(db),
