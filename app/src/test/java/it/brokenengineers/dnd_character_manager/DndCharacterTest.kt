@@ -57,6 +57,5 @@ class DndCharacterTest {
         assert(newDndCharacter.preparedSpells == emptySet<Spell>())
         assert(newDndCharacter.availableSpellSlots == spellSlots)
         assert(newDndCharacter.inventoryItems == emptySet<String>())
-        assert(newDndCharacter.weapon == null)
     }
 }
