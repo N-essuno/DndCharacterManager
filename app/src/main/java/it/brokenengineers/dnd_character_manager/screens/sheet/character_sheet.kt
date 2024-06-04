@@ -79,10 +79,13 @@ fun CharacterSheetScreen(
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
 
+    Log.d("CharacterSheet", "Just inside: $char")
+
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         char?.let { character ->
+            Log.d("CharacterSheet", "Recompostion: $character")
             val savingThrowsString = stringResource(id = R.string.saving_throws)
             val scrollState = rememberScrollState()
             Column(

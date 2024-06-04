@@ -55,7 +55,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     }
 
     fun fetchCharacterById(id: Int) {
-        repository.getCharacterById(id)
+        repository.fetchCharacterById(id)
     }
 
     fun fetchCharacterByName(name: String) {
