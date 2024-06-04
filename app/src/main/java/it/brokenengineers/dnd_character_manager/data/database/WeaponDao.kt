@@ -19,6 +19,4 @@ interface WeaponDao {
 
     @Query("SELECT * FROM Weapon")
     fun getAllWeapons(): List<Weapon>
-
-
 }

@@ -29,6 +29,4 @@ interface SpellDao {
             "INNER JOIN DndCharacterPreparedSpellCrossRef ON Spell.id = DndCharacterPreparedSpellCrossRef.spellId " +
             "WHERE DndCharacterPreparedSpellCrossRef.dndCharacterId = :characterId")
     fun getPreparedSpellsForCharacter(characterId: Int): List<Spell>
-
-
 }

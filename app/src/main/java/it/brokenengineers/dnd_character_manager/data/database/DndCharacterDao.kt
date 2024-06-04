@@ -140,7 +140,6 @@ interface DndCharacterDao {
 
     @Transaction
     fun update(dndCharacter: DndCharacter) {
-        // update the character
         updateDndCharacter(dndCharacter)
         // other update queries if needed (e.g. cross references)
     }

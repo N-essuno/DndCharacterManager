@@ -7,8 +7,6 @@ import com.google.gson.stream.JsonWriter
 import it.brokenengineers.dnd_character_manager.data.classes.Ability
 
 class AbilityTypeAdapter : TypeAdapter<Ability>() {
-    private val tag: String = AbilityTypeAdapter::class.java.simpleName
-
     override fun write(out: JsonWriter, ability: Ability) {
         out.beginObject()
         out.name("id").value(ability.id) // id: 1

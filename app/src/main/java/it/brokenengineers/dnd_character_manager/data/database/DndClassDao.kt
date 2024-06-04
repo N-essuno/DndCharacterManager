@@ -26,14 +26,13 @@ interface DndClassDao {
     @Query("SELECT * FROM DndClass")
     fun getAllDndClasses(): List<DndClass>
 
-
-    // insert queries needed to make relationships between DndClass and Ability list
-
     @Insert
     fun insertDndClass(dndClass: DndClass): Long
 
     @Insert
     fun insertAllDndClasses(dndClasses: List<DndClass>)
+
+    // insert queries needed to make relationships between DndClass and Ability list
 
     @Insert
     fun insertDndClassAbilityCrossRefs(crossRefs: List<DndClassAbilityCrossRef>)
@@ -57,6 +56,4 @@ interface DndClassDao {
             insertDndClassWithAbilities(dndClass)
         }
     }
-
-
 }

@@ -26,6 +26,4 @@ interface RaceDao {
 
     @Delete
     fun delete(race: Race)
-
-
 }

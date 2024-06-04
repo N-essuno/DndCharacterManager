@@ -241,5 +241,4 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
             INSTANCE?.characterDao()?.insertAll(listOf(silvano, broken))
         }
     }
-
 }
