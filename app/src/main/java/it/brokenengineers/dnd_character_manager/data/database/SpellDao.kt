@@ -4,6 +4,7 @@ package it.brokenengineers.dnd_character_manager.data.database
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import it.brokenengineers.dnd_character_manager.data.classes.Spell
 
 @Dao
@@ -20,6 +21,7 @@ interface SpellDao {
     @Query("SELECT * FROM Spell")
     fun getAllSpells(): List<Spell>
 
+    @RewriteQueriesToDropUnusedColumns
     @Query("SELECT * FROM Spell " +
             "INNER JOIN DndCharacterKnownSpellCrossRef ON Spell.id = DndCharacterKnownSpellCrossRef.spellId " +
             "WHERE DndCharacterKnownSpellCrossRef.dndCharacterId = :characterId")

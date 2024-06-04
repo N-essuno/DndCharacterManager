@@ -61,6 +61,7 @@ object TestTags {
     const val BUILD_CHARACTER_TITLE = "build_character_title"
 
     // Level up
+    const val LEVELUP_COLUMN = "levelup_column"
     const val STAT_INCREASE_NAME = "stat_increase_name"
     const val STAT_INCREASE_OLD_VAL = "_increase_old_val"
     const val STAT_INCREASE_NEW_VAL = "_increase_new_val"

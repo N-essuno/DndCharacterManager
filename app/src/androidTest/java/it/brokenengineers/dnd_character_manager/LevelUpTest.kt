@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -77,8 +79,10 @@ class LevelUpTest {
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
 
-        waitForUiUpdate()
-//        composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
+
+        composeTestRule.onNodeWithTag(TestTags.LEVELUP_COLUMN).performScrollToNode(
+            hasTestTag(TestTags.CHOOSE_ARCANE_TRADITION+"_Illusion")
+        )
 
         // Assert Choose Arcane tradition
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_ARCANE_TRADITION+"_Illusion").performClick()
