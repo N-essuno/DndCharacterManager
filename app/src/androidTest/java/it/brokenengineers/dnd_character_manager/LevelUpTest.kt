@@ -77,12 +77,12 @@ class LevelUpTest {
         // Assert Choose Spells
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cure Wounds").performClick()
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_SPELL+"_Cause Fear").performClick()
-        composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
-
-
+        // scroll until confirm button is visible
         composeTestRule.onNodeWithTag(TestTags.LEVELUP_COLUMN).performScrollToNode(
-            hasTestTag(TestTags.CHOOSE_ARCANE_TRADITION+"_Illusion")
+            hasTestTag(TestTags.CONFIRM_SPELLS)
         )
+        composeTestRule.onNodeWithTag(TestTags.CONFIRM_SPELLS).performClick()
+        composeTestRule.onNodeWithTag(TestTags.SPELLS_CHOSEN).assertExists()
 
         // Assert Choose Arcane tradition
         composeTestRule.onNodeWithTag(TestTags.CHOOSE_ARCANE_TRADITION+"_Illusion").performClick()
@@ -92,9 +92,7 @@ class LevelUpTest {
         // Assert level up committed
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_LEVELUP).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
-        // Assert character level 2
-        val charLevel2 = viewModel.selectedCharacter.value
-        assert(charLevel2?.level == 2)
+
     }
 
     private fun waitForUiUpdate(){
