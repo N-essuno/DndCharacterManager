@@ -61,10 +61,16 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
         // latch to wait for the database to be populated
         // It delays the DB return until the population callback is completed (roomDatabaseCallback)
         private val latch = CountDownLatch(1)
+        private var initCharacters: Boolean = true
 
-        fun getDatabase(context: Context): DndCharacterManagerDB? {
-            // TODO remove later. Used to test the database population
-            context.deleteDatabase("dnd_character_manager_database")
+        fun getDatabase(context: Context, initCharacters: Boolean = true, usingUI: Boolean = true): DndCharacterManagerDB? {
+            if (usingUI) {
+                val dbDelete = context.deleteDatabase("dnd_character_manager_database")
+                Log.i("CharacterSheet", "DB deleted: $dbDelete")
+            }
+
+
+            this.initCharacters = initCharacters
 
             if (INSTANCE == null) {
                 // ensure only one instance of the database is created even if multiple threads try to create an instance
@@ -127,7 +133,8 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
                         weaponDao.insertAll(listOf(weapon, nullWeapon))
                         spellDao.insertAll(spells)
 
-                        insertMockCharacters()
+                        if (initCharacters)
+                            insertMockCharacters()
 
                         Log.i("DndCharacterManagerDB", "DB Populated, calling countDown()")
                         latch.countDown()

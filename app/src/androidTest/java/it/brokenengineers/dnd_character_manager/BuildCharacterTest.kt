@@ -118,7 +118,7 @@ class BuildCharacterTest {
             // Click the button to create the character
             composeTestRule.onNodeWithTag("create_character_button").performClick()
 
-            composeTestRule.onNodeWithTag("Fireball").performClick()
+            composeTestRule.onNodeWithTag("Cure Wounds").performClick()
             composeTestRule.onNodeWithTag("Magic Missile").performClick()
             composeTestRule.onNodeWithTag(TestTags.ADD_SPELLS_CONFIRM_BUTTON).performClick()
 

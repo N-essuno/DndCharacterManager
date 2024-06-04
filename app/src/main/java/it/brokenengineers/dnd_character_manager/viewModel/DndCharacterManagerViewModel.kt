@@ -55,7 +55,7 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     }
 
     fun fetchCharacterById(id: Int) {
-        repository.getCharacterById(id)
+        repository.fetchCharacterById(id)
     }
 
     fun fetchCharacterByName(name: String) {
@@ -67,7 +67,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
     }
 
     fun createCharacter(name: String, race: String, dndClass: String, image: Uri?) {
-        // TODO clean method after implementation of Spells passed from UI
         viewModelScope.launch {
             // convert to Race and DndClass
             val raceObj: Race = RaceEnum.valueOf(race.uppercase()).race

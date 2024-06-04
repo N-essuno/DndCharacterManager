@@ -69,7 +69,7 @@ class DndCharacterManagerRepository(
 
                 val id = dndCharacterDao.insert(dndCharacter)
                 dndCharacter.id = id
-                fetchCharacterByName(dndCharacter.name)
+//                fetchCharacterByName(dndCharacter.name)
                 fetchAllCharacters()
             }
         }
@@ -195,6 +195,7 @@ class DndCharacterManagerRepository(
     private fun fetchCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                Log.d("CharacterSheet", "Fetching character: $id")
                 val dbCharacter = dndCharacterDao.getCharacterById(id)
                 val characterRace = raceDao.getRaceById(dbCharacter.raceId)
                 val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
@@ -204,7 +205,6 @@ class DndCharacterManagerRepository(
                     fetchCharacterKnownSpellsBlocking(dbCharacter.id)
                 val characterPreparedSpells: List<Spell> =
                     fetchCharacterPreparedSpellsBlocking(dbCharacter.id)
-
                 dbCharacter.race = characterRace
                 dbCharacter.dndClass = characterDndClass
                 dbCharacter.skillProficiencies = characterSkills.toSet()
@@ -212,6 +212,7 @@ class DndCharacterManagerRepository(
                 dbCharacter.spellsKnown = characterKnownSpells.toSet()
                 dbCharacter.preparedSpells = characterPreparedSpells.toSet()
                 selectedDndCharacter.value = dbCharacter
+                Log.d("CharacterSheet", "Repository: selectedCharacter updated: ${selectedDndCharacter.value}")
             }
         }
     }
@@ -410,9 +411,7 @@ class DndCharacterManagerRepository(
 
     fun getCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
-            // TODO review
-            fetchCharacterById(id)
-//            selectedDndCharacter.value = allCharacters.value.find { it.id == id }
+            selectedDndCharacter.value = allCharacters.value.find { it.id == id }
             Log.i(tag, "Repository: selectedCharacter updated: $selectedDndCharacter")
         }
     }

@@ -3,9 +3,11 @@ package it.brokenengineers.dnd_character_manager.screens.levelup
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,29 +57,29 @@ fun LevelUp(
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
     val levelUpCommitted = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     if(!levelUpCommitted.value){
         char?.let { character ->
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(top = XXLPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                item {
-                    // CHARACTER CARD (summary of the character statistics at the old level)
-                    CharacterCard(
-                        dndCharacter = character,
-                        navController = navController,
-                        onHomePage = false
-                    )
-                }
-                item { Text(text = stringResource(R.string.level_up), style = MaterialTheme.typography.titleLarge) }
-                item {
-                    // HP INCREASE
-                    StatIncrease(
-                    "HP",
+                // CHARACTER CARD (summary of the character statistics at the old level)
+                CharacterCard(
+                    dndCharacter = character,
+                    navController = navController,
+                    onHomePage = false
+                )
+
+                Text(text = stringResource(R.string.level_up), style = MaterialTheme.typography.titleLarge)
+                // HP INCREASE
+                StatIncrease(
+                "HP",
                     oldValue = getMaxHpStatic(
                         dndClass = character.dndClass!!,
                         level = character.level,
@@ -88,15 +90,15 @@ fun LevelUp(
                         level = character.level + 1,
                         abilityValues = character.abilityValues
                     ),
-                ) }
-                item {
-                    // OTHER LEVEL UP EVENTS
-                    DynamicLevelUp(
-                    character = character,
-                    viewModel = viewModel,
-                    navController = navController,
-                    levelUpCommitted = levelUpCommitted
-                )}
+                )
+                // OTHER LEVEL UP EVENTS
+                DynamicLevelUp(
+                character = character,
+                viewModel = viewModel,
+                navController = navController,
+                levelUpCommitted = levelUpCommitted
+                )
+                val a = 1
             }
         }
     } else {

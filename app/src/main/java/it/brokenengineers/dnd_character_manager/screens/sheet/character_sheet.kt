@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
@@ -76,13 +77,17 @@ fun CharacterSheetScreen(
 ) {
     LaunchedEffect(characterId) {
         viewModel.fetchCharacterById(characterId)
+//        viewModel.getCharacterById(characterId)
     }
     val char by viewModel.selectedCharacter.collectAsState(initial = null)
+
+    Log.d("CharacterSheet", "Just inside: $char")
 
     Scaffold(
         bottomBar = { CharacterSheetNavBar(navController, characterId) }
     ) { innerPadding ->
         char?.let { character ->
+            Log.d("CharacterSheet", "Recompostion: $character")
             val savingThrowsString = stringResource(id = R.string.saving_throws)
             val scrollState = rememberScrollState()
             Column(
@@ -166,6 +171,16 @@ fun CharacterSheetScreen(
                     )
                 }
             }
+        } ?: run {
+            CircularProgressIndicator()
+            Log.d("CharacterSheet", "character is null")
+            // every 1 second, fetch the character again
+            while (viewModel.selectedCharacter.value == null) {
+                // wait 1 second
+                viewModel.fetchCharacterById(characterId)
+                Thread.sleep(500)
+            }
+
         }
     }
 }
@@ -384,7 +399,6 @@ fun ImageAndDamageRow(
             ) {
                 showDialogTempHp.value = true
             }
-            Log.d("Sheet test", "Testing of character: ${viewModel.selectedCharacter.value}")
             MyButton(
                 modifier = Modifier
                     .testTag(TestTags.HIT_BUTTON)
