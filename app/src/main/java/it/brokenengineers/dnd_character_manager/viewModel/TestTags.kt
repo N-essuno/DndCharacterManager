@@ -1,9 +1,6 @@
 package it.brokenengineers.dnd_character_manager.viewModel
 
 object TestTags {
-
-    val ADD_SPELLS_CONFIRM_BUTTON = "add_spells_confirm_button"
-
     // Home screen
     const val WELCOME_MESSAGE = "welcome_message"
     const val TEST_CARD = "test_card"
@@ -12,6 +9,7 @@ object TestTags {
 
     // Character sheet
     const val CHARACTER_NAME_TEXT = "character_name"
+    const val CHARACTER_LEVEL_TEXT = "character_level"
     const val CHARACTER_RACE_TEXT = "character_race"
     const val CHARACTER_CLASS_TEXT = "character_class"
 
@@ -72,6 +70,8 @@ object TestTags {
     const val ARCANE_TRADITION_CHOSEN = "arcane_tradition_chosen"
     const val CONFIRM_ARCANE_TRADITION = "confirm_arcane_tradition"
     const val CONFIRM_LEVELUP = "confirm_levelup"
+    const val ADD_SPELLS_CONFIRM_BUTTON = "add_spells_confirm_button"
+
 
 
 }

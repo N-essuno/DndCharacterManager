@@ -198,7 +198,7 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
         ConstraintLayout (
             modifier = Modifier.fillMaxSize()
         ){
-            val (cName, cRace, cClass, hpCard, restButton, levelUpButton) = createRefs()
+            val (cName, cLevel, cRace, cClass, hpCard, restButton, levelUpButton) = createRefs()
             Text(
                 text = dndCharacter.name,
                 modifier = Modifier
@@ -208,6 +208,16 @@ fun CharacterSheetHead(modifier: Modifier, dndCharacter: DndCharacter, navContro
                         top.linkTo(parent.top)
                     }
                     .testTag(TestTags.CHARACTER_NAME_TEXT)
+            )
+            Text(
+                text = "Level: ${dndCharacter.level}",
+                modifier = Modifier
+                    .padding(SmallPadding)
+                    .constrainAs(cLevel) {
+                        start.linkTo(cName.end)
+                        top.linkTo(parent.top)
+                    }
+                    .testTag(TestTags.CHARACTER_LEVEL_TEXT)
             )
             dndCharacter.race?.let {
                 Text(
