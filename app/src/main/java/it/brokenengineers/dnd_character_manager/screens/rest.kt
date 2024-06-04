@@ -254,8 +254,8 @@ fun SpellRecovery(
 ) {
     // maps spell level to number of recoverable slots
     val slotsRecoverable: Map<Int, Int> = character.getRecoverableSpellSlots()
-    // number of slots recoverable for short rest for character
-    val maxSlotsRecoverable = character.getNumRecoverableSlotsForShortRest()
+    // sum values of slots recoverable for all levels
+    val maxSlotsRecoverable = slotsRecoverable.values.sum()
     // sum of selected slots, derived from selectedSlots
     val selectedSlotsSum by remember {
         derivedStateOf { selectedSlots.sumOf { it.intValue } }

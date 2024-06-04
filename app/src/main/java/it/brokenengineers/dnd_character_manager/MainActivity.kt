@@ -178,9 +178,6 @@ fun CustomNavigationHost(navController: NavHostController, viewModel: DndCharact
                 }
             }
         }
-        navigation(startDestination = "build_character", route = "build_character_route") {
-            composable("build_character") { BuildCharacterStart(navController, viewModel) }
-        }
     }
 }
 
