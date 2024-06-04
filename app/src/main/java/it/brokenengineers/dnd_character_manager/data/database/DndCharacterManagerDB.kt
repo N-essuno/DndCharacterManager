@@ -66,7 +66,7 @@ abstract class DndCharacterManagerDB: RoomDatabase() {
         fun getDatabase(context: Context, initCharacters: Boolean = true, usingUI: Boolean = true): DndCharacterManagerDB? {
             if (usingUI) {
                 val dbDelete = context.deleteDatabase("dnd_character_manager_database")
-                Log.i("CharacterSheet", "DB deleted: $dbDelete")
+                Log.i("DndCharacterManagerDB", "DB deleted: $dbDelete")
             }
 
 

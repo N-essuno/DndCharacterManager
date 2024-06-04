@@ -21,11 +21,14 @@ import it.brokenengineers.dnd_character_manager.ui.theme.DndCharacterManagerThem
 import it.brokenengineers.dnd_character_manager.viewModel.DndCharacterManagerViewModel
 import it.brokenengineers.dnd_character_manager.viewModel.TestTags
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class SheetScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -38,8 +41,7 @@ class SheetScreenTest {
         composeTestRule.setContent {
             DndCharacterManagerTheme(darkTheme = isSystemInDarkTheme(), dynamicColor = false) {
                 appContext = LocalContext.current
-                // DB not used in this test but needed for ViewModel
-                val db = DndCharacterManagerDB.getDatabase(appContext)
+                val db = DndCharacterManagerDB.getDatabase(appContext, usingUI = false)
                 assert(db != null)
                 viewModel = DndCharacterManagerViewModel(db!!)
                 viewModel.init()
@@ -51,19 +53,19 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testStartScreen() {
+    fun test11StartScreen() {
         navController.assertCurrentRouteEqual("home")
         composeTestRule.onNodeWithTag(TestTags.WELCOME_MESSAGE).assertIsDisplayed()
     }
 
     @Test
-    fun testNavigateSheet() {
+    fun test12NavigateSheet() {
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
     }
 
     @Test
-    fun testCharacterSheetDisplayed() {
+    fun test13CharacterSheetDisplayed() {
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithTag(TestTags.CHARACTER_NAME_TEXT).assertTextEquals("Silvano")
@@ -72,7 +74,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testAddTempHp() {
+    fun test14AddTempHp() {
         val tempHpString = appContext.getString(R.string.temp_hp)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -83,7 +85,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testLoseTempHp() {
+    fun test15LoseTempHp() {
         val tempHpString = appContext.getString(R.string.temp_hp)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -95,7 +97,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testLoseHp(){
+    fun test16LoseHp(){
         val hpString = appContext.getString(R.string.hp)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -107,7 +109,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testAddHp(){
+    fun test17AddHp(){
         val hpString = appContext.getString(R.string.hp)
 
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
@@ -120,7 +122,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testHit(){
+    fun test18Hit(){
         val hpString = appContext.getString(R.string.hp)
 
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
@@ -133,8 +135,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testNavigateToInventory() {
-        val totalWeightString = appContext.getString(R.string.total_weight)
+    fun test19NavigateToInventory() {
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Inventory").performClick()
@@ -142,7 +143,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testIncreaseItem() {
+    fun test21IncreaseItem() {
         val totalWeightString = appContext.getString(R.string.total_weight)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -162,28 +163,23 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testDecreaseItem() {
+    fun test22DecreaseItem() {
         val totalWeightString = appContext.getString(R.string.total_weight)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Inventory").performClick()
         navController.assertCurrentRouteWithIdEqual("inventory/1")
 
-        composeTestRule.onNodeWithTag(TestTags.ITEM_INCREMENT_BUTTON, useUnmergedTree = true).performClick()
-        composeTestRule.onNodeWithTag(TestTags.ITEM_NAME_TEXT).assertTextEquals("Paper")
-        composeTestRule.onNodeWithTag(TestTags.ITEM_WEIGHT_TEXT).assertTextEquals("0.2")
-        composeTestRule.onNodeWithTag(TestTags.ITEM_QUANTITY_TEXT).assertTextEquals("2")
-
         composeTestRule.onNodeWithTag(TestTags.ITEM_DECREMENT_BUTTON, useUnmergedTree = true).performClick()
-        composeTestRule.onNodeWithTag(TestTags.ITEM_NAME_TEXT).assertTextEquals("Paper")
-        composeTestRule.onNodeWithTag(TestTags.ITEM_WEIGHT_TEXT).assertTextEquals("0.2")
-        composeTestRule.onNodeWithTag(TestTags.ITEM_QUANTITY_TEXT).assertTextEquals("1")
+        composeTestRule.onNodeWithTag(TestTags.ITEM_NAME_TEXT).assertTextEquals("Health potion")
+        composeTestRule.onNodeWithTag(TestTags.ITEM_WEIGHT_TEXT).assertTextEquals("1.5")
+        composeTestRule.onNodeWithTag(TestTags.ITEM_QUANTITY_TEXT).assertTextEquals("5")
         composeTestRule.onNodeWithTag(TestTags.TOTAL_WEIGHT_TEXT)
-            .assertTextEquals("$totalWeightString 12.2")
+            .assertTextEquals("$totalWeightString 7.7")
     }
 
     @Test
-    fun testDeleteItem() {
+    fun test23DeleteItem() {
         val totalWeightString = appContext.getString(R.string.total_weight)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -192,18 +188,18 @@ class SheetScreenTest {
 
         composeTestRule.onNodeWithTag(TestTags.ITEM_NAME_TEXT).assertTextEquals("Health potion")
         composeTestRule.onNodeWithTag(TestTags.ITEM_WEIGHT_TEXT).assertTextEquals("1.5")
-        composeTestRule.onNodeWithTag(TestTags.ITEM_QUANTITY_TEXT).assertTextEquals("6")
+        composeTestRule.onNodeWithTag(TestTags.ITEM_QUANTITY_TEXT).assertTextEquals("5")
 
         composeTestRule.onNodeWithTag(TestTags.ITEM_DELETE_BUTTON, useUnmergedTree = true).performClick()
         composeTestRule.onNodeWithText("Health potion").assertDoesNotExist()
         composeTestRule.onNodeWithText("1.5").assertDoesNotExist()
-        composeTestRule.onNodeWithText("6").assertDoesNotExist()
+        composeTestRule.onNodeWithText("5").assertDoesNotExist()
         composeTestRule.onNodeWithTag(TestTags.TOTAL_WEIGHT_TEXT)
-            .assertTextEquals("$totalWeightString 12.2")
+            .assertTextEquals("$totalWeightString 0.2")
     }
 
     @Test
-    fun testAddNewItem() {
+    fun test24AddNewItem() {
         val totalWeightString = appContext.getString(R.string.total_weight)
         val addItemToInventoryString = appContext.getString(R.string.add_item_to_inventory)
 
@@ -225,11 +221,11 @@ class SheetScreenTest {
         composeTestRule.onNodeWithText("3.0").assertIsDisplayed()
         composeTestRule.onNodeWithText("4").assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTags.TOTAL_WEIGHT_TEXT)
-            .assertTextEquals("$totalWeightString 21.2")
+            .assertTextEquals("$totalWeightString 12.2")
     }
 
     @Test
-    fun testNavigateToAttack() {
+    fun test25NavigateToAttack() {
         val spellsTitleString = appContext.getString(R.string.spells_title)
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
@@ -242,7 +238,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testUseSlot(){
+    fun test26UseSlot(){
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithText("Attack & Spells").performClick()
@@ -254,7 +250,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testNavigateToLevelUp(){
+    fun test27NavigateToLevelUp(){
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithTag(TestTags.LEVELUP_BUTTON).performClick()
@@ -262,7 +258,7 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testNavigateToRest(){
+    fun test28NavigateToRest(){
         composeTestRule.onNodeWithTag(TestTags.TEST_CARD).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
         composeTestRule.onNodeWithTag(TestTags.REST_BUTTON).performClick()
@@ -270,8 +266,8 @@ class SheetScreenTest {
     }
 
     @Test
-    fun testNavigateToBuildCharacter(){
+    fun test29NavigateToBuildCharacter(){
         composeTestRule.onNodeWithTag(TestTags.CREATE_CHARACTER_BUTTON).performClick()
-        navController.assertCurrentRouteEqual("build_character")
+        navController.assertCurrentRouteEqual("create_character")
     }
 }

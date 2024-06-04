@@ -239,7 +239,7 @@ fun HomePage(
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             onClick = {
-                navController.navigate("build_character"){
+                navController.navigate("create_character"){
                     popUpTo(navController.graph.findStartDestination().id)
 
                     launchSingleTop = true
