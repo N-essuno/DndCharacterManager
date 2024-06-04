@@ -46,11 +46,13 @@ class DndCharacterManagerRepository(
 
     fun init() {
         viewModel.viewModelScope.launch {
-            // TODO use the following for loading only DB characters instead of Mock characters
             fetchAllCharacters()
-//            getAllCharacters()
         }
     }
+
+    /** --------- Insert/update functions --------- */
+
+    //region --------------- Insert/update functions ---------------
 
     fun insertCharacter(dndCharacter: DndCharacter) {
         viewModel.viewModelScope.launch {
@@ -168,6 +170,12 @@ class DndCharacterManagerRepository(
         }
     }
 
+    //endregion
+
+    /** --------- Retrieve functions --------- */
+
+    //region --------------- Retrieve functions ---------------
+
     fun fetchCharacterByName(name: String) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -195,7 +203,6 @@ class DndCharacterManagerRepository(
     fun fetchCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                Log.d("CharacterSheet", "Fetching character: $id")
                 val dbCharacter = dndCharacterDao.getCharacterById(id)
                 val characterRace = raceDao.getRaceById(dbCharacter.raceId)
                 val characterDndClass = fetchDndClassBlocking(dbCharacter.dndClassId)
@@ -212,7 +219,6 @@ class DndCharacterManagerRepository(
                 dbCharacter.spellsKnown = characterKnownSpells.toSet()
                 dbCharacter.preparedSpells = characterPreparedSpells.toSet()
                 selectedDndCharacter.value = dbCharacter
-                Log.d("CharacterSheet", "Repository: selectedCharacter updated: ${selectedDndCharacter.value}")
             }
         }
     }
@@ -244,6 +250,12 @@ class DndCharacterManagerRepository(
         }
     }
 
+    //endregion
+
+    /** --------- Delete functions --------- */
+
+    //region --------------- Delete functions ---------------
+
     fun deleteAllCharacters() {
         viewModel.viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -262,9 +274,15 @@ class DndCharacterManagerRepository(
         }
     }
 
+    fun clearSelectedCharacter() {
+        selectedDndCharacter.value = null
+    }
+
+    //endregion
 
     /** --------- Blocking functions used for DB testing to wait for results (no UI) --------- */
 
+    //region --------------- Blocking functions ---------------
     fun fetchAllCharactersBlocking(): List<DndCharacter> {
         val dbCharacters = dndCharacterDao.getAllCharacters().toMutableList()
 
@@ -399,8 +417,11 @@ class DndCharacterManagerRepository(
         return dbWeapons
     }
 
+    //endregion
 
-    /** --------------------- Functions to load Mock Characters --------------------- **/
+    /** --------------------- Functions for local/mock data --------------------- **/
+
+    //region --------------- Local/mock data functions ---------------
 
     fun getAllCharacters() {
         viewModel.viewModelScope.launch {
@@ -412,7 +433,6 @@ class DndCharacterManagerRepository(
     fun getCharacterById(id: Int) {
         viewModel.viewModelScope.launch {
             selectedDndCharacter.value = allCharacters.value.find { it.id == id }
-            Log.i(tag, "Repository: selectedCharacter updated: $selectedDndCharacter")
         }
     }
 
@@ -527,7 +547,5 @@ class DndCharacterManagerRepository(
         )
     }
 
-    fun clearSelectedCharacter() {
-        selectedDndCharacter.value = null
-    }
+    //endregion
 }
