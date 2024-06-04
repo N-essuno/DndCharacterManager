@@ -300,7 +300,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     newCharacter = newCharacter.copy(preparedSpells = spellsToPrepare.toSet())
                     Log.d("ViewModel", "New Prepared spells: ${newCharacter.preparedSpells}")
                 }
-                // TODO add slots recover
                 repository.longRest(newCharacter)
             }
         }
@@ -332,7 +331,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                         }
                     }
                     newCharacter = character.copy(abilityValues = newAbilityValues)
-                    repository.updateCharacter(newCharacter)
                 }
 
                 // Increase available spell slots
@@ -347,7 +345,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     }
                     newSpellSlots = newSlots?.toMap() ?: emptyMap()
                     newCharacter = newCharacter.copy(availableSpellSlots = newSpellSlots)
-                    repository.updateCharacter(newCharacter)
                 }
 
                 // Increase Hp
