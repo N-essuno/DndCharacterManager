@@ -93,10 +93,13 @@ class LevelUpTest {
         composeTestRule.onNodeWithTag(TestTags.CONFIRM_LEVELUP).performClick()
         navController.assertCurrentRouteWithIdEqual("sheet/1")
 
+        // Assert character level 2
+        composeTestRule.onNodeWithTag(TestTags.CHARACTER_LEVEL_TEXT)
+            .assertTextEquals("Level: 2")
     }
 
-    private fun waitForUiUpdate(){
-        Thread.sleep(5000)
-        composeTestRule.waitForIdle()
-    }
+//    private fun waitForDbUpdate(){
+//        Thread.sleep(2000)
+//        composeTestRule.waitForIdle()
+//    }
 }

@@ -332,7 +332,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                         }
                     }
                     newCharacter = character.copy(abilityValues = newAbilityValues)
-                    repository.updateCharacter(newCharacter)
                 }
 
                 // Increase available spell slots
@@ -347,7 +346,6 @@ class DndCharacterManagerViewModel(db: DndCharacterManagerDB) : ViewModel()  {
                     }
                     newSpellSlots = newSlots?.toMap() ?: emptyMap()
                     newCharacter = newCharacter.copy(availableSpellSlots = newSpellSlots)
-                    repository.updateCharacter(newCharacter)
                 }
 
                 // Increase Hp
