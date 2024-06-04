@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
@@ -172,9 +171,8 @@ fun CharacterSheetScreen(
                 }
             }
         } ?: run {
-            CircularProgressIndicator()
             Log.d("CharacterSheet", "character is null")
-            // every 1 second, fetch the character again
+            // fetch the character until correct recompose
             while (viewModel.selectedCharacter.value == null) {
                 // wait 1 second
                 viewModel.fetchCharacterById(characterId)

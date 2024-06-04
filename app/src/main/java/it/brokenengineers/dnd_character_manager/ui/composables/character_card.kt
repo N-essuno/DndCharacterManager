@@ -62,7 +62,7 @@ fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController
             modifier = columnModifier,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image( // TODO meybe use async image to retrieve image from url
+            Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Character Image"
             )
@@ -75,7 +75,7 @@ fun CharacterCard(onHomePage: Boolean, dndCharacter: DndCharacter, navController
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
-                text = dndCharacter.level.toString(),
+                text = "Level: ${dndCharacter.level.toString()}",
                 modifier = Modifier.padding(start = SmallPadding, end = SmallPadding)
             )
             Text(
